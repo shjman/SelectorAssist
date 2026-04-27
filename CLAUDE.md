@@ -51,7 +51,7 @@ Package: `com.yahorshymanchyk.selectorassist`
 | Биометрия | expect/actual вручную (AndroidX Biometric на Android, LocalAuthentication на iOS) |
 | Сборка | Gradle KTS + Version Catalogs (libs.versions.toml) |
 | JVM Target | 17 |
-| Min Android SDK | 26 |
+| Min Android SDK | 28 |
 | iOS deployment | 16.0 |
 
 ### Примечания по стеку

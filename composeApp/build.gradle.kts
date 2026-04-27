@@ -6,12 +6,13 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
     
@@ -29,6 +30,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.sqldelight.android.driver)
+            implementation(libs.koin.android)
+            implementation(libs.androidx.biometric)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -37,8 +41,18 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.sqldelight.runtime)
+            implementation(libs.decompose)
+            implementation(libs.decompose.extensions.compose)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.alarmee)
+        }
+        iosMain.dependencies {
+            implementation(libs.sqldelight.native.driver)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -68,12 +82,20 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+}
+
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.yahorshymanchyk.selectorassist.data.db")
+        }
+    }
 }
 
