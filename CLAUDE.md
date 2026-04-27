@@ -25,6 +25,16 @@ Package: `com.yahorshymanchyk.selectorassist`
 
 ---
 
+## Стиль сотрудничества
+
+- Claude **может и должен не соглашаться** с идеями разработчика — аргументированно, без агрессии
+- Claude **предлагает альтернативы**, если видит более подходящее решение
+- **Уточняющие вопросы обязательны** перед реализацией неоднозначной задачи
+- **Не додумывать** — лучше спросить, чем реализовать не то
+- Если решение кажется избыточным, преждевременным или противоречит стеку — сказать об этом явно
+
+---
+
 ## Абсолютные запреты (Anti-AI Manifesto)
 
 - **Никаких сетевых запросов.** Ни аналитики, ни телеметрии, ни синхронизации.
@@ -67,48 +77,59 @@ iOS: `LocalAuthentication` framework, вызывается из iosMain чере
 
 ---
 
-## Version Catalogs
-
-Все зависимости и версии — только через `gradle/libs.versions.toml`.
-Никогда не прописывать версии строками прямо в `build.gradle.kts`.
-
-Правильно:
-```toml
-[versions]
-alarmee = "2.0.0"
-
-[libraries]
-alarmee = { module = "io.github.tweener:alarmee", version.ref = "alarmee" }
-```
-
-Неправильно:
-```kotlin
-implementation("io.github.tweener:alarmee:2.0.0")
-```
-
----
-
 ## Структура модулей
 
+Проект многомодульный. Каждый модуль — отдельный Gradle-модуль с KMP-конфигурацией.
+
 ```
-composeApp/
-└── src/
-    ├── commonMain/
-    │   ├── kotlin/com/yahorshymanchyk/selectorassist/
-    │   │   ├── data/           # SQLDelight-репозитории, маперы
-    │   │   ├── domain/         # модели, use cases, интерфейсы репозиториев
-    │   │   ├── presentation/   # ViewModel, MVI State/Intent/Effect
-    │   │   ├── ui/             # Compose экраны и компоненты
-    │   │   ├── navigation/     # Decompose RootComponent и дерево компонентов
-    │   │   └── di/             # Koin modules
-    │   └── sqldelight/         # .sq файлы схемы БД
-    ├── androidMain/
-    │   └── kotlin/com/yahorshymanchyk/selectorassist/
-    │       ├── BiometryManager.android.kt
-    │       └── MainActivity.kt (уже существует)
-    └── iosMain/
-        └── kotlin/com/yahorshymanchyk/selectorassist/
-            └── BiometryManager.ios.kt
+:core:domain        — доменные модели, интерфейсы репозиториев, все UseCase'ы
+:core:data          — SQLDelight схема и драйверы, реализации репозиториев, маперы
+:core:ui            — общие Compose-компоненты, тема, цвета, типографика
+:feature:questions  — список вопросов + экран создания вопроса
+:feature:entry      — экран ежедневного ввода (слайдер, теги, комментарий)
+:feature:report     — экран финального отчёта
+:app (composeApp)   — точка входа Android/iOS, Koin wiring, Decompose RootComponent
+```
+
+### Зависимости между модулями
+
+```
+:feature:* → :core:domain, :core:ui
+:core:data  → :core:domain
+:app        → :feature:*, :core:data, :core:domain, :core:ui
+```
+
+`:feature`-модули не зависят от `:core:data` напрямую — только через интерфейсы из `:core:domain`.
+
+### Внутренняя структура feature-модуля
+
+```
+:feature:questions/
+└── src/commonMain/kotlin/com/yahorshymanchyk/selectorassist/questions/
+    ├── component/   # Decompose-компонент (интерфейс + реализация)
+    ├── presentation/ # QuestionsState, QuestionsIntent, QuestionsViewModel
+    └── ui/          # Compose-экраны
+```
+
+### Внутренняя структура :core:domain
+
+```
+:core:domain/src/commonMain/kotlin/com/yahorshymanchyk/selectorassist/domain/
+├── model/          # Question, Entry, Tag
+├── repository/     # QuestionRepository, EntryRepository (интерфейсы)
+└── usecase/        # все UseCase'ы
+```
+
+### Внутренняя структура :core:data
+
+```
+:core:data/src/
+├── commonMain/kotlin/.../data/
+│   ├── repository/  # реализации репозиториев
+│   └── mapper/      # SQLDelight entity → domain model
+├── commonMain/sqldelight/  # .sq файлы
+├── androidMain/    # AndroidDriver
+└── iosMain/        # NativeDriver
 ```
 
 ---
@@ -150,12 +171,70 @@ enum class Tag {
 
 ---
 
-## MVI-соглашения
+## Архитектура
 
-Для каждого экрана три файла в `presentation/`:
+### Слои и ответственность
+
+```
+UI (Compose)
+  ↓ Intent
+ViewModel (MVI)
+  ↓ вызов
+UseCase (:core:domain)
+  ↓ вызов через интерфейс
+Repository (интерфейс в :core:domain, реализация в :core:data)
+  ↓
+SQLDelight DB
+```
+
+Правило: каждый слой знает только о слое ниже. ViewModel не знает о SQLDelight. UseCase не знает о Compose.
+
+### UseCase'ы (все в :core:domain/usecase/)
+
+```kotlin
+// Вопросы
+GetActiveQuestionsUseCase    // () → Flow<List<Question>>
+GetCompletedQuestionsUseCase // () → Flow<List<Question>>
+CreateQuestionUseCase        // (title, poleA, poleB, deadlineAt) → Unit
+DeleteQuestionUseCase        // (questionId) → Unit
+
+// Записи
+GetTodayEntryUseCase         // (questionId) → Flow<Entry?>
+SaveEntryUseCase             // (questionId, sliderValue, tags, comment) → Unit
+
+// Отчёт
+GetQuestionStatsUseCase      // (questionId) → Flow<QuestionStats>
+```
+
+`QuestionStats` — отдельная data class в domain: распределение по слайдеру, частота тегов, аргументы по полюсам.
+
+### Decompose — иерархия компонентов
+
+```
+RootComponent
+├── BiometryComponent              — gate-экран при старте (если биометрия включена)
+└── HomeComponent
+    └── ChildStack<HomeChild>
+        ├── QuestionsListComponent — главный экран, список вопросов
+        ├── CreateQuestionComponent — создание новой дилеммы
+        └── QuestionComponent      — контейнер для конкретного вопроса
+            └── ChildStack<QuestionChild>
+                ├── EntryComponent   — ежедневный ввод
+                └── ReportComponent  — финальный отчёт
+```
+
+`RootComponent` переключает между `BiometryComponent` и `HomeComponent` через `Value<RootChild>`.
+`HomeComponent` управляет основным стеком навигации через `ChildStack`.
+`QuestionComponent` — вложенный `ChildStack` внутри конкретного вопроса.
+
+Каждый компонент: интерфейс (что отдаёт UI) + реализация `Default` (держит дочерние компоненты и ViewModel).
+
+### MVI-соглашения
+
+Для каждого экрана три файла в `presentation/` внутри feature-модуля:
 - `XxxState.kt` — data class, полное состояние UI
 - `XxxIntent.kt` — sealed interface, все действия пользователя
-- `XxxViewModel.kt` — принимает Intent, выдаёт StateFlow<XxxState>
+- `XxxViewModel.kt` — принимает Intent, выдаёт `StateFlow<XxxState>`
 
 ---
 
@@ -165,6 +244,7 @@ enum class Tag {
 - Комментарии на английском
 - Один файл — один класс (кроме мелких data class рядом с владельцем)
 - Не создавать интерфейс там где одна реализация — только для тестов или expect/actual
+- Все зависимости и версии — только через `gradle/libs.versions.toml`, никогда не хардкодить строками
 - Не добавлять зависимости в `libs.versions.toml` без явного запроса
 - Перед созданием файла проверять что он не существует
 - После каждой завершённой задачи предлагать коммит в формате:
