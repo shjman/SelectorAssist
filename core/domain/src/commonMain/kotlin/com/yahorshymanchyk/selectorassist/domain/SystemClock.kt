@@ -1,11 +1,11 @@
 package com.yahorshymanchyk.selectorassist.domain
 
-expect fun currentTimeMs(): Long
+import kotlin.time.Clock
 
 object SystemClock {
     private const val DAY_MS = 86_400_000L
 
-    fun now(): Long = currentTimeMs()
+    fun now(): Long = Clock.System.now().toEpochMilliseconds()
 
     fun todayAtMidnightMs(): Long {
         val now = now()

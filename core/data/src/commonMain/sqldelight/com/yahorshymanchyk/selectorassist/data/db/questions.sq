@@ -1,0 +1,28 @@
+CREATE TABLE IF NOT EXISTS questions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    pole_a TEXT NOT NULL,
+    pole_b TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    deadline_at INTEGER NOT NULL
+);
+
+selectActive:
+SELECT * FROM questions
+WHERE deadline_at > :currentTimeMs
+ORDER BY created_at DESC;
+
+selectCompleted:
+SELECT * FROM questions
+WHERE deadline_at <= :currentTimeMs
+ORDER BY deadline_at DESC;
+
+selectById:
+SELECT * FROM questions WHERE id = :id;
+
+insert:
+INSERT INTO questions (title, pole_a, pole_b, created_at, deadline_at)
+VALUES (:title, :poleA, :poleB, :createdAt, :deadlineAt);
+
+deleteById:
+DELETE FROM questions WHERE id = :id;

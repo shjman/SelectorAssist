@@ -1,0 +1,29 @@
+CREATE TABLE IF NOT EXISTS entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question_id INTEGER NOT NULL,
+    date INTEGER NOT NULL,
+    slider_value INTEGER NOT NULL,
+    comment TEXT,
+    UNIQUE(question_id, date)
+);
+
+selectByDate:
+SELECT * FROM entries
+WHERE question_id = :questionId AND date = :date;
+
+selectAllByQuestion:
+SELECT * FROM entries
+WHERE question_id = :questionId
+ORDER BY date ASC;
+
+insert:
+INSERT INTO entries (question_id, date, slider_value, comment)
+VALUES (:questionId, :date, :sliderValue, :comment);
+
+update:
+UPDATE entries
+SET slider_value = :sliderValue, comment = :comment
+WHERE id = :id;
+
+deleteAllByQuestion:
+DELETE FROM entries WHERE question_id = :questionId;
