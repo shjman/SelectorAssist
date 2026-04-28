@@ -97,6 +97,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    lint {
+        // Version bump warnings are informational — versions are managed explicitly via libs.versions.toml
+        disable += "AndroidGradlePluginVersion"
+        disable += "NewerVersionAvailable"
+        // Placeholder app icon — monochrome layer will be added with final assets
+        disable += "MonochromeLauncherIcon"
+        abortOnError = true
+        warningsAsErrors = false
+    }
 }
 
 dependencies {
