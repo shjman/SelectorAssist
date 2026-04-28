@@ -2,10 +2,9 @@ package com.yahorshymanchyk.selectorassist
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetCompletedQuestionSummariesUseCase
-import com.yahorshymanchyk.selectorassist.questions.component.DefaultQuestionsListComponent
-import com.yahorshymanchyk.selectorassist.questions.component.QuestionsListComponent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -15,12 +14,12 @@ class DefaultRootComponent(
 
     private val getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase by inject()
     private val getCompletedQuestionSummaries: GetCompletedQuestionSummariesUseCase by inject()
+    private val createQuestion: CreateQuestionUseCase by inject()
 
-    override val questionsListComponent: QuestionsListComponent = DefaultQuestionsListComponent(
-        componentContext = childContext(key = "questions_list"),
-        onNavigateToQuestion = { /* TODO */ },
-        onNavigateToCreate = { /* TODO */ },
+    override val homeComponent: HomeComponent = DefaultHomeComponent(
+        componentContext = childContext(key = "home"),
         getActiveQuestionSummaries = getActiveQuestionSummaries,
         getCompletedQuestionSummaries = getCompletedQuestionSummaries,
+        createQuestion = createQuestion,
     )
 }

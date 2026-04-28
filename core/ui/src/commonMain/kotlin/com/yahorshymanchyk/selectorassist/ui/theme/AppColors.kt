@@ -23,4 +23,8 @@ object AppColors {
 
     val Divider = Color(0xFF38383A)
     val Chevron = Color(0xFF636366)
+
+    val InputField = Color(0xFF2C2C2E)
+    val InputFieldSelected = Color(0xFF3A3A3C)
+    val InputFieldSelectedBorder = Color(0xFF636366)
 }
