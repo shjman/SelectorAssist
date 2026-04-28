@@ -1,5 +1,6 @@
 package com.yahorshymanchyk.selectorassist.domain.model
 
+// Daily user input for a specific question: slider position, tags, and optional comment
 data class Entry(
     val id: Long,
     val questionId: Long,
