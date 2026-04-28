@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,7 +5,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.sqldelight)
     alias(libs.plugins.detekt)
 }
 
@@ -16,7 +14,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -26,50 +24,33 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.sqldelight.android.driver)
+            implementation(libs.compose.uiToolingPreview)
             implementation(libs.koin.android)
             implementation(libs.androidx.biometric)
         }
         commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
+            implementation(projects.core.domain)
+            implementation(projects.core.data)
+            implementation(projects.core.ui)
+            implementation(projects.feature.questions)
+            implementation(projects.feature.entry)
+            implementation(projects.feature.report)
             implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.sqldelight.runtime)
-            implementation(libs.decompose)
-            implementation(libs.decompose.extensions.compose)
+            implementation(libs.compose.runtime)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.alarmee)
-        }
-        iosMain.dependencies {
-            implementation(libs.sqldelight.native.driver)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+            implementation(libs.decompose)
+            implementation(libs.decompose.extensions.compose)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
         }
     }
-}
-
-detekt {
-    config.setFrom("$rootDir/config/detekt/detekt.yml")
-    buildUponDefaultConfig = true
-    source.setFrom(
-        "src/commonMain/kotlin",
-        "src/androidMain/kotlin",
-        "src/iosMain/kotlin",
-        "src/commonTest/kotlin",
-    )
 }
 
 android {
@@ -112,11 +93,12 @@ dependencies {
     debugImplementation(libs.compose.uiTooling)
 }
 
-sqldelight {
-    databases {
-        create("AppDatabase") {
-            packageName.set("com.yahorshymanchyk.selectorassist.data.db")
-        }
-    }
+detekt {
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
+    buildUponDefaultConfig = true
+    source.setFrom(
+        "src/commonMain/kotlin",
+        "src/androidMain/kotlin",
+        "src/iosMain/kotlin",
+    )
 }
-
