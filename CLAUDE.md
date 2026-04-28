@@ -1,334 +1,150 @@
-# CLAUDE.md — SelectorAssist
+# SelectorAssist — CLAUDE.md
 
-Этот файл читается Claude Code автоматически при каждой сессии.
-Следуй инструкциям строго. Не отступай от стека и принципов без явного запроса разработчика.
+Читается автоматически каждую сессию. Следуй строго.
 
 ---
 
-## Что за проект
+## Разработчик
 
-KMP (Kotlin Multiplatform) приложение с Compose Multiplatform UI.
-Целевые платформы: Android и iOS. UI полностью общий — никакого SwiftUI.
-Pet project одного разработчика. Цель — рабочее приложение в Google Play и App Store.
+Опытный Android-разработчик, знает Kotlin глубоко, стандартные паттерны (MVVM, MVI, Repository, DI) — без объяснений. KMP-специфику объясняй, Android-базу — нет. Общение лаконичное, технически точное.
 
-Кодовое название: **SelectorAssist**
-Финальное название: **Ambivalence Monitor** (уточняется)
+---
+
+## Проект
+
+KMP + Compose Multiplatform. Android + iOS, UI полностью общий (никакого SwiftUI).
 Package: `com.yahorshymanchyk.selectorassist`
+Pet project → Google Play + App Store.
+
+**Суть:** пользователь создаёт бинарную дилемму (два полюса, срок). Каждый день — слайдер (1–5), теги, комментарий. По окончании — статистика склонений + паттерны.
 
 ---
 
-## Суть приложения
+## Абсолютные запреты
 
-Пользователь создаёт бинарную дилемму с двумя полюсами и сроком наблюдения.
-Каждый день: двигает ползунок (5 позиций), опционально выбирает теги и пишет комментарий.
-По окончании срока: статистика склонений + паттерн источников + аргументы по полюсам.
-
----
-
-## Стиль сотрудничества
-
-- Claude **может и должен не соглашаться** с идеями разработчика — аргументированно, без агрессии
-- Claude **предлагает альтернативы**, если видит более подходящее решение
-- **Уточняющие вопросы обязательны** перед реализацией неоднозначной задачи
-- **Не додумывать** — лучше спросить, чем реализовать не то
-- Если решение кажется избыточным, преждевременным или противоречит стеку — сказать об этом явно
+- Никаких сетевых запросов (ни аналитики, ни синхронизации)
+- Никакого ИИ внутри приложения
+- Никаких советов пользователю от приложения
+- Никаких engagement-механик (стрики, награды, напоминания-давления)
 
 ---
 
-## Абсолютные запреты (Anti-AI Manifesto)
-
-- **Никаких сетевых запросов.** Ни аналитики, ни телеметрии, ни синхронизации.
-- **Никакого ИИ внутри приложения.** Никаких ML-моделей, никаких API.
-- **Никаких советов пользователю** от приложения — только его собственные данные.
-- **Никаких engagement-механик** — стриков, наград, напоминаний "ты не заходил N дней".
-
-Нарушение любого из этих пунктов недопустимо даже если кажется полезным.
-
----
-
-## Технический стек (не менять без явного запроса)
+## Стек (не менять без явного запроса)
 
 | Слой | Решение |
 |------|---------|
 | UI | Compose Multiplatform (commonMain) |
-| Архитектура | MVI + shared ViewModel |
-| ViewModel | `androidx.lifecycle:lifecycle-viewmodel` (KMP) |
+| Архитектура | MVI + plain ViewModel class с внешним CoroutineScope |
 | БД | SQLDelight |
-| Навигация | Decompose |
-| Async | Kotlin Coroutines + StateFlow |
-| DI | Koin (KMP-совместимый) |
-| Уведомления | Alarmee (локальные scheduled, commonMain) |
-| Биометрия | expect/actual вручную (AndroidX Biometric на Android, LocalAuthentication на iOS) |
-| Сборка | Gradle KTS + Version Catalogs (libs.versions.toml) |
-| JVM Target | 17 |
-| Min Android SDK | 28 |
-| iOS deployment | 16.0 |
+| Навигация | Decompose 3.x (ChildStack, StackNavigation) |
+| Async | Coroutines + StateFlow |
+| DI | Koin 4.x (KMP) |
+| Уведомления | Alarmee (local/scheduled, commonMain) |
+| Биометрия | expect/actual: AndroidX Biometric / LocalAuthentication |
+| Сборка | Gradle KTS + libs.versions.toml |
+| JVM | 17 · minSdk 28 · iOS 16.0 |
 
-### Примечания по стеку
-
-**Alarmee** — библиотека для локальных и scheduled уведомлений в KMP.
-Используем только local/scheduled notifications, никакого Firebase/push.
-Документация: https://github.com/tweener/alarmee
-
-**Биометрия через expect/actual** — не библиотека.
-Android: `androidx.biometric:biometric` в androidMain.
-iOS: `LocalAuthentication` framework, вызывается из iosMain через Kotlin/Native.
-Интерфейс определяется в commonMain как `expect class BiometryManager`.
+**material3:** `org.jetbrains.compose.material3:1.10.0-alpha05` — это JetBrains CMP-артефакт, НЕ равен `androidx.compose.material3`. Не менять версию без проверки совместимости с foundation.
 
 ---
 
-## Структура модулей
-
-Проект многомодульный. Каждый модуль — отдельный Gradle-модуль с KMP-конфигурацией.
+## Модули и зависимости
 
 ```
-:core:domain        — доменные модели, интерфейсы репозиториев, все UseCase'ы
-:core:data          — SQLDelight схема и драйверы, реализации репозиториев, маперы
-:core:ui            — общие Compose-компоненты, тема, цвета, типографика
-:feature:questions  — список вопросов + экран создания вопроса
-:feature:entry      — экран ежедневного ввода (слайдер, теги, комментарий)
-:feature:report     — экран финального отчёта
-:app (composeApp)   — точка входа Android/iOS, Koin wiring, Decompose RootComponent
+:core:domain   — модели, репозитории (интерфейсы), use cases
+:core:data     — SQLDelight, реализации репозиториев, маперы
+:core:ui       — AppTheme, AppColors, AppTypography, shared components
+:feature:questions — список + создание вопроса
+:feature:entry     — ежедневный ввод
+:feature:report    — финальный отчёт
+:composeApp    — точка входа, Koin wiring, Decompose Root
 ```
 
-### Зависимости между модулями
-
-```
-:feature:* → :core:domain, :core:ui
-:core:data  → :core:domain
-:app        → :feature:*, :core:data, :core:domain, :core:ui
-```
-
-`:feature`-модули не зависят от `:core:data` напрямую — только через интерфейсы из `:core:domain`.
-
-### Внутренняя структура feature-модуля
-
-```
-:feature:questions/
-└── src/commonMain/kotlin/com/yahorshymanchyk/selectorassist/questions/
-    ├── component/   # Decompose-компонент (интерфейс + реализация)
-    ├── presentation/ # QuestionsState, QuestionsIntent, QuestionsViewModel
-    └── ui/          # Compose-экраны
-```
-
-### Внутренняя структура :core:domain
-
-```
-:core:domain/src/commonMain/kotlin/com/yahorshymanchyk/selectorassist/domain/
-├── model/          # Question, Entry, Tag
-├── repository/     # QuestionRepository, EntryRepository (интерфейсы)
-└── usecase/        # все UseCase'ы
-```
-
-### Внутренняя структура :core:data
-
-```
-:core:data/src/
-├── commonMain/kotlin/.../data/
-│   ├── repository/  # реализации репозиториев
-│   └── mapper/      # SQLDelight entity → domain model
-├── commonMain/sqldelight/  # .sq файлы
-├── androidMain/    # AndroidDriver
-└── iosMain/        # NativeDriver
-```
-
----
-
-## Доменные модели
-
-```kotlin
-data class Question(
-    val id: Long,
-    val title: String,       // "Уволиться или остаться?"
-    val poleA: String,       // "Уйти"
-    val poleB: String,       // "Остаться"
-    val createdAt: Long,     // epoch ms
-    val deadlineAt: Long,    // epoch ms
-    val isCompleted: Boolean
-)
-
-data class Entry(
-    val id: Long,
-    val questionId: Long,
-    val date: Long,          // epoch ms, только дата (time = 00:00:00)
-    val sliderValue: Int,    // 1–5: 1=точно A, 3=нейтрально, 5=точно B
-    val tags: List<Tag>,     // может быть пустым
-    val comment: String?     // null если не заполнен
-)
-
-enum class TagGroup { NOISE, HEALTHY }
-
-enum class Tag(val group: TagGroup) {
-    // Noise — Ложные фильтры
-    FEAR_OF_FUTURE(NOISE),
-    OPINION_OF_OTHERS(NOISE),
-    PAST_EXPERIENCE(NOISE),
-    GUILT(NOISE),
-    EMOTIONS_IMPULSES(NOISE),
-    SELF_DOUBT(NOISE),
-    FATIGUE_BURNOUT(NOISE),
-    SOCIAL_EXPECTATIONS(NOISE),
-    // Healthy — Опора
-    MY_VALUES(HEALTHY),
-    FACTS_REASON(HEALTHY),
-    INTUITION(HEALTHY),
-    SELF_CARE(HEALTHY),
-    LONG_TERM_GOALS(HEALTHY),
-    PERSONAL_FREEDOM(HEALTHY),
-    INNER_PEACE(HEALTHY),
-    OBJECTIVE_OPPORTUNITIES(HEALTHY),
-}
-```
+Правило зависимостей: `:feature:*` → только `:core:domain` + `:core:ui`, никогда `:core:data`.
 
 ---
 
 ## Архитектура
 
-### Слои и ответственность
+**Слои:** UI → Intent → ViewModel → UseCase → Repository (interface) → SQLDelight
 
-```
-UI (Compose)
-  ↓ Intent
-ViewModel (MVI)
-  ↓ вызов
-UseCase (:core:domain)
-  ↓ вызов через интерфейс
-Repository (интерфейс в :core:domain, реализация в :core:data)
-  ↓
-SQLDelight DB
-```
-
-Правило: каждый слой знает только о слое ниже. ViewModel не знает о SQLDelight. UseCase не знает о Compose.
-
-### UseCase'ы (все в :core:domain/usecase/)
-
-```kotlin
-// Вопросы
-GetActiveQuestionsUseCase    // () → Flow<List<Question>>
-GetCompletedQuestionsUseCase // () → Flow<List<Question>>
-CreateQuestionUseCase        // (title, poleA, poleB, deadlineAt) → Unit
-DeleteQuestionUseCase        // (questionId) → Unit
-
-// Записи
-GetTodayEntryUseCase         // (questionId) → Flow<Entry?>
-SaveEntryUseCase             // (questionId, sliderValue, tags, comment) → Unit
-
-// Отчёт
-GetQuestionStatsUseCase      // (questionId) → Flow<QuestionStats>
-```
-
-`QuestionStats` — отдельная data class в domain: распределение по слайдеру, частота тегов, аргументы по полюсам.
-
-### Decompose — иерархия компонентов
-
+**Decompose-иерархия (целевая):**
 ```
 RootComponent
-├── BiometryComponent              — gate-экран при старте (если биометрия включена)
-└── HomeComponent
-    └── ChildStack<HomeChild>
-        ├── QuestionsListComponent — главный экран, список вопросов
-        ├── CreateQuestionComponent — создание новой дилеммы
-        └── QuestionComponent      — контейнер для конкретного вопроса
-            └── ChildStack<QuestionChild>
-                ├── EntryComponent   — ежедневный ввод
-                └── ReportComponent  — финальный отчёт
+├── BiometryComponent          — TODO
+└── HomeComponent (ChildStack)
+    ├── QuestionsListComponent — ✅ реализован
+    ├── CreateQuestionComponent — ✅ реализован
+    └── QuestionComponent (ChildStack) — TODO
+        ├── EntryComponent
+        └── ReportComponent
 ```
 
-`RootComponent` переключает между `BiometryComponent` и `HomeComponent` через `Value<RootChild>`.
-`HomeComponent` управляет основным стеком навигации через `ChildStack`.
-`QuestionComponent` — вложенный `ChildStack` внутри конкретного вопроса.
+**Паттерн компонента:**
+- Интерфейс: `Value<XxxState>` + `onIntent(XxxIntent)`
+- Реализация `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged из `StateFlow`
+- ViewModel: plain class, не наследует `androidx.lifecycle.ViewModel`, получает scope снаружи
 
-Каждый компонент: интерфейс (что отдаёт UI) + реализация `Default` (держит дочерние компоненты и ViewModel).
+**MVI:** `XxxState.kt` / `XxxIntent.kt` / `XxxViewModel.kt` в `presentation/`
 
-### MVI-соглашения
-
-Для каждого экрана три файла в `presentation/` внутри feature-модуля:
-- `XxxState.kt` — data class, полное состояние UI
-- `XxxIntent.kt` — sealed interface, все действия пользователя
-- `XxxViewModel.kt` — принимает Intent, выдаёт `StateFlow<XxxState>`
+**Koin:** `SelectorAssistApp` (Android) / `MainViewController` (iOS) → `androidPlatformModule` + `dataModule` + `domainModule`. `DefaultRootComponent : KoinComponent`.
 
 ---
 
-## Качество кода
+## Текущий статус реализации
 
-**Quality over speed.** Do not accept "we'll fix it later", "good enough for MVP", or "it's temporary". Temporary solutions become permanent.
+**Готово:**
+- `core:domain` — все модели (Question, Entry, Tag, QuestionStats, ActiveQuestionSummary, CompletedQuestionSummary), репозитории, все use cases
+- `core:data` — SQLDelight схема (questions/entries/entry_tags), оба драйвера, репозитории, маперы
+- `core:ui` — AppTheme, AppColors, AppTypography
+- `feature:questions` — QuestionsListScreen + CreateQuestionScreen (полный MVI + Decompose)
+- `composeApp` — Koin DI, RootComponent, HomeComponent с ChildStack, MainActivity, SelectorAssistApp
 
-- Никакого хардкода: строки — в ресурсы/константы, числа — в именованные константы, конфигурация — в параметры
-- Если решение выглядит как быстрый костыль — остановиться и сделать правильно
-- Технический долг не накапливается: каждый файл оставляется лучше, чем был найден
-
----
-
-## Рабочий процесс (обязателен для каждой задачи)
-
-Каждая задача выполняется строго по шагам:
-
-1. **Анализ** — понять текущее состояние кода, найти все затронутые файлы, выявить зависимости
-2. **План** — сформулировать конкретные шаги реализации, согласовать с разработчиком при неоднозначности
-3. **Выполнение** — реализовать по плану, не отклоняясь без явной причины
-4. **Проверка** — запустить статические анализаторы, убедиться что результат соответствует требованиям
-
-Если на шаге проверки обнаружена проблема — вернуться к шагу 1 (анализ проблемы), не пропускать шаги.
+**TODO (MVP):**
+- `feature:entry` — EntryComponent, EntryScreen (слайдер + теги + комментарий)
+- `feature:report` — ReportComponent, ReportScreen
+- QuestionComponent (вложенный ChildStack для Entry/Report)
+- BiometryComponent
+- Alarmee уведомления
+- DeleteQuestionUseCase — UI (свайп или кнопка в деталях)
 
 ---
 
-## Статический анализ (обязателен после каждого изменения кода)
+## Правила кода
 
-После каждого изменения кода запускать последовательно:
+- Идиоматичный Kotlin, без лишних абстракций
+- Комментарии на английском, только если WHY неочевидно
+- 1 файл = 1 класс (исключение: мелкие data class рядом с владельцем)
+- Интерфейс — только если несколько реализаций, тесты или expect/actual
+- Все версии — только через `libs.versions.toml`
+- Не добавлять зависимости без явного запроса
+- Magic numbers → именованные константы; hex-цвета в `AppColors` → `@file:Suppress("MagicNumber")` с пометкой
+
+---
+
+## Рабочий процесс
+
+1. **Анализ** — затронутые файлы, зависимости
+2. **План** — шаги; согласовать при неоднозначности
+3. **Реализация**
+4. **Проверка:** `./gradlew lintDebug detekt` — оба чистые до коммита
+
+`@Suppress` — только с явным обоснованием в комментарии.
+
+---
+
+## Статический анализ
 
 ```bash
-./gradlew lintDebug        # Android lint — UI, ресурсы, manifest
-./gradlew detekt           # Kotlin static analysis — стиль, сложность, запахи
-```
-
-Оба инструмента должны пройти без новых ошибок и предупреждений.
-Если анализаторы выдают проблемы — исправить до предложения коммита.
-Не игнорировать предупреждения через `@Suppress` без явного обоснования.
-
+./gradlew lintDebug detekt --no-configuration-cache
 ---
 
-## Правила написания кода
-
-- Kotlin, идиоматично, без лишних абстракций
-- Комментарии на английском
-- Один файл — один класс (кроме мелких data class рядом с владельцем)
-- Не создавать интерфейс там где одна реализация — только для тестов или expect/actual
-- Все зависимости и версии — только через `gradle/libs.versions.toml`, никогда не хардкодить строками
-- Не добавлять зависимости в `libs.versions.toml` без явного запроса
-- Перед созданием файла проверять что он не существует
-- После каждой завершённой задачи предлагать коммит в формате:
-  `feat(scope): описание` / `fix(scope): описание` / `chore(scope): описание`
-
----
-
-## MVP scope
-
-**Входит:**
-- Создание и удаление вопроса
-- Ежедневный ввод (слайдер + теги + комментарий)
-- Список активных и завершённых вопросов
-- Финальный отчёт (статистика + паттерн + аргументы)
-- Ежедневное уведомление-напоминание (Alarmee)
-- Биометрическая защита входа (expect/actual)
-- Полное удаление вопроса со всеми данными
-
-**Не входит в MVP:**
-- Аудиокомментарии
-- Настраиваемые теги
-- Экспорт данных
-- Виджет на главный экран
-- iPad / tablet layout
-
----
-
-## Git-стратегия
+## Git
 
 ```
-main        — стабильный код, только merge из develop
-develop     — текущая разработка
-feature/    — новая функциональность
-fix/        — исправление бага
-chore/      — инфраструктура, зависимости, конфигурация
+main ← только merge из develop
+develop ← текущая разработка
+feature/ · fix/ · chore/
 ```
 
-Прямые коммиты в `main` запрещены.
+Формат коммита: `feat(scope): ...` / `fix(scope): ...` / `chore(scope): ...`
