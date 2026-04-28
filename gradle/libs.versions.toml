@@ -1,5 +1,6 @@
 [versions]
 agp = "8.11.2"
+detekt = "1.23.7"
 alarmee = "2.6.0"
 android-compileSdk = "36"
 android-minSdk = "28"
@@ -56,3 +57,4 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

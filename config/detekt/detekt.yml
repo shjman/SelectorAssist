@@ -1,0 +1,188 @@
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+comments:
+  active: true
+  AbsentOrWrongFileLicense:
+    active: false
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false
+
+complexity:
+  active: true
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 15
+  LongMethod:
+    active: true
+    threshold: 60
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 8
+    ignoreAnnotated: ['Composable']
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 20
+    thresholdInClasses: 15
+    thresholdInObjects: 15
+    thresholdInEnums: 10
+    thresholdInInterfaces: 10
+  NestedBlockDepth:
+    active: true
+    threshold: 5
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage:
+    active: true
+  RedundantSuspendModifier:
+    active: true
+  SuspendFunSwallowedCancellation:
+    active: true
+
+empty-blocks:
+  active: true
+  EmptyCatchBlock:
+    active: true
+  EmptyFunctionBlock:
+    active: true
+    ignoreOverridden: true
+
+exceptions:
+  active: true
+  SwallowedException:
+    active: true
+  TooGenericExceptionCaught:
+    active: true
+  TooGenericExceptionThrown:
+    active: true
+
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+  FunctionNaming:
+    active: true
+    # Composable functions follow PascalCase; MainViewController is iOS entry point callable from Swift
+    ignoreAnnotated: ['Composable']
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+    excludes: ['**/iosMain/**/MainViewController.kt']
+  MatchingDeclarationName:
+    active: true
+    # KMP actual implementations use Platform.android.kt / Platform.ios.kt naming by convention
+    excludes: ['**/*.android.kt', '**/*.ios.kt']
+  VariableNaming:
+    active: true
+  ConstructorParameterNaming:
+    active: true
+  EnumNaming:
+    active: true
+    enumEntryPattern: '[A-Z][_A-Z0-9]*'
+  PackageNaming:
+    active: true
+    packagePattern: '[a-z]+(\.[a-z][a-z0-9]*)*'
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+    privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
+
+performance:
+  active: true
+  ArrayPrimitive:
+    active: true
+  SpreadOperator:
+    active: true
+  UnnecessaryTemporaryInstantiation:
+    active: true
+
+potential-bugs:
+  active: true
+  AvoidReferentialEquality:
+    active: true
+  DontDowncastCollectionTypes:
+    active: true
+  ElseCaseInsteadOfExhaustiveWhen:
+    active: true
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+  ExplicitGarbageCollectionCall:
+    active: true
+  HasPlatformType:
+    active: true
+  IgnoredReturnValue:
+    active: true
+  ImplicitDefaultLocale:
+    active: true
+  MapGetWithNotNullAssertionOperator:
+    active: true
+  NullCheckOnMutableProperty:
+    active: true
+  UnconditionalJumpStatementInLoop:
+    active: true
+  UnnecessaryNotNullCheck:
+    active: true
+
+style:
+  active: true
+  MagicNumber:
+    active: true
+    ignoreNumbers:
+      - '-1'
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '100'
+      - '1000'
+    ignoreAnnotated:
+      - 'Preview'
+      - 'Composable'
+    ignoreLocalVariableDeclaration: false
+    ignoreConstantDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreEnums: true
+    ignoreRanges: false
+  WildcardImport:
+    active: true
+    excludeImports:
+      - 'java.util.*'
+  UnusedImports:
+    active: true
+  ReturnCount:
+    active: true
+    max: 4
+    excludedFunctions: ['equals']
+    excludeReturnFromLambda: true
+  ForbiddenComment:
+    active: true
+    comments:
+      - reason: 'Use a proper fix, not a TODO placeholder.'
+        value: 'FIXME:'
+      - reason: 'Resolve before merging.'
+        value: 'STOPSHIP:'
+    allowedPatterns: ''
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
+  NoTabs:
+    active: true
+  TrailingWhitespace:
+    active: true
+  NewLineAtEndOfFile:
+    active: true
