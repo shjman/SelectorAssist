@@ -156,16 +156,27 @@ data class Entry(
     val comment: String?     // null если не заполнен
 )
 
-enum class Tag {
-    // Ложные фильтры
-    FEAR_OF_FUTURE,
-    OPINION_OF_OTHERS,
-    PAST_EXPERIENCE,
-    EMOTIONS,
-    // Опора
-    MY_VALUES,
-    FACTS_REASON,
-    INTUITION
+enum class TagGroup { NOISE, HEALTHY }
+
+enum class Tag(val group: TagGroup) {
+    // Noise — Ложные фильтры
+    FEAR_OF_FUTURE(NOISE),
+    OPINION_OF_OTHERS(NOISE),
+    PAST_EXPERIENCE(NOISE),
+    GUILT(NOISE),
+    EMOTIONS_IMPULSES(NOISE),
+    SELF_DOUBT(NOISE),
+    FATIGUE_BURNOUT(NOISE),
+    SOCIAL_EXPECTATIONS(NOISE),
+    // Healthy — Опора
+    MY_VALUES(HEALTHY),
+    FACTS_REASON(HEALTHY),
+    INTUITION(HEALTHY),
+    SELF_CARE(HEALTHY),
+    LONG_TERM_GOALS(HEALTHY),
+    PERSONAL_FREEDOM(HEALTHY),
+    INNER_PEACE(HEALTHY),
+    OBJECTIVE_OPPORTUNITIES(HEALTHY),
 }
 ```
 
