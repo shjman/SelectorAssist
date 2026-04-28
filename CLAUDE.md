@@ -4,6 +4,19 @@
 
 ---
 
+## Reference docs
+
+Читай до того, как смотреть исходники — содержат готовые сниппеты и паттерны.
+
+| Файл | Читать когда |
+|------|-------------|
+| `ARCHITECTURE.md` | новый экран, навигация, DI, структура модулей, паттерны MVI/Decompose/Koin |
+| `DESIGN_SYSTEM.md` | любой UI-код: цвета, компоненты, новый экран, изменения в AppColors |
+
+При создании субагентов на реализацию — передавай содержимое релевантного файла в промпт.
+
+---
+
 ## Разработчик
 
 Опытный Android-разработчик, знает Kotlin глубоко, стандартные паттерны (MVVM, MVI, Repository, DI) — без объяснений. KMP-специфику объясняй, Android-базу — нет. Общение лаконичное, технически точное.
@@ -98,10 +111,10 @@ RootComponent
 - `core:data` — SQLDelight схема (questions/entries/entry_tags), оба драйвера, репозитории, маперы
 - `core:ui` — AppTheme, AppColors, AppTypography
 - `feature:questions` — QuestionsListScreen + CreateQuestionScreen (полный MVI + Decompose)
+- `feature:entry` — EntryScreen (слайдер + теги + комментарий, полный MVI + Decompose)
 - `composeApp` — Koin DI, RootComponent, HomeComponent с ChildStack, MainActivity, SelectorAssistApp
 
 **TODO (MVP):**
-- `feature:entry` — EntryComponent, EntryScreen (слайдер + теги + комментарий)
 - `feature:report` — ReportComponent, ReportScreen
 - QuestionComponent (вложенный ChildStack для Entry/Report)
 - BiometryComponent
@@ -137,6 +150,8 @@ RootComponent
 
 ```bash
 ./gradlew lintDebug detekt --no-configuration-cache
+```
+
 ---
 
 ## Git
