@@ -18,7 +18,7 @@ decompose = "3.5.0"
 junit = "4.13.2"
 koin = "4.2.1"
 kotlin = "2.3.20"
-material3 = "1.10.0-alpha05"
+material3 = "1.4.0" # April 22, 2026
 sqldelight = "2.3.2"
 
 [libraries]
