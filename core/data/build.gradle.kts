@@ -23,6 +23,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.domain)
             implementation(libs.sqldelight.runtime)
+            implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.kotlinx.coroutines.core)
         }
         iosMain.dependencies {
