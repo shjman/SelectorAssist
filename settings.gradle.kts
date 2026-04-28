@@ -29,3 +29,9 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
+include(":core:domain")
+include(":core:data")
+include(":core:ui")
+include(":feature:questions")
+include(":feature:entry")
+include(":feature:report")
