@@ -17,6 +17,32 @@
 
 ---
 
+## Стиль работы
+
+**Качество важнее скорости.** Не принимать «починим потом», «сойдёт для MVP», «временное решение». Временное становится постоянным.
+
+**Право отказать.** Если запрошенный подход нарушает SOLID, создаёт tech debt или является workaround — возразить, объяснить почему, предложить альтернативу. Молчаливое согласие с плохим решением — тоже ошибка. Если пользователь настаивает — явно назвать риски перед тем как продолжить.
+
+**Быстрый путь:** однострочные правки, опечатки, очевидные переименования — делать сразу без обсуждения.
+
+**Нетривиальные задачи:** уточнять до полной ясности требований, затем реализовывать пошагово.
+
+---
+
+## Build commands
+
+```bash
+./gradlew :composeApp:assembleDebug          # сборка debug APK
+./gradlew :composeApp:assembleRelease        # сборка release APK
+./gradlew :composeApp:installDebug           # сборка + установка на устройство/эмулятор
+./gradlew lintDebug --no-configuration-cache # Android Lint
+./gradlew detekt --no-configuration-cache    # Kotlin статический анализ
+```
+
+Оба — `lintDebug` и `detekt` — должны быть чистыми до коммита.
+
+---
+
 ## Разработчик
 
 Опытный Android-разработчик, знает Kotlin глубоко, стандартные паттерны (MVVM, MVI, Repository, DI) — без объяснений. KMP-специфику объясняй, Android-базу — нет. Общение лаконичное, технически точное.
@@ -25,20 +51,11 @@
 
 ## Проект
 
-KMP + Compose Multiplatform. Android + iOS, UI полностью общий (никакого SwiftUI).
-Package: `com.yahorshymanchyk.selectorassist`
+KMP + Compose Multiplatform. Android + iOS, UI полностью общий (никакого SwiftUI).  
+Package: `com.yahorshymanchyk.selectorassist`  
 Pet project → Google Play + App Store.
 
-**Суть:** пользователь создаёт бинарную дилемму (два полюса, срок). Каждый день — слайдер (1–5), теги, комментарий. По окончании — статистика склонений + паттерны.
-
----
-
-## Абсолютные запреты
-
-- Никаких сетевых запросов (ни аналитики, ни синхронизации)
-- Никакого ИИ внутри приложения
-- Никаких советов пользователю от приложения
-- Никаких engagement-механик (стрики, награды, напоминания-давления)
+**Суть:** пользователь создаёт бинарную дилемму (два полюса, срок). Каждый день — слайдер, теги, комментарий. По окончании — статистика склонений + паттерны.
 
 ---
 
@@ -57,7 +74,7 @@ Pet project → Google Play + App Store.
 | Сборка | Gradle KTS + libs.versions.toml |
 | JVM | 17 · minSdk 28 · iOS 16.0 |
 
-**material3:** `org.jetbrains.compose.material3:1.10.0-alpha05` — это JetBrains CMP-артефакт, НЕ равен `androidx.compose.material3`. Не менять версию без проверки совместимости с foundation.
+**material3:** `org.jetbrains.compose.material3:1.10.0-alpha05` — JetBrains CMP-артефакт, НЕ равен `androidx.compose.material3`. Не менять версию без проверки совместимости с foundation.
 
 ---
 
@@ -73,7 +90,9 @@ Pet project → Google Play + App Store.
 :composeApp    — точка входа, Koin wiring, Decompose Root
 ```
 
-Правило зависимостей: `:feature:*` → только `:core:domain` + `:core:ui`, никогда `:core:data`.
+Правило: `:feature:*` → только `:core:domain` + `:core:ui`, никогда `:core:data`.  
+Все версии зависимостей — только через `libs.versions.toml`.  
+Не добавлять новые зависимости без явного запроса.
 
 ---
 
@@ -81,76 +100,53 @@ Pet project → Google Play + App Store.
 
 **Слои:** UI → Intent → ViewModel → UseCase → Repository (interface) → SQLDelight
 
-**Decompose-иерархия (целевая):**
-```
-RootComponent
-├── BiometryComponent          — TODO
-└── HomeComponent (ChildStack)
-    ├── QuestionsListComponent — ✅ реализован
-    ├── CreateQuestionComponent — ✅ реализован
-    └── QuestionComponent (ChildStack) — TODO
-        ├── EntryComponent
-        └── ReportComponent
-```
-
-**Паттерн компонента:**
+**Паттерн компонента** (подробно + сниппеты → `ARCHITECTURE.md`):
 - Интерфейс: `Value<XxxState>` + `onIntent(XxxIntent)`
-- Реализация `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged из `StateFlow`
-- ViewModel: plain class, не наследует `androidx.lifecycle.ViewModel`, получает scope снаружи
+- `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged из `StateFlow`
+- ViewModel: plain class, не наследует `androidx.lifecycle.ViewModel`, scope снаружи
 
-**MVI:** `XxxState.kt` / `XxxIntent.kt` / `XxxViewModel.kt` в `presentation/`
-
-**Koin:** `SelectorAssistApp` (Android) / `MainViewController` (iOS) → `androidPlatformModule` + `dataModule` + `domainModule`. `DefaultRootComponent : KoinComponent`.
+**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` + `dataModule` + `domainModule`. `DefaultRootComponent : KoinComponent`.
 
 ---
 
 ## Текущий статус реализации
 
 **Готово:**
-- `core:domain` — все модели (Question, Entry, Tag, QuestionStats, ActiveQuestionSummary, CompletedQuestionSummary), репозитории, все use cases
-- `core:data` — SQLDelight схема (questions/entries/entry_tags), оба драйвера, репозитории, маперы
+- `core:domain` — все модели, репозитории, все use cases
+- `core:data` — SQLDelight схема, оба драйвера, репозитории, маперы
 - `core:ui` — AppTheme, AppColors, AppTypography
 - `feature:questions` — QuestionsListScreen + CreateQuestionScreen (полный MVI + Decompose)
 - `feature:entry` — EntryScreen (слайдер + теги + комментарий, полный MVI + Decompose)
-- `composeApp` — Koin DI, RootComponent, HomeComponent с ChildStack, MainActivity, SelectorAssistApp
+- `composeApp` — Koin DI, RootComponent, HomeComponent с ChildStack, MainActivity
 
 **TODO (MVP):**
 - `feature:report` — ReportComponent, ReportScreen
 - QuestionComponent (вложенный ChildStack для Entry/Report)
 - BiometryComponent
 - Alarmee уведомления
-- DeleteQuestionUseCase — UI (свайп или кнопка в деталях)
+- DeleteQuestionUseCase — UI (свайп или кнопка)
 
 ---
 
-## Правила кода
+## Никогда не использовать
 
-- Идиоматичный Kotlin, без лишних абстракций
-- Комментарии на английском, только если WHY неочевидно
-- 1 файл = 1 класс (исключение: мелкие data class рядом с владельцем)
-- Интерфейс — только если несколько реализаций, тесты или expect/actual
-- Все версии — только через `libs.versions.toml`
-- Не добавлять зависимости без явного запроса
-- Magic numbers → именованные константы; hex-цвета в `AppColors` → `@file:Suppress("MagicNumber")` с пометкой
-
----
-
-## Рабочий процесс
-
-1. **Анализ** — затронутые файлы, зависимости
-2. **План** — шаги; согласовать при неоднозначности
-3. **Реализация**
-4. **Проверка:** `./gradlew lintDebug detekt` — оба чистые до коммита
-
-`@Suppress` — только с явным обоснованием в комментарии.
+- `class XxxViewModel : ViewModel()` — только plain class с внешним scope
+- `import android.*` в `:core:domain` или `:core:data` (кроме SQLDelight-драйвера на Android)
+- `:feature:*` → `implementation(projects.core.data)` — запрещено
+- `LiveData` / `MutableLiveData`
+- Бизнес-логику в `@Composable` или Component — только в ViewModel/UseCase
+- `Color(0xFF...)` inline в экранах — только через `AppColors`
+- Magic numbers без именованных `private const val`
+- `@Suppress` без однострочного комментария-обоснования
 
 ---
 
-## Статический анализ
+## Абсолютные запреты (продукт)
 
-```bash
-./gradlew lintDebug detekt --no-configuration-cache
-```
+- Никаких сетевых запросов (ни аналитики, ни синхронизации)
+- Никакого ИИ внутри приложения
+- Никаких советов пользователю от приложения
+- Никаких engagement-механик (стрики, награды, напоминания-давления)
 
 ---
 
