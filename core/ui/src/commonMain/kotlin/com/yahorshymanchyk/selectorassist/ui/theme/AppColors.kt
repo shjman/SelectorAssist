@@ -27,4 +27,7 @@ object AppColors {
     val InputField = Color(0xFF2C2C2E)
     val InputFieldSelected = Color(0xFF3A3A3C)
     val InputFieldSelectedBorder = Color(0xFF636366)
+
+    val TagGroupNoise = Color(0xFFFF453A)
+    val TagGroupHealthy = Color(0xFF30D158)
 }

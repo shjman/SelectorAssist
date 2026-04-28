@@ -10,6 +10,10 @@ import com.arkivanov.decompose.value.Value
 import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetCompletedQuestionSummariesUseCase
+import com.yahorshymanchyk.selectorassist.domain.usecase.GetQuestionByIdUseCase
+import com.yahorshymanchyk.selectorassist.domain.usecase.GetTodayEntryUseCase
+import com.yahorshymanchyk.selectorassist.domain.usecase.SaveEntryUseCase
+import com.yahorshymanchyk.selectorassist.entry.component.DefaultEntryComponent
 import com.yahorshymanchyk.selectorassist.questions.component.DefaultCreateQuestionComponent
 import com.yahorshymanchyk.selectorassist.questions.component.DefaultQuestionsListComponent
 
@@ -18,6 +22,9 @@ class DefaultHomeComponent(
     private val getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase,
     private val getCompletedQuestionSummaries: GetCompletedQuestionSummariesUseCase,
     private val createQuestion: CreateQuestionUseCase,
+    private val getQuestionById: GetQuestionByIdUseCase,
+    private val getTodayEntry: GetTodayEntryUseCase,
+    private val saveEntry: SaveEntryUseCase,
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<HomeConfig>()
@@ -35,7 +42,7 @@ class DefaultHomeComponent(
             HomeConfig.QuestionsList -> HomeComponent.HomeChild.QuestionsList(
                 DefaultQuestionsListComponent(
                     componentContext = context,
-                    onNavigateToQuestion = { /* TODO */ },
+                    onNavigateToQuestion = { navigation.push(HomeConfig.Entry(it)) },
                     onNavigateToCreate = { navigation.push(HomeConfig.CreateQuestion) },
                     getActiveQuestionSummaries = getActiveQuestionSummaries,
                     getCompletedQuestionSummaries = getCompletedQuestionSummaries,
@@ -48,10 +55,21 @@ class DefaultHomeComponent(
                     createQuestionUseCase = createQuestion,
                 )
             )
+            is HomeConfig.Entry -> HomeComponent.HomeChild.Entry(
+                DefaultEntryComponent(
+                    componentContext = context,
+                    questionId = config.questionId,
+                    onNavigateBack = { navigation.pop() },
+                    getQuestionById = getQuestionById,
+                    getTodayEntry = getTodayEntry,
+                    saveEntry = saveEntry,
+                )
+            )
         }
 
     private sealed interface HomeConfig {
         data object QuestionsList : HomeConfig
         data object CreateQuestion : HomeConfig
+        data class Entry(val questionId: Long) : HomeConfig
     }
 }

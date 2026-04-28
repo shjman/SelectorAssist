@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.yahorshymanchyk.selectorassist.entry.ui.EntryScreen
 import com.yahorshymanchyk.selectorassist.questions.ui.CreateQuestionScreen
 import com.yahorshymanchyk.selectorassist.questions.ui.QuestionsListScreen
 import com.yahorshymanchyk.selectorassist.ui.theme.AppTheme
@@ -23,6 +24,7 @@ private fun HomeContent(component: HomeComponent) {
         when (val instance = child.instance) {
             is HomeComponent.HomeChild.QuestionsList -> QuestionsListScreen(instance.component)
             is HomeComponent.HomeChild.CreateQuestion -> CreateQuestionScreen(instance.component)
+            is HomeComponent.HomeChild.Entry -> EntryScreen(instance.component)
         }
     }
 }
