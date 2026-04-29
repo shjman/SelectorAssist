@@ -9,8 +9,8 @@ import com.yahorshymanchyk.selectorassist.domain.repository.EntryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+private const val SLIDER_MAX = 10
 private const val SLIDER_MID = 5
-private const val PERCENT_MULTIPLIER = 100
 
 class GetQuestionStatsUseCase(private val repository: EntryRepository) {
     operator fun invoke(questionId: Long): Flow<QuestionStats> =
@@ -18,13 +18,13 @@ class GetQuestionStatsUseCase(private val repository: EntryRepository) {
 
     private fun List<Entry>.toStats(): QuestionStats {
         val total = size
-        val poleACount = count { it.sliderValue < SLIDER_MID }
-        val poleBCount = count { it.sliderValue > SLIDER_MID }
-        val poleATendency = if (total > 0) poleACount * PERCENT_MULTIPLIER / total else 0
+        val poleATendencyPercent = if (total > 0) {
+            (sumOf { (SLIDER_MAX - it.sliderValue).toDouble() } / (total * SLIDER_MAX) * 100).toInt()
+        } else 0
         return QuestionStats(
             totalEntries = total,
-            poleATendencyPercent = poleATendency,
-            poleBTendencyPercent = PERCENT_MULTIPLIER - poleATendency,
+            poleATendencyPercent = poleATendencyPercent,
+            poleBTendencyPercent = 100 - poleATendencyPercent,
             noiseInfluencePole = computeGroupInfluence(TagGroup.NOISE),
             healthyInfluencePole = computeGroupInfluence(TagGroup.HEALTHY),
             poleAArguments = filter { it.sliderValue < SLIDER_MID }.mapNotNull { it.comment },
@@ -36,11 +36,11 @@ class GetQuestionStatsUseCase(private val repository: EntryRepository) {
         val groupTags = Tag.entries.filter { it.group == group }.toSet()
         val tagged = filter { entry -> entry.tags.any { it in groupTags } }
         if (tagged.isEmpty()) return null
-        val poleACount = tagged.count { it.sliderValue < SLIDER_MID }
-        val poleBCount = tagged.count { it.sliderValue > SLIDER_MID }
+        val poleAWeight = tagged.sumOf { (SLIDER_MAX - it.sliderValue).toDouble() }
+        val poleBWeight = tagged.sumOf { it.sliderValue.toDouble() }
         return when {
-            poleACount > poleBCount -> Pole.A
-            poleBCount > poleACount -> Pole.B
+            poleAWeight > poleBWeight -> Pole.A
+            poleBWeight > poleAWeight -> Pole.B
             else -> null
         }
     }
