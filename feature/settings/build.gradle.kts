@@ -18,25 +18,22 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.uiTooling)
-        }
         commonMain.dependencies {
             implementation(projects.core.domain)
+            implementation(projects.core.ui)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.compose.components.resources)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            api(compose.materialIconsExtended)
+            implementation(libs.decompose)
+            implementation(libs.decompose.extensions.compose)
+            implementation(libs.koin.core)
         }
     }
 }
 
 android {
-    namespace = "com.yahorshymanchyk.selectorassist.ui"
+    namespace = "com.yahorshymanchyk.selectorassist.settings"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
@@ -52,9 +49,5 @@ android {
 detekt {
     config.setFrom("$rootDir/config/detekt/detekt.yml")
     buildUponDefaultConfig = true
-    source.setFrom(
-        "src/commonMain/kotlin",
-        "src/androidMain/kotlin",
-        "src/iosMain/kotlin",
-    )
+    source.setFrom("src/commonMain/kotlin")
 }

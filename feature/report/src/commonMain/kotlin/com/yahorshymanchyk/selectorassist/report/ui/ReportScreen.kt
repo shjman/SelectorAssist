@@ -3,7 +3,6 @@
 package com.yahorshymanchyk.selectorassist.report.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -33,6 +33,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.domain.model.Pole
 import com.yahorshymanchyk.selectorassist.report.component.ReportComponent
 import com.yahorshymanchyk.selectorassist.report.presentation.ReportState
+import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 
 private val CardShape = RoundedCornerShape(16.dp)
@@ -72,15 +73,11 @@ fun ReportScreen(component: ReportComponent) {
 
 @Composable
 private fun BackButton(onBack: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .padding(start = 8.dp, top = 56.dp, bottom = 4.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onBack)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-    ) {
-        Text(text = "‹", color = AppColors.TextSecondary, fontSize = 24.sp)
-    }
+    BackButton(
+        onClick = onBack,
+        tint = AppColors.TextSecondary,
+        modifier = Modifier.padding(start = 8.dp, top = 56.dp, bottom = 4.dp),
+    )
 }
 
 @Composable

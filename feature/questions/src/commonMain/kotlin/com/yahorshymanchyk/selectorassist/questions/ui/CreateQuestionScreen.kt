@@ -35,7 +35,9 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.questions.component.CreateQuestionComponent
 import com.yahorshymanchyk.selectorassist.questions.presentation.CreateQuestionIntent
+import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
 import androidx.compose.material3.Text
 
 private const val PRESET_DURATION_SHORT = 7
@@ -96,22 +98,14 @@ private fun ScreenHeader(onBack: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
+            .padding(start = if (isAndroid) 4.dp else 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(onClick = onBack)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(text = "‹", color = AppColors.TextPrimary, fontSize = 24.sp)
-        }
+        BackButton(onClick = onBack)
         Text(
             text = "Новый вопрос",
             color = AppColors.TextPrimary,
-            fontSize = 20.sp,
+            fontSize = if (isAndroid) 22.sp else 20.sp,
             fontWeight = FontWeight.SemiBold,
         )
     }

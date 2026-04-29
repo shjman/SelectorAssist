@@ -50,6 +50,7 @@ sqldelight {
     databases {
         create("AppDatabase") {
             packageName.set("com.yahorshymanchyk.selectorassist.data.db")
+            verifyMigrations.set(true)
         }
     }
 }

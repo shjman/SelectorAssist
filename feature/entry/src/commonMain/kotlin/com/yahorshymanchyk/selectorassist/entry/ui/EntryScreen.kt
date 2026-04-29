@@ -47,6 +47,7 @@ import com.yahorshymanchyk.selectorassist.domain.model.Tag
 import com.yahorshymanchyk.selectorassist.domain.model.TagGroup
 import com.yahorshymanchyk.selectorassist.entry.component.EntryComponent
 import com.yahorshymanchyk.selectorassist.entry.presentation.EntryIntent
+import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 
 private val CardShape = RoundedCornerShape(16.dp)
@@ -141,15 +142,7 @@ private fun EntryHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .clickable(onClick = onBack)
-                    .padding(end = 4.dp, top = 2.dp, bottom = 2.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(text = "‹", color = AppColors.TextSecondary, fontSize = 24.sp)
-            }
+            BackButton(onClick = onBack, tint = AppColors.TextSecondary)
             Text(
                 text = "ЕЖЕДНЕВНЫЙ ВВОД",
                 color = AppColors.TextSecondary,

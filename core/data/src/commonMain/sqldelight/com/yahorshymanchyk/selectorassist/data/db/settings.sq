@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS app_settings (
+    id INTEGER NOT NULL PRIMARY KEY,
+    is_biometry_enabled INTEGER NOT NULL
+);
+
+selectSettings:
+SELECT is_biometry_enabled FROM app_settings WHERE id = 1;
+
+upsertBiometryEnabled:
+INSERT OR REPLACE INTO app_settings (id, is_biometry_enabled) VALUES (1, :isBiometryEnabled);

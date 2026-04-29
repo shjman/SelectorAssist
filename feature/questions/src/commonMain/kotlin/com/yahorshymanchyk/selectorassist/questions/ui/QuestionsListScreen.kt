@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package com.yahorshymanchyk.selectorassist.questions.ui
 
 import androidx.compose.foundation.background
@@ -19,7 +21,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,12 +40,14 @@ import com.yahorshymanchyk.selectorassist.domain.model.ActiveQuestionSummary
 import com.yahorshymanchyk.selectorassist.domain.model.CompletedQuestionSummary
 import com.yahorshymanchyk.selectorassist.questions.component.QuestionsListComponent
 import com.yahorshymanchyk.selectorassist.questions.presentation.QuestionsListIntent
+import com.yahorshymanchyk.selectorassist.ui.components.SettingsIconButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
-import androidx.compose.material3.Text
+import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
 
 @Composable
 fun QuestionsListScreen(component: QuestionsListComponent) {
     val state by component.state.subscribeAsState()
+    val onCreateClick = { component.onIntent(QuestionsListIntent.OpenCreateQuestion) }
 
     Box(
         modifier = Modifier
@@ -47,57 +56,72 @@ fun QuestionsListScreen(component: QuestionsListComponent) {
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 32.dp),
+            contentPadding = PaddingValues(bottom = if (isAndroid) 88.dp else 32.dp),
         ) {
             item {
                 ScreenHeader(
-                    onCreateClick = { component.onIntent(QuestionsListIntent.OpenCreateQuestion) },
+                    onSettingsClick = { component.onIntent(QuestionsListIntent.OpenSettings) },
+                    onCreateClick = if (isAndroid) null else onCreateClick,
                 )
             }
-
-            items(
-                items = state.activeQuestions,
-                key = { it.question.id },
-            ) { summary ->
+            items(state.activeQuestions, key = { it.question.id }) { summary ->
                 ActiveQuestionCard(
                     summary = summary,
                     onClick = {
-                        component.onIntent(QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = false))
+                        component.onIntent(
+                            QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = false)
+                        )
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                 )
             }
-
             if (state.completedQuestions.isNotEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
-                            .height(1.dp)
-                            .background(AppColors.Divider),
-                    )
-                }
-
-                items(
-                    items = state.completedQuestions,
-                    key = { "completed_${it.question.id}" },
-                ) { summary ->
+                item { SectionDivider() }
+                items(state.completedQuestions, key = { "completed_${it.question.id}" }) { summary ->
                     CompletedQuestionRow(
                         summary = summary,
                         onClick = {
-                            component.onIntent(QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = true))
+                            component.onIntent(
+                                QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = true)
+                            )
                         },
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
                     )
                 }
             }
         }
+        if (isAndroid) {
+            AddFab(
+                onClick = onCreateClick,
+                modifier = Modifier.align(Alignment.BottomEnd),
+            )
+        }
     }
 }
 
 @Composable
-private fun ScreenHeader(onCreateClick: () -> Unit) {
+private fun SectionDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+            .height(1.dp)
+            .background(AppColors.Divider),
+    )
+}
+
+@Composable
+private fun AddFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = modifier.padding(end = 16.dp, bottom = 24.dp),
+    ) {
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add question")
+    }
+}
+
+@Composable
+private fun ScreenHeader(onSettingsClick: () -> Unit, onCreateClick: (() -> Unit)?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,20 +136,25 @@ private fun ScreenHeader(onCreateClick: () -> Unit) {
             fontWeight = FontWeight.Bold,
         )
 
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(CircleShape)
-                .background(AppColors.Surface)
-                .clickable(onClick = onCreateClick),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = "+",
-                color = AppColors.TextPrimary,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Light,
-            )
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            SettingsIconButton(onClick = onSettingsClick)
+            if (onCreateClick != null) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(AppColors.Surface)
+                        .clickable(onClick = onCreateClick),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "+",
+                        color = AppColors.TextPrimary,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Light,
+                    )
+                }
+            }
         }
     }
 }
@@ -212,7 +241,7 @@ private fun PoleLabels(poleA: String, poleB: String) {
 @Composable
 private fun CardProgress(currentDay: Int, totalDays: Int) {
     LinearProgressIndicator(
-        progress = currentDay.toFloat() / totalDays.toFloat(),
+        progress = { currentDay.toFloat() / totalDays.toFloat() },
         modifier = Modifier
             .fillMaxWidth()
             .height(3.dp)

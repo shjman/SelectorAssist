@@ -20,6 +20,7 @@ class DefaultQuestionsListComponent(
     private val onNavigateToEntry: (Long) -> Unit,
     private val onNavigateToReport: (Long) -> Unit,
     private val onNavigateToCreate: () -> Unit,
+    private val onNavigateToSettings: () -> Unit,
     getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase,
     getCompletedQuestionSummaries: GetCompletedQuestionSummariesUseCase,
 ) : QuestionsListComponent, ComponentContext by componentContext {
@@ -49,6 +50,7 @@ class DefaultQuestionsListComponent(
                 else onNavigateToEntry(intent.questionId)
             }
             QuestionsListIntent.OpenCreateQuestion -> onNavigateToCreate()
+            QuestionsListIntent.OpenSettings -> onNavigateToSettings()
         }
     }
 }
