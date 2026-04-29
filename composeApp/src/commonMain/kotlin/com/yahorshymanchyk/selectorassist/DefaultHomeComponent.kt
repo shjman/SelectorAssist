@@ -11,12 +11,16 @@ import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetCompletedQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetQuestionByIdUseCase
+import com.yahorshymanchyk.selectorassist.domain.usecase.GetQuestionStatsUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetTodayEntryUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.SaveEntryUseCase
 import com.yahorshymanchyk.selectorassist.entry.component.DefaultEntryComponent
 import com.yahorshymanchyk.selectorassist.questions.component.DefaultCreateQuestionComponent
 import com.yahorshymanchyk.selectorassist.questions.component.DefaultQuestionsListComponent
+import com.yahorshymanchyk.selectorassist.report.component.DefaultReportComponent
 
+// All parameters are use cases passed straight to child components — no logic here, pure DI wiring.
+@Suppress("LongParameterList")
 class DefaultHomeComponent(
     componentContext: ComponentContext,
     private val getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase,
@@ -25,6 +29,7 @@ class DefaultHomeComponent(
     private val getQuestionById: GetQuestionByIdUseCase,
     private val getTodayEntry: GetTodayEntryUseCase,
     private val saveEntry: SaveEntryUseCase,
+    private val getQuestionStats: GetQuestionStatsUseCase,
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<HomeConfig>()
@@ -42,7 +47,8 @@ class DefaultHomeComponent(
             HomeConfig.QuestionsList -> HomeComponent.HomeChild.QuestionsList(
                 DefaultQuestionsListComponent(
                     componentContext = context,
-                    onNavigateToQuestion = { navigation.push(HomeConfig.Entry(it)) },
+                    onNavigateToEntry = { navigation.push(HomeConfig.Entry(it)) },
+                    onNavigateToReport = { navigation.push(HomeConfig.Report(it)) },
                     onNavigateToCreate = { navigation.push(HomeConfig.CreateQuestion) },
                     getActiveQuestionSummaries = getActiveQuestionSummaries,
                     getCompletedQuestionSummaries = getCompletedQuestionSummaries,
@@ -65,11 +71,21 @@ class DefaultHomeComponent(
                     saveEntry = saveEntry,
                 )
             )
+            is HomeConfig.Report -> HomeComponent.HomeChild.Report(
+                DefaultReportComponent(
+                    componentContext = context,
+                    questionId = config.questionId,
+                    onNavigateBack = { navigation.pop() },
+                    getQuestionById = getQuestionById,
+                    getQuestionStats = getQuestionStats,
+                )
+            )
         }
 
     private sealed interface HomeConfig {
         data object QuestionsList : HomeConfig
         data object CreateQuestion : HomeConfig
         data class Entry(val questionId: Long) : HomeConfig
+        data class Report(val questionId: Long) : HomeConfig
     }
 }

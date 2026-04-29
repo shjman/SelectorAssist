@@ -210,7 +210,7 @@ Box(modifier = Modifier.fillMaxWidth()) {
 }
 ```
 
-Slider value: `Float 0.0..1.0` in UI → stored as `Int 0..100` via `(value * 100).toInt()`.
+Slider value: `Float 0.0..1.0` in UI → stored as `Int 0..10` via `(value * 10).toInt()`.
 
 ### Bottom action button
 

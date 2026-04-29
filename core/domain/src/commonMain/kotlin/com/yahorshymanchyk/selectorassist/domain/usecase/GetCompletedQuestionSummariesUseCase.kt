@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
+private const val SLIDER_MID = 5
 private const val PERCENT_MULTIPLIER = 100
 private const val PERCENT_NEUTRAL = 50
 
@@ -36,8 +37,8 @@ class GetCompletedQuestionSummariesUseCase(
         }
 
     private fun Question.toSummary(entries: List<Entry>): CompletedQuestionSummary {
-        val poleACount = entries.count { it.sliderValue <= 2 }
-        val poleBCount = entries.count { it.sliderValue >= 4 }
+        val poleACount = entries.count { it.sliderValue < SLIDER_MID }
+        val poleBCount = entries.count { it.sliderValue > SLIDER_MID }
         val total = entries.size
         val (dominantPole, percentage) = when {
             total == 0 -> poleA to PERCENT_NEUTRAL

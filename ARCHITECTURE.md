@@ -13,7 +13,7 @@ Stack: MVI · Decompose · SQLDelight · Koin · Coroutines/StateFlow
 :core:ui       — AppTheme, AppColors, AppTypography, shared Compose components
 :feature:questions — QuestionsListScreen + CreateQuestionScreen
 :feature:entry     — EntryScreen (daily slider + tags + comment)
-:feature:report    — ReportScreen (TODO)
+:feature:report    — ReportScreen (tendency + tag influence + arguments)
 :composeApp    — entry point, Koin wiring, Decompose Root, MainActivity / MainViewController
 ```
 
@@ -165,7 +165,8 @@ class DefaultXxxComponent(
 private sealed interface HomeConfig {
     data object QuestionsList  : HomeConfig
     data object CreateQuestion : HomeConfig
-    data class  Entry(val questionId: Long) : HomeConfig
+    data class  Entry(val questionId: Long)  : HomeConfig
+    data class  Report(val questionId: Long) : HomeConfig
 }
 ```
 
@@ -176,7 +177,8 @@ RootComponent
 └── HomeComponent (ChildStack)
     ├── QuestionsListComponent   ✅
     ├── CreateQuestionComponent  ✅
-    └── EntryComponent           ✅
+    ├── EntryComponent           ✅
+    └── ReportComponent          ✅
 
 Planned (MVP):
 RootComponent
@@ -186,7 +188,7 @@ RootComponent
     ├── CreateQuestionComponent  ✅
     └── QuestionComponent (nested ChildStack) TODO
         ├── EntryComponent       ✅  (to move here)
-        └── ReportComponent      TODO
+        └── ReportComponent      ✅  (to move here)
 ```
 
 ### Adding a destination to HomeComponent

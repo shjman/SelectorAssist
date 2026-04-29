@@ -6,6 +6,7 @@ import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetCompletedQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetQuestionByIdUseCase
+import com.yahorshymanchyk.selectorassist.domain.usecase.GetQuestionStatsUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetTodayEntryUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.SaveEntryUseCase
 import org.koin.core.component.KoinComponent
@@ -21,6 +22,7 @@ class DefaultRootComponent(
     private val getQuestionById: GetQuestionByIdUseCase by inject()
     private val getTodayEntry: GetTodayEntryUseCase by inject()
     private val saveEntry: SaveEntryUseCase by inject()
+    private val getQuestionStats: GetQuestionStatsUseCase by inject()
 
     override val homeComponent: HomeComponent = DefaultHomeComponent(
         componentContext = childContext(key = "home"),
@@ -30,5 +32,6 @@ class DefaultRootComponent(
         getQuestionById = getQuestionById,
         getTodayEntry = getTodayEntry,
         saveEntry = saveEntry,
+        getQuestionStats = getQuestionStats,
     )
 }

@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class DefaultQuestionsListComponent(
     componentContext: ComponentContext,
-    private val onNavigateToQuestion: (Long) -> Unit,
+    private val onNavigateToEntry: (Long) -> Unit,
+    private val onNavigateToReport: (Long) -> Unit,
     private val onNavigateToCreate: () -> Unit,
     getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase,
     getCompletedQuestionSummaries: GetCompletedQuestionSummariesUseCase,
@@ -43,7 +44,10 @@ class DefaultQuestionsListComponent(
 
     override fun onIntent(intent: QuestionsListIntent) {
         when (intent) {
-            is QuestionsListIntent.OpenQuestion -> onNavigateToQuestion(intent.questionId)
+            is QuestionsListIntent.OpenQuestion -> {
+                if (intent.isCompleted) onNavigateToReport(intent.questionId)
+                else onNavigateToEntry(intent.questionId)
+            }
             QuestionsListIntent.OpenCreateQuestion -> onNavigateToCreate()
         }
     }

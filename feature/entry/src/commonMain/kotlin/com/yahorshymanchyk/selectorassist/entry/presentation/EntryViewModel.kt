@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val MILLIS_PER_DAY = 86_400_000L
-private const val SLIDER_STORAGE_MAX = 100
+private const val SLIDER_STORAGE_MAX = 10
 
 class EntryViewModel(
     private val questionId: Long,

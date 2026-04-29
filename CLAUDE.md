@@ -116,11 +116,11 @@ Pet project → Google Play + App Store.
 - `core:data` — SQLDelight схема, оба драйвера, репозитории, маперы
 - `core:ui` — AppTheme, AppColors, AppTypography
 - `feature:questions` — QuestionsListScreen + CreateQuestionScreen (полный MVI + Decompose)
-- `feature:entry` — EntryScreen (слайдер + теги + комментарий, полный MVI + Decompose)
+- `feature:entry` — EntryScreen (слайдер 0..10 + теги + комментарий, полный MVI + Decompose)
+- `feature:report` — ReportScreen (склонение + влияние тегов + аргументы, полный MVI + Decompose)
 - `composeApp` — Koin DI, RootComponent, HomeComponent с ChildStack, MainActivity
 
 **TODO (MVP):**
-- `feature:report` — ReportComponent, ReportScreen
 - QuestionComponent (вложенный ChildStack для Entry/Report)
 - BiometryComponent
 - Alarmee уведомления

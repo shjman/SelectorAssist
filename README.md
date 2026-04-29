@@ -12,7 +12,7 @@ Targets: Android (Google Play) + iOS (App Store). Fully shared UI — no SwiftUI
 - **Daily entry** — slider between the two poles, optional tag classification, optional free-text comment
 - **Two tag groups** — *Noise* (false filters: fear, guilt, impulses…) and *Healthy* (grounded reasons: values, long-term goals…)
 - **Upsert behaviour** — re-opening a day's entry pre-fills with the saved values; saving again updates in place
-- **Final report** — summary of tendencies and tag patterns over the full observation period *(in progress)*
+- **Final report** — tendency bars (% per pole), tag group influence, and all user comments split by pole
 - **Biometric lock** — optional Face ID / Fingerprint gate on app open *(planned)*
 - **Local-only** — no network, no analytics, no sync; all data stays on device
 
@@ -70,7 +70,7 @@ Targets: Android (Google Play) + iOS (App Store). Fully shared UI — no SwiftUI
 │   ├── entry/                      # Daily entry (slider + tags + comment)
 │   │   └── commonMain/             # same structure: component / presentation / ui
 │   │
-│   └── report/                     # Final report (TODO)
+│   └── report/                     # Final report — tendency, tag influence, arguments
 │
 └── composeApp/                     # App entry point
     ├── commonMain/
@@ -148,7 +148,7 @@ XxxViewModel (plain class)        — pure business logic, scope injected from C
 | id | INTEGER | Primary key, auto-generated |
 | question_id | INTEGER | FK → questions.id |
 | date | INTEGER | Day at midnight UTC ms (one entry per day per question) |
-| slider_value | INTEGER | 0–100 (0 = pole A, 100 = pole B) |
+| slider_value | INTEGER | 0–10 (0 = pole A, 10 = pole B) |
 | comment | TEXT | Nullable |
 
 **`entry_tags`**
@@ -186,7 +186,8 @@ RootComponent
 └── HomeComponent (ChildStack)
     ├── QuestionsListComponent   ✅
     ├── CreateQuestionComponent  ✅
-    └── EntryComponent           ✅
+    ├── EntryComponent           ✅
+    └── ReportComponent          ✅
 
 Planned:
     └── QuestionComponent (nested ChildStack)

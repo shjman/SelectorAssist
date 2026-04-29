@@ -62,7 +62,7 @@ fun QuestionsListScreen(component: QuestionsListComponent) {
                 ActiveQuestionCard(
                     summary = summary,
                     onClick = {
-                        component.onIntent(QuestionsListIntent.OpenQuestion(summary.question.id))
+                        component.onIntent(QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = false))
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
                 )
@@ -86,7 +86,7 @@ fun QuestionsListScreen(component: QuestionsListComponent) {
                     CompletedQuestionRow(
                         summary = summary,
                         onClick = {
-                            component.onIntent(QuestionsListIntent.OpenQuestion(summary.question.id))
+                            component.onIntent(QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = true))
                         },
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
                     )
