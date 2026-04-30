@@ -16,8 +16,8 @@ Full reference: `core/ui/src/commonMain/kotlin/.../ui/theme/AppColors.kt`
 | `TextPrimary` | `#FFFFFF` | Main content text, active input text |
 | `TextSecondary` | `#8E8E93` | Labels, hints, secondary info |
 | `TextTertiary` | `#48484A` | Placeholders, disabled text |
-| `PoleA` | `#0A84FF` | Left pole label + slider track start |
-| `PoleB` | `#FF375F` | Right pole label + slider track end |
+| `PoleA` | `#64D2FF` | Left pole label + slider track start |
+| `PoleB` | `#FF6B9D` | Right pole label + slider track end |
 | `PendingIndicator` | `#FF9F0A` | "Entry needed today" dot on question card |
 | `PendingBorder` | `#6B4C00` | Border for pending question card |
 | `ProgressTrack` | `#3A3A3C` | Background of progress bars |
@@ -27,7 +27,7 @@ Full reference: `core/ui/src/commonMain/kotlin/.../ui/theme/AppColors.kt`
 | `InputField` | `#2C2C2E` | Text field background, unselected chip |
 | `InputFieldSelected` | `#3A3A3C` | Selected chip background |
 | `InputFieldSelectedBorder` | `#636366` | Border on selected chip |
-| `TagGroupNoise` | `#FF453A` | Bullet dot — "Ложные фильтры" section |
+| `TagGroupNoise` | `#FF9500` | Bullet dot — "Ложные фильтры" section |
 | `TagGroupHealthy` | `#30D158` | Bullet dot — "Опора" section |
 
 **Rule:** Adding a new color = add to `AppColors` with `@file:Suppress("MagicNumber")` already present.  

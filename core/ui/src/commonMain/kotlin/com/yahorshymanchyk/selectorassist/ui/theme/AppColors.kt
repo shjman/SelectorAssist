@@ -12,8 +12,8 @@ object AppColors {
     val TextSecondary = Color(0xFF8E8E93)
     val TextTertiary = Color(0xFF48484A)
 
-    val PoleA = Color(0xFF0A84FF)
-    val PoleB = Color(0xFFFF375F)
+    val PoleA = Color(0xFF64D2FF)
+    val PoleB = Color(0xFFFF6B9D)
 
     val PendingIndicator = Color(0xFFFF9F0A)
     val PendingBorder = Color(0xFF6B4C00)
@@ -28,6 +28,6 @@ object AppColors {
     val InputFieldSelected = Color(0xFF3A3A3C)
     val InputFieldSelectedBorder = Color(0xFF636366)
 
-    val TagGroupNoise = Color(0xFFFF453A)
+    val TagGroupNoise = Color(0xFFFF9500)
     val TagGroupHealthy = Color(0xFF30D158)
 }
