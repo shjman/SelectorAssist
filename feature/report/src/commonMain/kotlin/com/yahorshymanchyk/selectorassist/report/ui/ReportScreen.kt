@@ -32,9 +32,19 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.domain.model.Pole
 import com.yahorshymanchyk.selectorassist.report.component.ReportComponent
+import selectorassist.feature.report.generated.resources.Res
+import selectorassist.feature.report.generated.resources.report_header_stats
+import selectorassist.feature.report.generated.resources.report_healthy_group_label
+import selectorassist.feature.report.generated.resources.report_healthy_verb
+import selectorassist.feature.report.generated.resources.report_noise_group_label
+import selectorassist.feature.report.generated.resources.report_noise_verb
+import selectorassist.feature.report.generated.resources.report_section_arguments
+import selectorassist.feature.report.generated.resources.report_section_influence
+import selectorassist.feature.report.generated.resources.report_section_tendency
 import com.yahorshymanchyk.selectorassist.report.presentation.ReportState
 import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import org.jetbrains.compose.resources.stringResource
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val ArgumentShape = RoundedCornerShape(12.dp)
@@ -97,14 +107,14 @@ private fun HeaderCard(state: ReportState) {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "${state.totalDays} дней · ${state.totalEntries} ответов",
+            text = stringResource(Res.string.report_header_stats, state.totalDays, state.totalEntries),
             color = AppColors.TextSecondary,
             fontSize = 13.sp,
         )
 
         if (!state.isLoading) {
             Spacer(Modifier.height(20.dp))
-            SectionLabel("СКЛОНЕНИЕ")
+            SectionLabel(stringResource(Res.string.report_section_tendency))
             Spacer(Modifier.height(12.dp))
             TendencyRow(
                 label = state.poleA,
@@ -168,23 +178,23 @@ private fun InfluenceCard(state: ReportState) {
             .padding(horizontal = 20.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        SectionLabel("ЧТО ВЛИЯЛО НА РЕШЕНИЯ")
+        SectionLabel(stringResource(Res.string.report_section_influence))
         Spacer(Modifier.height(2.dp))
 
         state.noiseInfluencePole?.let { pole ->
             InfluenceLine(
-                groupLabel = "Ложные фильтры",
+                groupLabel = stringResource(Res.string.report_noise_group_label),
                 groupColor = AppColors.TagGroupNoise,
-                verb = "чаще склоняли к",
+                verb = stringResource(Res.string.report_noise_verb),
                 poleName = if (pole == Pole.A) state.poleA else state.poleB,
                 poleColor = if (pole == Pole.A) AppColors.PoleA else AppColors.PoleB,
             )
         }
         state.healthyInfluencePole?.let { pole ->
             InfluenceLine(
-                groupLabel = "Опора",
+                groupLabel = stringResource(Res.string.report_healthy_group_label),
                 groupColor = AppColors.TagGroupHealthy,
-                verb = "чаще склоняла к",
+                verb = stringResource(Res.string.report_healthy_verb),
                 poleName = if (pole == Pole.A) state.poleA else state.poleB,
                 poleColor = if (pole == Pole.A) AppColors.PoleA else AppColors.PoleB,
             )
@@ -219,7 +229,7 @@ private fun InfluenceLine(
 @Composable
 private fun ArgumentsSection(state: ReportState) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        SectionLabel("АРГУМЕНТЫ")
+        SectionLabel(stringResource(Res.string.report_section_arguments))
         Spacer(Modifier.height(10.dp))
 
         Row(

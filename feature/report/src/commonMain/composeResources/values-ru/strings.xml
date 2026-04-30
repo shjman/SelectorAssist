@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="report_header_stats">%1$d дней · %2$d ответов</string>
+    <string name="report_section_tendency">СКЛОНЕНИЕ</string>
+    <string name="report_section_influence">ЧТО ВЛИЯЛО НА РЕШЕНИЯ</string>
+    <string name="report_noise_group_label">Ложные фильтры</string>
+    <string name="report_noise_verb">чаще склоняли к</string>
+    <string name="report_healthy_group_label">Опора</string>
+    <string name="report_healthy_verb">чаще склоняла к</string>
+    <string name="report_section_arguments">АРГУМЕНТЫ</string>
+</resources>

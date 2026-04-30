@@ -36,6 +36,7 @@ kotlin {
             implementation(projects.core.domain)
             implementation(projects.core.data)
             implementation(projects.core.ui)
+            implementation(libs.compose.components.resources)
             implementation(projects.feature.questions)
             implementation(projects.feature.entry)
             implementation(projects.feature.report)

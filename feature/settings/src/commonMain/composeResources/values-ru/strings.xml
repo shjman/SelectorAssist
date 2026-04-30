@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="settings_title">Настройки</string>
+    <string name="settings_section_security">БЕЗОПАСНОСТЬ</string>
+    <string name="settings_biometry_title">Вход по биометрии</string>
+    <string name="settings_biometry_subtitle">Face ID или Touch ID</string>
+</resources>

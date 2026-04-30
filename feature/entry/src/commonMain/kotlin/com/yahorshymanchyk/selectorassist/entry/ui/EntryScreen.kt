@@ -46,9 +46,37 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.domain.model.Tag
 import com.yahorshymanchyk.selectorassist.domain.model.TagGroup
 import com.yahorshymanchyk.selectorassist.entry.component.EntryComponent
+import selectorassist.feature.entry.generated.resources.Res
+import selectorassist.feature.entry.generated.resources.entry_comment_placeholder
+import selectorassist.feature.entry.generated.resources.entry_day_of
+import selectorassist.feature.entry.generated.resources.entry_header_label
+import selectorassist.feature.entry.generated.resources.entry_optional
+import selectorassist.feature.entry.generated.resources.entry_save
+import selectorassist.feature.entry.generated.resources.entry_slider_hint_high
+import selectorassist.feature.entry.generated.resources.entry_slider_hint_low
+import selectorassist.feature.entry.generated.resources.entry_slider_hint_mid
+import selectorassist.feature.entry.generated.resources.entry_tag_group_healthy
+import selectorassist.feature.entry.generated.resources.entry_tag_group_noise
+import selectorassist.feature.entry.generated.resources.tag_emotions_impulses
+import selectorassist.feature.entry.generated.resources.tag_facts_reason
+import selectorassist.feature.entry.generated.resources.tag_fatigue_burnout
+import selectorassist.feature.entry.generated.resources.tag_fear_of_future
+import selectorassist.feature.entry.generated.resources.tag_guilt
+import selectorassist.feature.entry.generated.resources.tag_inner_peace
+import selectorassist.feature.entry.generated.resources.tag_intuition
+import selectorassist.feature.entry.generated.resources.tag_long_term_goals
+import selectorassist.feature.entry.generated.resources.tag_my_values
+import selectorassist.feature.entry.generated.resources.tag_objective_opportunities
+import selectorassist.feature.entry.generated.resources.tag_opinion_of_others
+import selectorassist.feature.entry.generated.resources.tag_past_experience
+import selectorassist.feature.entry.generated.resources.tag_personal_freedom
+import selectorassist.feature.entry.generated.resources.tag_self_care
+import selectorassist.feature.entry.generated.resources.tag_self_doubt
+import selectorassist.feature.entry.generated.resources.tag_social_expectations
 import com.yahorshymanchyk.selectorassist.entry.presentation.EntryIntent
 import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import org.jetbrains.compose.resources.stringResource
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val ChipShape = RoundedCornerShape(20.dp)
@@ -94,7 +122,7 @@ fun EntryScreen(component: EntryComponent) {
             TagsSection(
                 tags = Tag.entries.filter { it.group == TagGroup.NOISE },
                 selectedTags = state.selectedTags,
-                groupLabel = "Ложные фильтры",
+                groupLabel = stringResource(Res.string.entry_tag_group_noise),
                 groupColor = AppColors.TagGroupNoise,
                 onTagToggle = { component.onIntent(EntryIntent.TagToggled(it)) },
             )
@@ -104,7 +132,7 @@ fun EntryScreen(component: EntryComponent) {
             TagsSection(
                 tags = Tag.entries.filter { it.group == TagGroup.HEALTHY },
                 selectedTags = state.selectedTags,
-                groupLabel = "Опора",
+                groupLabel = stringResource(Res.string.entry_tag_group_healthy),
                 groupColor = AppColors.TagGroupHealthy,
                 onTagToggle = { component.onIntent(EntryIntent.TagToggled(it)) },
             )
@@ -144,7 +172,7 @@ private fun EntryHeader(
         ) {
             BackButton(onClick = onBack, tint = AppColors.TextSecondary)
             Text(
-                text = "ЕЖЕДНЕВНЫЙ ВВОД",
+                text = stringResource(Res.string.entry_header_label),
                 color = AppColors.TextSecondary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
@@ -161,7 +189,7 @@ private fun EntryHeader(
         if (currentDay > 0) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "День $currentDay из $totalDays",
+                text = stringResource(Res.string.entry_day_of, currentDay, totalDays),
                 color = AppColors.TextSecondary,
                 fontSize = 13.sp,
             )
@@ -227,10 +255,11 @@ private fun SliderCard(
     }
 }
 
+@Composable
 private fun sliderHint(value: Float, poleA: String, poleB: String): String = when {
-    value < SLIDER_LOW_THRESHOLD -> "Ближе к «$poleA»"
-    value > SLIDER_HIGH_THRESHOLD -> "Ближе к «$poleB»"
-    else -> "Примерно посередине"
+    value < SLIDER_LOW_THRESHOLD -> stringResource(Res.string.entry_slider_hint_low, poleA)
+    value > SLIDER_HIGH_THRESHOLD -> stringResource(Res.string.entry_slider_hint_high, poleB)
+    else -> stringResource(Res.string.entry_slider_hint_mid)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -260,7 +289,7 @@ private fun TagsSection(
             fontWeight = FontWeight.Medium,
         )
         Text(
-            text = "необязательно",
+            text = stringResource(Res.string.entry_optional),
             color = AppColors.TextTertiary,
             fontSize = 12.sp,
         )
@@ -272,7 +301,7 @@ private fun TagsSection(
     ) {
         tags.forEach { tag ->
             TagChip(
-                label = tag.label,
+                label = tag.label(),
                 isSelected = tag in selectedTags,
                 onClick = { onTagToggle(tag) },
             )
@@ -324,7 +353,7 @@ private fun CommentField(value: String, onValueChange: (String) -> Unit) {
             Box {
                 if (value.isEmpty()) {
                     Text(
-                        text = "Аргумент или ощущение  •  необязательно",
+                        text = stringResource(Res.string.entry_comment_placeholder),
                         color = AppColors.TextTertiary,
                         fontSize = 16.sp,
                     )
@@ -346,7 +375,7 @@ private fun SaveButton(isSaving: Boolean, onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "сохранить",
+            text = stringResource(Res.string.entry_save),
             color = if (!isSaving) AppColors.TextPrimary else AppColors.TextTertiary,
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,
@@ -354,22 +383,23 @@ private fun SaveButton(isSaving: Boolean, onClick: () -> Unit) {
     }
 }
 
-private val Tag.label: String
-    get() = when (this) {
-        Tag.FEAR_OF_FUTURE -> "Страх будущего"
-        Tag.OPINION_OF_OTHERS -> "Мнение других"
-        Tag.PAST_EXPERIENCE -> "Прошлый опыт"
-        Tag.GUILT -> "Чувство вины"
-        Tag.EMOTIONS_IMPULSES -> "Эмоции и импульсы"
-        Tag.SELF_DOUBT -> "Неуверенность в себе"
-        Tag.FATIGUE_BURNOUT -> "Усталость / Выгорание"
-        Tag.SOCIAL_EXPECTATIONS -> "Социальные ожидания"
-        Tag.MY_VALUES -> "Мои ценности"
-        Tag.FACTS_REASON -> "Факты и логика"
-        Tag.INTUITION -> "Интуиция"
-        Tag.SELF_CARE -> "Забота о себе"
-        Tag.LONG_TERM_GOALS -> "Долгосрочные цели"
-        Tag.PERSONAL_FREEDOM -> "Личная свобода"
-        Tag.INNER_PEACE -> "Внутреннее спокойствие"
-        Tag.OBJECTIVE_OPPORTUNITIES -> "Объективные возможности"
-    }
+@Suppress("CyclomaticComplexMethod") // exhaustive enum mapping — complexity is structural, not logical
+@Composable
+private fun Tag.label(): String = when (this) {
+    Tag.FEAR_OF_FUTURE -> stringResource(Res.string.tag_fear_of_future)
+    Tag.OPINION_OF_OTHERS -> stringResource(Res.string.tag_opinion_of_others)
+    Tag.PAST_EXPERIENCE -> stringResource(Res.string.tag_past_experience)
+    Tag.GUILT -> stringResource(Res.string.tag_guilt)
+    Tag.EMOTIONS_IMPULSES -> stringResource(Res.string.tag_emotions_impulses)
+    Tag.SELF_DOUBT -> stringResource(Res.string.tag_self_doubt)
+    Tag.FATIGUE_BURNOUT -> stringResource(Res.string.tag_fatigue_burnout)
+    Tag.SOCIAL_EXPECTATIONS -> stringResource(Res.string.tag_social_expectations)
+    Tag.MY_VALUES -> stringResource(Res.string.tag_my_values)
+    Tag.FACTS_REASON -> stringResource(Res.string.tag_facts_reason)
+    Tag.INTUITION -> stringResource(Res.string.tag_intuition)
+    Tag.SELF_CARE -> stringResource(Res.string.tag_self_care)
+    Tag.LONG_TERM_GOALS -> stringResource(Res.string.tag_long_term_goals)
+    Tag.PERSONAL_FREEDOM -> stringResource(Res.string.tag_personal_freedom)
+    Tag.INNER_PEACE -> stringResource(Res.string.tag_inner_peace)
+    Tag.OBJECTIVE_OPPORTUNITIES -> stringResource(Res.string.tag_objective_opportunities)
+}

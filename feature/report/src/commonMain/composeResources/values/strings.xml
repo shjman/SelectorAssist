@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="report_header_stats">%1$d days · %2$d answers</string>
+    <string name="report_section_tendency">TENDENCY</string>
+    <string name="report_section_influence">WHAT INFLUENCED DECISIONS</string>
+    <string name="report_noise_group_label">False filters</string>
+    <string name="report_noise_verb">more often inclined towards</string>
+    <string name="report_healthy_group_label">Support</string>
+    <string name="report_healthy_verb">more often inclined towards</string>
+    <string name="report_section_arguments">ARGUMENTS</string>
+</resources>

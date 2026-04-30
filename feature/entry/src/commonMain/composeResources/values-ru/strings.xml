@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="entry_header_label">ЕЖЕДНЕВНЫЙ ВВОД</string>
+    <string name="entry_day_of">День %1$d из %2$d</string>
+    <string name="entry_tag_group_noise">Ложные фильтры</string>
+    <string name="entry_tag_group_healthy">Опора</string>
+    <string name="entry_optional">необязательно</string>
+    <string name="entry_comment_placeholder">Аргумент или ощущение  •  необязательно</string>
+    <string name="entry_save">сохранить</string>
+    <string name="entry_slider_hint_low">Ближе к «%1$s»</string>
+    <string name="entry_slider_hint_high">Ближе к «%1$s»</string>
+    <string name="entry_slider_hint_mid">Примерно посередине</string>
+
+    <string name="tag_fear_of_future">Страх будущего</string>
+    <string name="tag_opinion_of_others">Мнение других</string>
+    <string name="tag_past_experience">Прошлый опыт</string>
+    <string name="tag_guilt">Чувство вины</string>
+    <string name="tag_emotions_impulses">Эмоции и импульсы</string>
+    <string name="tag_self_doubt">Неуверенность в себе</string>
+    <string name="tag_fatigue_burnout">Усталость / Выгорание</string>
+    <string name="tag_social_expectations">Социальные ожидания</string>
+    <string name="tag_my_values">Мои ценности</string>
+    <string name="tag_facts_reason">Факты и логика</string>
+    <string name="tag_intuition">Интуиция</string>
+    <string name="tag_self_care">Забота о себе</string>
+    <string name="tag_long_term_goals">Долгосрочные цели</string>
+    <string name="tag_personal_freedom">Личная свобода</string>
+    <string name="tag_inner_peace">Внутреннее спокойствие</string>
+    <string name="tag_objective_opportunities">Объективные возможности</string>
+</resources>

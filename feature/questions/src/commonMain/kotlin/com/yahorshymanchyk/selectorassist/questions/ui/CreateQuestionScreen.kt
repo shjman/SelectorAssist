@@ -32,13 +32,29 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Text
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.questions.component.CreateQuestionComponent
+import selectorassist.feature.questions.generated.resources.Res
+import selectorassist.feature.questions.generated.resources.create_question_duration_optimal
+import selectorassist.feature.questions.generated.resources.create_question_duration_preset
+import selectorassist.feature.questions.generated.resources.create_question_duration_unit
+import selectorassist.feature.questions.generated.resources.create_question_hint_title
+import selectorassist.feature.questions.generated.resources.create_question_placeholder_title
+import selectorassist.feature.questions.generated.resources.create_question_pole_a_label
+import selectorassist.feature.questions.generated.resources.create_question_pole_a_placeholder
+import selectorassist.feature.questions.generated.resources.create_question_pole_b_label
+import selectorassist.feature.questions.generated.resources.create_question_pole_b_placeholder
+import selectorassist.feature.questions.generated.resources.create_question_section_dilemma
+import selectorassist.feature.questions.generated.resources.create_question_section_duration
+import selectorassist.feature.questions.generated.resources.create_question_section_poles
+import selectorassist.feature.questions.generated.resources.create_question_submit
+import selectorassist.feature.questions.generated.resources.create_question_title
 import com.yahorshymanchyk.selectorassist.questions.presentation.CreateQuestionIntent
 import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
-import androidx.compose.material3.Text
+import org.jetbrains.compose.resources.stringResource
 
 private const val PRESET_DURATION_SHORT = 7
 private const val PRESET_DURATION_OPTIMAL = 30
@@ -103,7 +119,7 @@ private fun ScreenHeader(onBack: () -> Unit) {
     ) {
         BackButton(onClick = onBack)
         Text(
-            text = "Новый вопрос",
+            text = stringResource(Res.string.create_question_title),
             color = AppColors.TextPrimary,
             fontSize = if (isAndroid) 22.sp else 20.sp,
             fontWeight = FontWeight.SemiBold,
@@ -137,12 +153,12 @@ private fun SectionDivider() {
 
 @Composable
 private fun TitleSection(title: String, onTitleChange: (String) -> Unit) {
-    SectionLabel(text = "Ваша дилемма")
+    SectionLabel(text = stringResource(Res.string.create_question_section_dilemma))
     Spacer(Modifier.height(10.dp))
     FormTextField(
         value = title,
         onValueChange = onTitleChange,
-        placeholder = "Уволиться или остаться?",
+        placeholder = stringResource(Res.string.create_question_placeholder_title),
         minHeight = 96.dp,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
@@ -151,7 +167,7 @@ private fun TitleSection(title: String, onTitleChange: (String) -> Unit) {
     )
     Spacer(Modifier.height(8.dp))
     Text(
-        text = "Сформулируйте вопрос так, как он звучит у вас внутри",
+        text = stringResource(Res.string.create_question_hint_title),
         color = AppColors.TextSecondary,
         fontSize = 12.sp,
     )
@@ -164,7 +180,7 @@ private fun PolesSection(
     onPoleAChange: (String) -> Unit,
     onPoleBChange: (String) -> Unit,
 ) {
-    SectionLabel(text = "Два полюса")
+    SectionLabel(text = stringResource(Res.string.create_question_section_poles))
     Spacer(Modifier.height(10.dp))
     Row(
         modifier = Modifier
@@ -173,12 +189,12 @@ private fun PolesSection(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = "Первый вариант", color = AppColors.TextSecondary, fontSize = 12.sp)
+            Text(text = stringResource(Res.string.create_question_pole_a_label), color = AppColors.TextSecondary, fontSize = 12.sp)
             Spacer(Modifier.height(6.dp))
             FormTextField(
                 value = poleA,
                 onValueChange = onPoleAChange,
-                placeholder = "Уйти",
+                placeholder = stringResource(Res.string.create_question_pole_a_placeholder),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
@@ -187,12 +203,12 @@ private fun PolesSection(
             )
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = "Второй вариант", color = AppColors.TextSecondary, fontSize = 12.sp)
+            Text(text = stringResource(Res.string.create_question_pole_b_label), color = AppColors.TextSecondary, fontSize = 12.sp)
             Spacer(Modifier.height(6.dp))
             FormTextField(
                 value = poleB,
                 onValueChange = onPoleBChange,
-                placeholder = "Остаться",
+                placeholder = stringResource(Res.string.create_question_pole_b_placeholder),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
@@ -205,7 +221,7 @@ private fun PolesSection(
 
 @Composable
 private fun DurationSection(durationDays: Int, onDurationChange: (Int) -> Unit) {
-    SectionLabel(text = "Срок наблюдения")
+    SectionLabel(text = stringResource(Res.string.create_question_section_duration))
     Spacer(Modifier.height(10.dp))
     DurationStepper(
         days = durationDays,
@@ -217,7 +233,7 @@ private fun DurationSection(durationDays: Int, onDurationChange: (Int) -> Unit) 
     if (durationDays == PRESET_DURATION_OPTIMAL) {
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Оптимально для большинства дилемм",
+            text = stringResource(Res.string.create_question_duration_optimal),
             color = AppColors.TextSecondary,
             fontSize = 12.sp,
         )
@@ -254,7 +270,7 @@ private fun DurationStepper(days: Int, onDecrement: () -> Unit, onIncrement: () 
             )
             Spacer(Modifier.width(4.dp))
             Text(
-                text = "дн",
+                text = stringResource(Res.string.create_question_duration_unit),
                 color = AppColors.TextSecondary,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(bottom = 4.dp),
@@ -295,7 +311,7 @@ private fun DurationPresets(selected: Int, onSelect: (Int) -> Unit) {
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "$days дн",
+                    text = stringResource(Res.string.create_question_duration_preset, days),
                     color = if (isSelected) AppColors.TextPrimary else AppColors.TextSecondary,
                     fontSize = 14.sp,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
@@ -358,7 +374,7 @@ private fun SubmitButton(canSubmit: Boolean, onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "начать наблюдение",
+            text = stringResource(Res.string.create_question_submit),
             color = if (canSubmit) AppColors.TextPrimary else AppColors.TextTertiary,
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,

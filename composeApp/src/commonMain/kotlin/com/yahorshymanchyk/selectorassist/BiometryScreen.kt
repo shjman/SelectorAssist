@@ -17,7 +17,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import selectorassist.composeapp.generated.resources.Res
+import selectorassist.composeapp.generated.resources.biometry_error_title
+import selectorassist.composeapp.generated.resources.biometry_retry
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BiometryScreen(component: BiometryComponent) {
@@ -40,7 +44,7 @@ fun BiometryScreen(component: BiometryComponent) {
         if (state.isError) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "Не удалось войти",
+                    text = stringResource(Res.string.biometry_error_title),
                     color = AppColors.TextSecondary,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Medium,
@@ -48,7 +52,7 @@ fun BiometryScreen(component: BiometryComponent) {
                 Spacer(Modifier.height(16.dp))
                 TextButton(onClick = { component.onIntent(BiometryIntent.Retry) }) {
                     Text(
-                        text = "Попробовать снова",
+                        text = stringResource(Res.string.biometry_retry),
                         color = AppColors.PoleA,
                         fontSize = 16.sp,
                     )

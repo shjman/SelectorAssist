@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="biometry_error_title">Не удалось войти</string>
+    <string name="biometry_retry">Попробовать снова</string>
+</resources>

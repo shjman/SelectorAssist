@@ -39,10 +39,16 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.domain.model.ActiveQuestionSummary
 import com.yahorshymanchyk.selectorassist.domain.model.CompletedQuestionSummary
 import com.yahorshymanchyk.selectorassist.questions.component.QuestionsListComponent
+import selectorassist.feature.questions.generated.resources.Res
+import selectorassist.feature.questions.generated.resources.questions_list_add_cd
+import selectorassist.feature.questions.generated.resources.questions_list_day_of
+import selectorassist.feature.questions.generated.resources.questions_list_pending
+import selectorassist.feature.questions.generated.resources.questions_list_title
 import com.yahorshymanchyk.selectorassist.questions.presentation.QuestionsListIntent
 import com.yahorshymanchyk.selectorassist.ui.components.SettingsIconButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun QuestionsListScreen(component: QuestionsListComponent) {
@@ -116,7 +122,7 @@ private fun AddFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
         onClick = onClick,
         modifier = modifier.padding(end = 16.dp, bottom = 24.dp),
     ) {
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add question")
+        Icon(imageVector = Icons.Filled.Add, contentDescription = stringResource(Res.string.questions_list_add_cd))
     }
 }
 
@@ -130,7 +136,7 @@ private fun ScreenHeader(onSettingsClick: () -> Unit, onCreateClick: (() -> Unit
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Мои вопросы",
+            text = stringResource(Res.string.questions_list_title),
             color = AppColors.TextPrimary,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
@@ -225,7 +231,7 @@ private fun PendingBadge() {
                 .background(AppColors.PendingIndicator),
         )
         Spacer(Modifier.width(6.dp))
-        Text(text = "ещё не отмечено", color = AppColors.PendingIndicator, fontSize = 13.sp)
+        Text(text = stringResource(Res.string.questions_list_pending), color = AppColors.PendingIndicator, fontSize = 13.sp)
     }
 }
 
@@ -251,7 +257,7 @@ private fun CardProgress(currentDay: Int, totalDays: Int) {
     )
     Spacer(Modifier.height(6.dp))
     Text(
-        text = "день $currentDay из $totalDays",
+        text = stringResource(Res.string.questions_list_day_of, currentDay, totalDays),
         color = AppColors.TextSecondary,
         fontSize = 13.sp,
     )

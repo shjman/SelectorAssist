@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_security">SECURITY</string>
+    <string name="settings_biometry_title">Sign in with biometrics</string>
+    <string name="settings_biometry_subtitle">Face ID or Touch ID</string>
+</resources>
