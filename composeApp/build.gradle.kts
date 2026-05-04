@@ -25,16 +25,26 @@ kotlin {
         }
     }
 
+    wasmJs {
+        browser()
+        binaries.executable()
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.koin.android)
             implementation(libs.androidx.biometric)
+            implementation(projects.core.data)
+            implementation(libs.alarmee)
+        }
+        iosMain.dependencies {
+            implementation(projects.core.data)
+            implementation(libs.alarmee)
         }
         commonMain.dependencies {
             implementation(projects.core.domain)
-            implementation(projects.core.data)
             implementation(projects.core.ui)
             implementation(libs.compose.components.resources)
             implementation(projects.feature.questions)
@@ -46,7 +56,6 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.alarmee)
             implementation(libs.decompose)
             implementation(libs.decompose.extensions.compose)
             implementation(libs.androidx.lifecycle.viewmodel)
@@ -103,5 +112,6 @@ detekt {
         "src/commonMain/kotlin",
         "src/androidMain/kotlin",
         "src/iosMain/kotlin",
+        "src/wasmJsMain/kotlin",
     )
 }
