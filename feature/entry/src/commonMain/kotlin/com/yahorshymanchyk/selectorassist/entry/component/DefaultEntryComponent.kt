@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.yahorshymanchyk.selectorassist.domain.CurrentDateProvider
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetQuestionByIdUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetTodayEntryUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.SaveEntryUseCase
@@ -23,6 +24,7 @@ class DefaultEntryComponent(
     getQuestionById: GetQuestionByIdUseCase,
     getTodayEntry: GetTodayEntryUseCase,
     saveEntry: SaveEntryUseCase,
+    clock: CurrentDateProvider,
 ) : EntryComponent, ComponentContext by componentContext {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -32,6 +34,7 @@ class DefaultEntryComponent(
         getQuestionById = getQuestionById,
         getTodayEntry = getTodayEntry,
         saveEntry = saveEntry,
+        clock = clock,
         coroutineScope = scope,
         onSaved = onNavigateBack,
     )

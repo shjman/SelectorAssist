@@ -6,6 +6,7 @@ import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.replaceAll
 import com.arkivanov.decompose.value.Value
+import com.yahorshymanchyk.selectorassist.domain.CurrentDateProvider
 import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetAppSettingsUseCase
@@ -31,6 +32,7 @@ class DefaultRootComponent(
     private val getQuestionStats: GetQuestionStatsUseCase by inject()
     private val getAppSettings: GetAppSettingsUseCase by inject()
     private val setBiometryEnabled: SetBiometryEnabledUseCase by inject()
+    private val clock: CurrentDateProvider by inject()
 
     private val navigation = StackNavigation<RootConfig>()
 
@@ -63,6 +65,7 @@ class DefaultRootComponent(
                     getQuestionStats = getQuestionStats,
                     getAppSettings = getAppSettings,
                     setBiometryEnabled = setBiometryEnabled,
+                    clock = clock,
                 )
             )
         }

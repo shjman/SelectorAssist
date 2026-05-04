@@ -17,13 +17,13 @@ import org.koin.dsl.module
 val domainModule = module {
     factory { GetActiveQuestionsUseCase(get()) }
     factory { GetCompletedQuestionsUseCase(get()) }
-    factory { GetActiveQuestionSummariesUseCase(get(), get()) }
+    factory { GetActiveQuestionSummariesUseCase(get(), get(), get()) }
     factory { GetCompletedQuestionSummariesUseCase(get(), get()) }
     factory { GetQuestionByIdUseCase(get()) }
-    factory { CreateQuestionUseCase(get()) }
+    factory { CreateQuestionUseCase(get(), get()) }
     factory { DeleteQuestionUseCase(get()) }
-    factory { GetTodayEntryUseCase(get()) }
-    factory { SaveEntryUseCase(get()) }
+    factory { GetTodayEntryUseCase(get(), get()) }
+    factory { SaveEntryUseCase(get(), get()) }
     factory { GetQuestionStatsUseCase(get()) }
     factory { GetAppSettingsUseCase(get()) }
     factory { SetBiometryEnabledUseCase(get()) }

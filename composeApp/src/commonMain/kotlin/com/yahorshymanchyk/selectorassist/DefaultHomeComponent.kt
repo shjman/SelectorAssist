@@ -7,6 +7,7 @@ import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
+import com.yahorshymanchyk.selectorassist.domain.CurrentDateProvider
 import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetAppSettingsUseCase
@@ -22,7 +23,7 @@ import com.yahorshymanchyk.selectorassist.questions.component.DefaultQuestionsLi
 import com.yahorshymanchyk.selectorassist.report.component.DefaultReportComponent
 import com.yahorshymanchyk.selectorassist.settings.component.DefaultSettingsComponent
 
-// All parameters are use cases passed straight to child components — no logic here, pure DI wiring.
+// All parameters are use cases/services passed straight to child components — no logic here, pure DI wiring.
 @Suppress("LongParameterList")
 class DefaultHomeComponent(
     componentContext: ComponentContext,
@@ -35,6 +36,7 @@ class DefaultHomeComponent(
     private val getQuestionStats: GetQuestionStatsUseCase,
     private val getAppSettings: GetAppSettingsUseCase,
     private val setBiometryEnabled: SetBiometryEnabledUseCase,
+    private val clock: CurrentDateProvider,
 ) : HomeComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<HomeConfig>()
@@ -75,6 +77,7 @@ class DefaultHomeComponent(
                     getQuestionById = getQuestionById,
                     getTodayEntry = getTodayEntry,
                     saveEntry = saveEntry,
+                    clock = clock,
                 )
             )
             is HomeConfig.Report -> HomeComponent.HomeChild.Report(

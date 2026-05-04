@@ -1,6 +1,6 @@
 package com.yahorshymanchyk.selectorassist.entry.presentation
 
-import com.yahorshymanchyk.selectorassist.domain.SystemClock
+import com.yahorshymanchyk.selectorassist.domain.CurrentDateProvider
 import com.yahorshymanchyk.selectorassist.domain.model.Question
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetQuestionByIdUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetTodayEntryUseCase
@@ -9,11 +9,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private const val MILLIS_PER_DAY = 86_400_000L
+private const val MILLIS_PER_DAY = CurrentDateProvider.DAY_MS
 private const val SLIDER_STORAGE_MAX = 10
 
 class EntryViewModel(
@@ -21,6 +22,7 @@ class EntryViewModel(
     private val getQuestionById: GetQuestionByIdUseCase,
     private val getTodayEntry: GetTodayEntryUseCase,
     private val saveEntry: SaveEntryUseCase,
+    private val clock: CurrentDateProvider,
     private val coroutineScope: CoroutineScope,
     private val onSaved: () -> Unit,
 ) {
@@ -30,20 +32,23 @@ class EntryViewModel(
     init {
         coroutineScope.launch {
             val question = getQuestionById(questionId).first() ?: return@launch
-            val entry = getTodayEntry(questionId).first()
-            val (currentDay, totalDays) = computeDays(question)
-            _state.update {
-                EntryState(
-                    questionTitle = question.title,
-                    poleA = question.poleA,
-                    poleB = question.poleB,
-                    currentDay = currentDay,
-                    totalDays = totalDays,
-                    sliderValue = entry?.sliderValue?.div(SLIDER_STORAGE_MAX.toFloat()) ?: 0.5f,
-                    selectedTags = entry?.tags?.toSet() ?: emptySet(),
-                    comment = entry?.comment ?: "",
-                    isLoading = false,
-                )
+            combine(getTodayEntry(questionId), clock.nowMs) { entry, nowMs ->
+                Pair(entry, nowMs)
+            }.collect { (entry, nowMs) ->
+                val (currentDay, totalDays) = computeDays(question, nowMs)
+                _state.update {
+                    EntryState(
+                        questionTitle = question.title,
+                        poleA = question.poleA,
+                        poleB = question.poleB,
+                        currentDay = currentDay,
+                        totalDays = totalDays,
+                        sliderValue = entry?.sliderValue?.div(SLIDER_STORAGE_MAX.toFloat()) ?: 0.5f,
+                        selectedTags = entry?.tags?.toSet() ?: emptySet(),
+                        comment = entry?.comment ?: "",
+                        isLoading = false,
+                    )
+                }
             }
         }
     }
@@ -76,9 +81,9 @@ class EntryViewModel(
         }
     }
 
-    private fun computeDays(question: Question): Pair<Int, Int> {
+    private fun computeDays(question: Question, nowMs: Long): Pair<Int, Int> {
         val totalDays = ((question.deadlineAt - question.createdAt) / MILLIS_PER_DAY).toInt().coerceAtLeast(1)
-        val currentDay = ((SystemClock.now() - question.createdAt) / MILLIS_PER_DAY + 1L)
+        val currentDay = ((nowMs - question.createdAt) / MILLIS_PER_DAY + 1L)
             .toInt()
             .coerceIn(1, totalDays)
         return currentDay to totalDays
