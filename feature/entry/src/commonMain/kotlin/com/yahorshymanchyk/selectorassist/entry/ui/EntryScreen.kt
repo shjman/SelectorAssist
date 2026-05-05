@@ -76,6 +76,7 @@ import selectorassist.feature.entry.generated.resources.tag_social_expectations
 import com.yahorshymanchyk.selectorassist.entry.presentation.EntryIntent
 import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
 import org.jetbrains.compose.resources.stringResource
 
 private val CardShape = RoundedCornerShape(16.dp)
@@ -164,7 +165,7 @@ private fun EntryHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
+            .padding(start = 20.dp, end = 20.dp, top = if (isAndroid) 56.dp else 8.dp, bottom = 16.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
