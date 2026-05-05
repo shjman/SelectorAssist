@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,10 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -54,7 +51,7 @@ import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 import org.koin.compose.koinInject
 
 private val PHONE_WIDTH = 390.dp
-private val PHONE_HEIGHT = 1500.dp
+private val PHONE_HEIGHT = 800.dp
 private val FRAME_CORNER = 32.dp
 private val FRAME_GAP = 24.dp
 private val FRAME_BORDER = 2.dp
@@ -89,6 +86,7 @@ fun WebGallery() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .background(AppColors.Background),
         ) {
             DateSwitcherBar(
@@ -169,18 +167,6 @@ private fun PhoneFrame(
     label: String,
     content: @Composable () -> Unit,
 ) {
-    // Prevent unconsumed vertical scroll from reaching the outer horizontalScroll Row.
-    // onPreScroll passes delta through; onPostScroll eats remaining vertical so the outer
-    // Row doesn't interpret it as horizontal scroll.
-    val verticalScrollBarrier = remember {
-        object : NestedScrollConnection {
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource,
-            ): Offset = Offset(0f, available.y)
-        }
-    }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = label,
@@ -192,7 +178,6 @@ private fun PhoneFrame(
             modifier = Modifier
                 .width(PHONE_WIDTH)
                 .height(PHONE_HEIGHT)
-                .nestedScroll(verticalScrollBarrier)
                 .border(FRAME_BORDER, AppColors.Divider, RoundedCornerShape(FRAME_CORNER))
                 .clip(RoundedCornerShape(FRAME_CORNER))
                 .background(AppColors.Background),
