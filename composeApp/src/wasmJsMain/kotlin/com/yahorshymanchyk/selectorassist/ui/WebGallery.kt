@@ -36,6 +36,7 @@ import com.yahorshymanchyk.selectorassist.WebCurrentDateProvider
 import com.yahorshymanchyk.selectorassist.WebEntryComponent
 import com.yahorshymanchyk.selectorassist.WebQuestionsListComponent
 import com.yahorshymanchyk.selectorassist.WebReportComponent
+import com.yahorshymanchyk.selectorassist.domain.model.Question
 import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetCompletedQuestionSummariesUseCase
@@ -60,14 +61,9 @@ private val FRAME_BORDER = 2.dp
 fun WebGallery() {
     val clock = koinInject<WebCurrentDateProvider>()
     val offsetDays by clock.offsetDays.collectAsState()
-
     val getActiveQuestionSummaries = koinInject<GetActiveQuestionSummariesUseCase>()
     val getCompletedQuestionSummaries = koinInject<GetCompletedQuestionSummariesUseCase>()
     val createQuestion = koinInject<CreateQuestionUseCase>()
-    val getQuestionById = koinInject<GetQuestionByIdUseCase>()
-    val getTodayEntry = koinInject<GetTodayEntryUseCase>()
-    val saveEntry = koinInject<SaveEntryUseCase>()
-    val getQuestionStats = koinInject<GetQuestionStatsUseCase>()
 
     val questionsListComponent = remember {
         WebQuestionsListComponent(getActiveQuestionSummaries, getCompletedQuestionSummaries)
@@ -80,7 +76,6 @@ fun WebGallery() {
             WebCreateQuestionComponent(createQuestion, onCreated = { formKey++ })
         }
         DisposableEffect(formKey) { onDispose { createQuestionComponent.cancel() } }
-
         val questionsState by questionsListComponent.state.subscribeAsState()
 
         Column(
@@ -94,7 +89,6 @@ fun WebGallery() {
                 onRetreat = { clock.retreat() },
                 onAdvance = { clock.advance() },
             )
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -102,64 +96,43 @@ fun WebGallery() {
                     .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
                 verticalAlignment = Alignment.Top,
             ) {
-                PhoneFrame(label = "Questions") {
-                    QuestionsListScreen(questionsListComponent)
-                }
+                PhoneFrame(label = "Questions") { QuestionsListScreen(questionsListComponent) }
                 Spacer(modifier = Modifier.width(FRAME_GAP))
-                PhoneFrame(label = "Create Question") {
-                    CreateQuestionScreen(createQuestionComponent)
-                }
-
+                PhoneFrame(label = "Create Question") { CreateQuestionScreen(createQuestionComponent) }
                 questionsState.activeQuestions.forEach { summary ->
-                    val questionId = summary.question.id
-                    key(questionId) {
-                        val entryComponent = remember {
-                            WebEntryComponent(questionId, getQuestionById, getTodayEntry, saveEntry, clock)
-                        }
-                        DisposableEffect(questionId) { onDispose { entryComponent.cancel() } }
-
-                        val reportComponent = remember {
-                            WebReportComponent(questionId, getQuestionById, getQuestionStats)
-                        }
-                        DisposableEffect(questionId) { onDispose { reportComponent.cancel() } }
-
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Entry · ${summary.question.title}") {
-                            EntryScreen(entryComponent)
-                        }
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Report · ${summary.question.title}") {
-                            ReportScreen(reportComponent)
-                        }
-                    }
+                    key(summary.question.id) { QuestionFramePair(summary.question, completed = false) }
                 }
-
                 questionsState.completedQuestions.forEach { summary ->
-                    val questionId = summary.question.id
-                    key("completed_$questionId") {
-                        val entryComponent = remember {
-                            WebEntryComponent(questionId, getQuestionById, getTodayEntry, saveEntry, clock)
-                        }
-                        DisposableEffect(questionId) { onDispose { entryComponent.cancel() } }
-
-                        val reportComponent = remember {
-                            WebReportComponent(questionId, getQuestionById, getQuestionStats)
-                        }
-                        DisposableEffect(questionId) { onDispose { reportComponent.cancel() } }
-
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Entry (done) · ${summary.question.title}") {
-                            EntryScreen(entryComponent)
-                        }
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Report (done) · ${summary.question.title}") {
-                            ReportScreen(reportComponent)
-                        }
-                    }
+                    key("completed_${summary.question.id}") { QuestionFramePair(summary.question, completed = true) }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun QuestionFramePair(question: Question, completed: Boolean) {
+    val getQuestionById = koinInject<GetQuestionByIdUseCase>()
+    val getTodayEntry = koinInject<GetTodayEntryUseCase>()
+    val saveEntry = koinInject<SaveEntryUseCase>()
+    val clock = koinInject<WebCurrentDateProvider>()
+    val getQuestionStats = koinInject<GetQuestionStatsUseCase>()
+
+    val entryComponent = remember {
+        WebEntryComponent(question.id, getQuestionById, getTodayEntry, saveEntry, clock)
+    }
+    DisposableEffect(question.id) { onDispose { entryComponent.cancel() } }
+
+    val reportComponent = remember {
+        WebReportComponent(question.id, getQuestionById, getQuestionStats)
+    }
+    DisposableEffect(question.id) { onDispose { reportComponent.cancel() } }
+
+    val suffix = if (completed) " (done)" else ""
+    Spacer(modifier = Modifier.width(FRAME_GAP))
+    PhoneFrame(label = "Entry$suffix · ${question.title}") { EntryScreen(entryComponent) }
+    Spacer(modifier = Modifier.width(FRAME_GAP))
+    PhoneFrame(label = "Report$suffix · ${question.title}") { ReportScreen(reportComponent) }
 }
 
 @Composable
