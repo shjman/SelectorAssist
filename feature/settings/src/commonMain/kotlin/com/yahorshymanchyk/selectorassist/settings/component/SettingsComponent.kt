@@ -6,6 +6,8 @@ import com.yahorshymanchyk.selectorassist.settings.presentation.SettingsState
 
 interface SettingsComponent {
     val state: Value<SettingsState>
+
     fun onIntent(intent: SettingsIntent)
+
     fun onBack()
 }

@@ -14,10 +14,15 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class EntryRepositoryImpl(private val database: AppDatabase) : EntryRepository {
-
-    override fun observeByDate(questionId: Long, dateMs: Long): Flow<Entry?> =
-        database.entriesQueries.selectByDate(questionId, dateMs)
+class EntryRepositoryImpl(
+    private val database: AppDatabase,
+) : EntryRepository {
+    override fun observeByDate(
+        questionId: Long,
+        dateMs: Long,
+    ): Flow<Entry?> =
+        database.entriesQueries
+            .selectByDate(questionId, dateMs)
             .asFlow()
             .mapToOneOrNull(Dispatchers.Default)
             .map { entity ->
@@ -25,11 +30,11 @@ class EntryRepositoryImpl(private val database: AppDatabase) : EntryRepository {
                     val tagNames = database.entry_tagsQueries.selectAllForEntry(it.id).executeAsList()
                     it.toDomain(tagNames)
                 }
-            }
-            .flowOn(Dispatchers.Default)
+            }.flowOn(Dispatchers.Default)
 
     override fun observeAll(questionId: Long): Flow<List<Entry>> =
-        database.entriesQueries.selectAllByQuestion(questionId)
+        database.entriesQueries
+            .selectAllByQuestion(questionId)
             .asFlow()
             .mapToList(Dispatchers.Default)
             .map { entities ->
@@ -37,10 +42,15 @@ class EntryRepositoryImpl(private val database: AppDatabase) : EntryRepository {
                     val tagNames = database.entry_tagsQueries.selectAllForEntry(entity.id).executeAsList()
                     entity.toDomain(tagNames)
                 }
-            }
-            .flowOn(Dispatchers.Default)
+            }.flowOn(Dispatchers.Default)
 
-    override suspend fun upsert(questionId: Long, date: Long, sliderValue: Int, tags: List<Tag>, comment: String?) {
+    override suspend fun upsert(
+        questionId: Long,
+        date: Long,
+        sliderValue: Int,
+        tags: List<Tag>,
+        comment: String?,
+    ) {
         withContext(Dispatchers.Default) {
             database.transaction {
                 val existing = database.entriesQueries.selectByDate(questionId, date).executeAsOneOrNull()
@@ -50,7 +60,11 @@ class EntryRepositoryImpl(private val database: AppDatabase) : EntryRepository {
                 } else {
                     database.entriesQueries.insert(questionId, date, sliderValue.toLong(), comment)
                 }
-                val entryId = database.entriesQueries.selectByDate(questionId, date).executeAsOne().id
+                val entryId =
+                    database.entriesQueries
+                        .selectByDate(questionId, date)
+                        .executeAsOne()
+                        .id
                 tags.forEach { tag ->
                     database.entry_tagsQueries.insert(entryId, tag.name)
                 }

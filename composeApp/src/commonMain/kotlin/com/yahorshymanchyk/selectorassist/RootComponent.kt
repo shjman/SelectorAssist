@@ -7,7 +7,12 @@ interface RootComponent {
     val stack: Value<ChildStack<*, RootChild>>
 
     sealed class RootChild {
-        class Biometry(val component: BiometryComponent) : RootChild()
-        class Home(val component: HomeComponent) : RootChild()
+        class Biometry(
+            val component: BiometryComponent,
+        ) : RootChild()
+
+        class Home(
+            val component: HomeComponent,
+        ) : RootChild()
     }
 }

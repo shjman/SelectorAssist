@@ -56,11 +56,12 @@ class EntryViewModel(
     fun onIntent(intent: EntryIntent) {
         when (intent) {
             is EntryIntent.SliderChanged -> _state.update { it.copy(sliderValue = intent.value) }
-            is EntryIntent.TagToggled -> _state.update {
-                val tags = it.selectedTags.toMutableSet()
-                if (intent.tag in tags) tags.remove(intent.tag) else tags.add(intent.tag)
-                it.copy(selectedTags = tags)
-            }
+            is EntryIntent.TagToggled ->
+                _state.update {
+                    val tags = it.selectedTags.toMutableSet()
+                    if (intent.tag in tags) tags.remove(intent.tag) else tags.add(intent.tag)
+                    it.copy(selectedTags = tags)
+                }
             is EntryIntent.CommentChanged -> _state.update { it.copy(comment = intent.text) }
             EntryIntent.Save -> save()
         }
@@ -81,11 +82,15 @@ class EntryViewModel(
         }
     }
 
-    private fun computeDays(question: Question, nowMs: Long): Pair<Int, Int> {
+    private fun computeDays(
+        question: Question,
+        nowMs: Long,
+    ): Pair<Int, Int> {
         val totalDays = ((question.deadlineAt - question.createdAt) / MILLIS_PER_DAY).toInt().coerceAtLeast(1)
-        val currentDay = ((nowMs - question.createdAt) / MILLIS_PER_DAY + 1L)
-            .toInt()
-            .coerceIn(1, totalDays)
+        val currentDay =
+            ((nowMs - question.createdAt) / MILLIS_PER_DAY + 1L)
+                .toInt()
+                .coerceIn(1, totalDays)
         return currentDay to totalDays
     }
 }

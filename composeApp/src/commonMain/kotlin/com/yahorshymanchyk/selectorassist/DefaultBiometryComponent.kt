@@ -15,15 +15,16 @@ class DefaultBiometryComponent(
     componentContext: ComponentContext,
     getAppSettings: GetAppSettingsUseCase,
     onAuthenticated: () -> Unit,
-) : BiometryComponent, ComponentContext by componentContext {
-
+) : BiometryComponent,
+    ComponentContext by componentContext {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = BiometryViewModel(
-        scope = scope,
-        getAppSettings = getAppSettings,
-        onAuthenticated = onAuthenticated,
-    )
+    private val viewModel =
+        BiometryViewModel(
+            scope = scope,
+            getAppSettings = getAppSettings,
+            onAuthenticated = onAuthenticated,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<BiometryState> = _state

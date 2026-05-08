@@ -37,73 +37,90 @@ class DefaultHomeComponent(
     private val getAppSettings: GetAppSettingsUseCase,
     private val setBiometryEnabled: SetBiometryEnabledUseCase,
     private val clock: CurrentDateProvider,
-) : HomeComponent, ComponentContext by componentContext {
-
+) : HomeComponent,
+    ComponentContext by componentContext {
     private val navigation = StackNavigation<HomeConfig>()
 
-    override val stack: Value<ChildStack<*, HomeComponent.HomeChild>> = childStack(
-        source = navigation,
-        serializer = null,
-        initialConfiguration = HomeConfig.QuestionsList,
-        handleBackButton = true,
-        childFactory = ::createChild,
-    )
+    override val stack: Value<ChildStack<*, HomeComponent.HomeChild>> =
+        childStack(
+            source = navigation,
+            serializer = null,
+            initialConfiguration = HomeConfig.QuestionsList,
+            handleBackButton = true,
+            childFactory = ::createChild,
+        )
 
-    private fun createChild(config: HomeConfig, context: ComponentContext): HomeComponent.HomeChild =
+    private fun createChild(
+        config: HomeConfig,
+        context: ComponentContext,
+    ): HomeComponent.HomeChild =
         when (config) {
-            HomeConfig.QuestionsList -> HomeComponent.HomeChild.QuestionsList(
-                DefaultQuestionsListComponent(
-                    componentContext = context,
-                    onNavigateToEntry = { navigation.push(HomeConfig.Entry(it)) },
-                    onNavigateToReport = { navigation.push(HomeConfig.Report(it)) },
-                    onNavigateToCreate = { navigation.push(HomeConfig.CreateQuestion) },
-                    onNavigateToSettings = { navigation.push(HomeConfig.Settings) },
-                    getActiveQuestionSummaries = getActiveQuestionSummaries,
-                    getCompletedQuestionSummaries = getCompletedQuestionSummaries,
+            HomeConfig.QuestionsList ->
+                HomeComponent.HomeChild.QuestionsList(
+                    DefaultQuestionsListComponent(
+                        componentContext = context,
+                        onNavigateToEntry = { navigation.push(HomeConfig.Entry(it)) },
+                        onNavigateToReport = { navigation.push(HomeConfig.Report(it)) },
+                        onNavigateToCreate = { navigation.push(HomeConfig.CreateQuestion) },
+                        onNavigateToSettings = { navigation.push(HomeConfig.Settings) },
+                        getActiveQuestionSummaries = getActiveQuestionSummaries,
+                        getCompletedQuestionSummaries = getCompletedQuestionSummaries,
+                    ),
                 )
-            )
-            HomeConfig.CreateQuestion -> HomeComponent.HomeChild.CreateQuestion(
-                DefaultCreateQuestionComponent(
-                    componentContext = context,
-                    onNavigateBack = { navigation.pop() },
-                    createQuestionUseCase = createQuestion,
+            HomeConfig.CreateQuestion ->
+                HomeComponent.HomeChild.CreateQuestion(
+                    DefaultCreateQuestionComponent(
+                        componentContext = context,
+                        onNavigateBack = { navigation.pop() },
+                        createQuestionUseCase = createQuestion,
+                    ),
                 )
-            )
-            is HomeConfig.Entry -> HomeComponent.HomeChild.Entry(
-                DefaultEntryComponent(
-                    componentContext = context,
-                    questionId = config.questionId,
-                    onNavigateBack = { navigation.pop() },
-                    getQuestionById = getQuestionById,
-                    getTodayEntry = getTodayEntry,
-                    saveEntry = saveEntry,
-                    clock = clock,
+            is HomeConfig.Entry ->
+                HomeComponent.HomeChild.Entry(
+                    DefaultEntryComponent(
+                        componentContext = context,
+                        questionId = config.questionId,
+                        onNavigateBack = { navigation.pop() },
+                        getQuestionById = getQuestionById,
+                        getTodayEntry = getTodayEntry,
+                        saveEntry = saveEntry,
+                        clock = clock,
+                    ),
                 )
-            )
-            is HomeConfig.Report -> HomeComponent.HomeChild.Report(
-                DefaultReportComponent(
-                    componentContext = context,
-                    questionId = config.questionId,
-                    onNavigateBack = { navigation.pop() },
-                    getQuestionById = getQuestionById,
-                    getQuestionStats = getQuestionStats,
+            is HomeConfig.Report ->
+                HomeComponent.HomeChild.Report(
+                    DefaultReportComponent(
+                        componentContext = context,
+                        questionId = config.questionId,
+                        onNavigateBack = { navigation.pop() },
+                        getQuestionById = getQuestionById,
+                        getQuestionStats = getQuestionStats,
+                    ),
                 )
-            )
-            HomeConfig.Settings -> HomeComponent.HomeChild.Settings(
-                DefaultSettingsComponent(
-                    componentContext = context,
-                    onNavigateBack = { navigation.pop() },
-                    getAppSettings = getAppSettings,
-                    setBiometryEnabled = setBiometryEnabled,
+            HomeConfig.Settings ->
+                HomeComponent.HomeChild.Settings(
+                    DefaultSettingsComponent(
+                        componentContext = context,
+                        onNavigateBack = { navigation.pop() },
+                        getAppSettings = getAppSettings,
+                        setBiometryEnabled = setBiometryEnabled,
+                    ),
                 )
-            )
         }
 
     private sealed interface HomeConfig {
         data object QuestionsList : HomeConfig
+
         data object CreateQuestion : HomeConfig
-        data class Entry(val questionId: Long) : HomeConfig
-        data class Report(val questionId: Long) : HomeConfig
+
+        data class Entry(
+            val questionId: Long,
+        ) : HomeConfig
+
+        data class Report(
+            val questionId: Long,
+        ) : HomeConfig
+
         data object Settings : HomeConfig
     }
 }

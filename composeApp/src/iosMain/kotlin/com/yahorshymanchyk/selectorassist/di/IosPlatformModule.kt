@@ -12,11 +12,12 @@ import com.yahorshymanchyk.selectorassist.domain.repository.EntryRepository
 import com.yahorshymanchyk.selectorassist.domain.repository.QuestionRepository
 import org.koin.dsl.module
 
-val iosPlatformModule = module {
-    single<CurrentDateProvider> { SystemCurrentDateProvider() }
-    single { DatabaseDriverFactory() }
-    single { AppDatabase(get<DatabaseDriverFactory>().create()) }
-    single<QuestionRepository> { QuestionRepositoryImpl(get()) }
-    single<EntryRepository> { EntryRepositoryImpl(get()) }
-    single<AppSettingsRepository> { AppSettingsRepositoryImpl(get()) }
-}
+val iosPlatformModule =
+    module {
+        single<CurrentDateProvider> { SystemCurrentDateProvider() }
+        single { DatabaseDriverFactory() }
+        single { AppDatabase(get<DatabaseDriverFactory>().create()) }
+        single<QuestionRepository> { QuestionRepositoryImpl(get()) }
+        single<EntryRepository> { EntryRepositoryImpl(get()) }
+        single<AppSettingsRepository> { AppSettingsRepositoryImpl(get()) }
+    }

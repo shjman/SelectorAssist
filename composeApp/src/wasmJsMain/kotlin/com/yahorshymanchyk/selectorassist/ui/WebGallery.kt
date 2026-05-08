@@ -36,6 +36,7 @@ import com.yahorshymanchyk.selectorassist.WebCurrentDateProvider
 import com.yahorshymanchyk.selectorassist.WebEntryComponent
 import com.yahorshymanchyk.selectorassist.WebQuestionsListComponent
 import com.yahorshymanchyk.selectorassist.WebReportComponent
+import com.yahorshymanchyk.selectorassist.domain.model.Question
 import com.yahorshymanchyk.selectorassist.domain.usecase.CreateQuestionUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetActiveQuestionSummariesUseCase
 import com.yahorshymanchyk.selectorassist.domain.usecase.GetCompletedQuestionSummariesUseCase
@@ -60,106 +61,87 @@ private val FRAME_BORDER = 2.dp
 fun WebGallery() {
     val clock = koinInject<WebCurrentDateProvider>()
     val offsetDays by clock.offsetDays.collectAsState()
-
     val getActiveQuestionSummaries = koinInject<GetActiveQuestionSummariesUseCase>()
     val getCompletedQuestionSummaries = koinInject<GetCompletedQuestionSummariesUseCase>()
     val createQuestion = koinInject<CreateQuestionUseCase>()
-    val getQuestionById = koinInject<GetQuestionByIdUseCase>()
-    val getTodayEntry = koinInject<GetTodayEntryUseCase>()
-    val saveEntry = koinInject<SaveEntryUseCase>()
-    val getQuestionStats = koinInject<GetQuestionStatsUseCase>()
 
-    val questionsListComponent = remember {
-        WebQuestionsListComponent(getActiveQuestionSummaries, getCompletedQuestionSummaries)
-    }
+    val questionsListComponent =
+        remember {
+            WebQuestionsListComponent(getActiveQuestionSummaries, getCompletedQuestionSummaries)
+        }
     DisposableEffect(Unit) { onDispose { questionsListComponent.cancel() } }
 
     var formKey by remember { mutableStateOf(0) }
     key(formKey) {
-        val createQuestionComponent = remember {
-            WebCreateQuestionComponent(createQuestion, onCreated = { formKey++ })
-        }
+        val createQuestionComponent =
+            remember {
+                WebCreateQuestionComponent(createQuestion, onCreated = { formKey++ })
+            }
         DisposableEffect(formKey) { onDispose { createQuestionComponent.cancel() } }
-
         val questionsState by questionsListComponent.state.subscribeAsState()
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .background(AppColors.Background),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .background(AppColors.Background),
         ) {
             DateSwitcherBar(
                 offsetDays = offsetDays,
                 onRetreat = { clock.retreat() },
                 onAdvance = { clock.advance() },
             )
-
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
                 verticalAlignment = Alignment.Top,
             ) {
-                PhoneFrame(label = "Questions") {
-                    QuestionsListScreen(questionsListComponent)
-                }
+                PhoneFrame(label = "Questions") { QuestionsListScreen(questionsListComponent) }
                 Spacer(modifier = Modifier.width(FRAME_GAP))
-                PhoneFrame(label = "Create Question") {
-                    CreateQuestionScreen(createQuestionComponent)
-                }
-
+                PhoneFrame(label = "Create Question") { CreateQuestionScreen(createQuestionComponent) }
                 questionsState.activeQuestions.forEach { summary ->
-                    val questionId = summary.question.id
-                    key(questionId) {
-                        val entryComponent = remember {
-                            WebEntryComponent(questionId, getQuestionById, getTodayEntry, saveEntry, clock)
-                        }
-                        DisposableEffect(questionId) { onDispose { entryComponent.cancel() } }
-
-                        val reportComponent = remember {
-                            WebReportComponent(questionId, getQuestionById, getQuestionStats)
-                        }
-                        DisposableEffect(questionId) { onDispose { reportComponent.cancel() } }
-
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Entry · ${summary.question.title}") {
-                            EntryScreen(entryComponent)
-                        }
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Report · ${summary.question.title}") {
-                            ReportScreen(reportComponent)
-                        }
-                    }
+                    key(summary.question.id) { QuestionFramePair(summary.question, completed = false) }
                 }
-
                 questionsState.completedQuestions.forEach { summary ->
-                    val questionId = summary.question.id
-                    key("completed_$questionId") {
-                        val entryComponent = remember {
-                            WebEntryComponent(questionId, getQuestionById, getTodayEntry, saveEntry, clock)
-                        }
-                        DisposableEffect(questionId) { onDispose { entryComponent.cancel() } }
-
-                        val reportComponent = remember {
-                            WebReportComponent(questionId, getQuestionById, getQuestionStats)
-                        }
-                        DisposableEffect(questionId) { onDispose { reportComponent.cancel() } }
-
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Entry (done) · ${summary.question.title}") {
-                            EntryScreen(entryComponent)
-                        }
-                        Spacer(modifier = Modifier.width(FRAME_GAP))
-                        PhoneFrame(label = "Report (done) · ${summary.question.title}") {
-                            ReportScreen(reportComponent)
-                        }
-                    }
+                    key("completed_${summary.question.id}") { QuestionFramePair(summary.question, completed = true) }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun QuestionFramePair(
+    question: Question,
+    completed: Boolean,
+) {
+    val getQuestionById = koinInject<GetQuestionByIdUseCase>()
+    val getTodayEntry = koinInject<GetTodayEntryUseCase>()
+    val saveEntry = koinInject<SaveEntryUseCase>()
+    val clock = koinInject<WebCurrentDateProvider>()
+    val getQuestionStats = koinInject<GetQuestionStatsUseCase>()
+
+    val entryComponent =
+        remember {
+            WebEntryComponent(question.id, getQuestionById, getTodayEntry, saveEntry, clock)
+        }
+    DisposableEffect(question.id) { onDispose { entryComponent.cancel() } }
+
+    val reportComponent =
+        remember {
+            WebReportComponent(question.id, getQuestionById, getQuestionStats)
+        }
+    DisposableEffect(question.id) { onDispose { reportComponent.cancel() } }
+
+    val suffix = if (completed) " (done)" else ""
+    Spacer(modifier = Modifier.width(FRAME_GAP))
+    PhoneFrame(label = "Entry$suffix · ${question.title}") { EntryScreen(entryComponent) }
+    Spacer(modifier = Modifier.width(FRAME_GAP))
+    PhoneFrame(label = "Report$suffix · ${question.title}") { ReportScreen(reportComponent) }
 }
 
 @Composable
@@ -175,12 +157,13 @@ private fun PhoneFrame(
             modifier = Modifier.padding(bottom = 8.dp),
         )
         Box(
-            modifier = Modifier
-                .width(PHONE_WIDTH)
-                .height(PHONE_HEIGHT)
-                .border(FRAME_BORDER, AppColors.Divider, RoundedCornerShape(FRAME_CORNER))
-                .clip(RoundedCornerShape(FRAME_CORNER))
-                .background(AppColors.Background),
+            modifier =
+                Modifier
+                    .width(PHONE_WIDTH)
+                    .height(PHONE_HEIGHT)
+                    .border(FRAME_BORDER, AppColors.Divider, RoundedCornerShape(FRAME_CORNER))
+                    .clip(RoundedCornerShape(FRAME_CORNER))
+                    .background(AppColors.Background),
         ) {
             content()
         }

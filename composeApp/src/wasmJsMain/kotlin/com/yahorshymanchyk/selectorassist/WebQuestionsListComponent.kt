@@ -18,14 +18,14 @@ class WebQuestionsListComponent(
     getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase,
     getCompletedQuestionSummaries: GetCompletedQuestionSummariesUseCase,
 ) : QuestionsListComponent {
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = QuestionsListViewModel(
-        getActiveQuestionSummaries = getActiveQuestionSummaries,
-        getCompletedQuestionSummaries = getCompletedQuestionSummaries,
-        scope = scope,
-    )
+    private val viewModel =
+        QuestionsListViewModel(
+            getActiveQuestionSummaries = getActiveQuestionSummaries,
+            getCompletedQuestionSummaries = getCompletedQuestionSummaries,
+            scope = scope,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<QuestionsListState> = _state

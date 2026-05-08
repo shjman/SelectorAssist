@@ -5,5 +5,6 @@ import com.yahorshymanchyk.selectorassist.report.presentation.ReportState
 
 interface ReportComponent {
     val state: Value<ReportState>
+
     fun onBack()
 }

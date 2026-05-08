@@ -26,33 +26,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.settings.component.SettingsComponent
-import selectorassist.feature.settings.generated.resources.Res
-import selectorassist.feature.settings.generated.resources.settings_biometry_subtitle
-import selectorassist.feature.settings.generated.resources.settings_biometry_title
-import selectorassist.feature.settings.generated.resources.settings_section_security
-import selectorassist.feature.settings.generated.resources.settings_title
 import com.yahorshymanchyk.selectorassist.settings.presentation.SettingsIntent
 import com.yahorshymanchyk.selectorassist.ui.components.BackButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
 import org.jetbrains.compose.resources.stringResource
+import selectorassist.feature.settings.generated.resources.Res
+import selectorassist.feature.settings.generated.resources.settings_biometry_subtitle
+import selectorassist.feature.settings.generated.resources.settings_biometry_title
+import selectorassist.feature.settings.generated.resources.settings_section_security
+import selectorassist.feature.settings.generated.resources.settings_title
 
 @Composable
 fun SettingsScreen(component: SettingsComponent) {
     val state by component.state.subscribeAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.Background),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(AppColors.Background),
     ) {
         SettingsHeader(onBack = component::onBack)
 
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
         ) {
             Spacer(Modifier.height(12.dp))
 
@@ -80,9 +82,10 @@ fun SettingsScreen(component: SettingsComponent) {
 @Composable
 private fun SettingsHeader(onBack: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = if (isAndroid) 4.dp else 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(start = if (isAndroid) 4.dp else 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         BackButton(onClick = onBack)
@@ -101,11 +104,12 @@ private fun BiometryToggleRow(
     onToggle: (Boolean) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(AppColors.Surface)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(AppColors.Surface)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
@@ -123,13 +127,14 @@ private fun BiometryToggleRow(
         Switch(
             checked = isEnabled,
             onCheckedChange = onToggle,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = AppColors.TextPrimary,
-                checkedTrackColor = AppColors.PoleA,
-                uncheckedThumbColor = AppColors.TextSecondary,
-                uncheckedTrackColor = AppColors.InputField,
-                uncheckedBorderColor = AppColors.Chevron,
-            ),
+            colors =
+                SwitchDefaults.colors(
+                    checkedThumbColor = AppColors.TextPrimary,
+                    checkedTrackColor = AppColors.PoleA,
+                    uncheckedThumbColor = AppColors.TextSecondary,
+                    uncheckedTrackColor = AppColors.InputField,
+                    uncheckedBorderColor = AppColors.Chevron,
+                ),
         )
     }
 }

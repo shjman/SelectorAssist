@@ -21,8 +21,9 @@ import org.koin.core.component.inject
 
 class DefaultRootComponent(
     componentContext: ComponentContext,
-) : RootComponent, ComponentContext by componentContext, KoinComponent {
-
+) : RootComponent,
+    ComponentContext by componentContext,
+    KoinComponent {
     private val getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase by inject()
     private val getCompletedQuestionSummaries: GetCompletedQuestionSummariesUseCase by inject()
     private val createQuestion: CreateQuestionUseCase by inject()
@@ -36,42 +37,49 @@ class DefaultRootComponent(
 
     private val navigation = StackNavigation<RootConfig>()
 
-    override val stack: Value<ChildStack<*, RootComponent.RootChild>> = childStack(
-        source = navigation,
-        serializer = null,
-        initialConfiguration = RootConfig.Biometry,
-        handleBackButton = false,
-        childFactory = ::createChild,
-    )
+    override val stack: Value<ChildStack<*, RootComponent.RootChild>> =
+        childStack(
+            source = navigation,
+            serializer = null,
+            initialConfiguration = RootConfig.Biometry,
+            handleBackButton = false,
+            childFactory = ::createChild,
+        )
 
-    private fun createChild(config: RootConfig, context: ComponentContext): RootComponent.RootChild =
+    private fun createChild(
+        config: RootConfig,
+        context: ComponentContext,
+    ): RootComponent.RootChild =
         when (config) {
-            RootConfig.Biometry -> RootComponent.RootChild.Biometry(
-                DefaultBiometryComponent(
-                    componentContext = context,
-                    getAppSettings = getAppSettings,
-                    onAuthenticated = { navigation.replaceAll(RootConfig.Home) },
+            RootConfig.Biometry ->
+                RootComponent.RootChild.Biometry(
+                    DefaultBiometryComponent(
+                        componentContext = context,
+                        getAppSettings = getAppSettings,
+                        onAuthenticated = { navigation.replaceAll(RootConfig.Home) },
+                    ),
                 )
-            )
-            RootConfig.Home -> RootComponent.RootChild.Home(
-                DefaultHomeComponent(
-                    componentContext = context,
-                    getActiveQuestionSummaries = getActiveQuestionSummaries,
-                    getCompletedQuestionSummaries = getCompletedQuestionSummaries,
-                    createQuestion = createQuestion,
-                    getQuestionById = getQuestionById,
-                    getTodayEntry = getTodayEntry,
-                    saveEntry = saveEntry,
-                    getQuestionStats = getQuestionStats,
-                    getAppSettings = getAppSettings,
-                    setBiometryEnabled = setBiometryEnabled,
-                    clock = clock,
+            RootConfig.Home ->
+                RootComponent.RootChild.Home(
+                    DefaultHomeComponent(
+                        componentContext = context,
+                        getActiveQuestionSummaries = getActiveQuestionSummaries,
+                        getCompletedQuestionSummaries = getCompletedQuestionSummaries,
+                        createQuestion = createQuestion,
+                        getQuestionById = getQuestionById,
+                        getTodayEntry = getTodayEntry,
+                        saveEntry = saveEntry,
+                        getQuestionStats = getQuestionStats,
+                        getAppSettings = getAppSettings,
+                        setBiometryEnabled = setBiometryEnabled,
+                        clock = clock,
+                    ),
                 )
-            )
         }
 
     private sealed interface RootConfig {
         data object Biometry : RootConfig
+
         data object Home : RootConfig
     }
 }

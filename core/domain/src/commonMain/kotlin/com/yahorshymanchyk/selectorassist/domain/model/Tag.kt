@@ -1,7 +1,9 @@
 package com.yahorshymanchyk.selectorassist.domain.model
 
 // Hardcoded classification attached to an entry to identify the source of a decision
-enum class Tag(val group: TagGroup) {
+enum class Tag(
+    val group: TagGroup,
+) {
     // Noise — false filters that distort judgment
     FEAR_OF_FUTURE(TagGroup.NOISE),
     OPINION_OF_OTHERS(TagGroup.NOISE),

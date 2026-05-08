@@ -23,15 +23,16 @@ class DefaultQuestionsListComponent(
     private val onNavigateToSettings: () -> Unit,
     getActiveQuestionSummaries: GetActiveQuestionSummariesUseCase,
     getCompletedQuestionSummaries: GetCompletedQuestionSummariesUseCase,
-) : QuestionsListComponent, ComponentContext by componentContext {
-
+) : QuestionsListComponent,
+    ComponentContext by componentContext {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = QuestionsListViewModel(
-        getActiveQuestionSummaries = getActiveQuestionSummaries,
-        getCompletedQuestionSummaries = getCompletedQuestionSummaries,
-        scope = scope,
-    )
+    private val viewModel =
+        QuestionsListViewModel(
+            getActiveQuestionSummaries = getActiveQuestionSummaries,
+            getCompletedQuestionSummaries = getCompletedQuestionSummaries,
+            scope = scope,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<QuestionsListState> = _state
@@ -46,8 +47,11 @@ class DefaultQuestionsListComponent(
     override fun onIntent(intent: QuestionsListIntent) {
         when (intent) {
             is QuestionsListIntent.OpenQuestion -> {
-                if (intent.isCompleted) onNavigateToReport(intent.questionId)
-                else onNavigateToEntry(intent.questionId)
+                if (intent.isCompleted) {
+                    onNavigateToReport(intent.questionId)
+                } else {
+                    onNavigateToEntry(intent.questionId)
+                }
             }
             QuestionsListIntent.OpenCreateQuestion -> onNavigateToCreate()
             QuestionsListIntent.OpenSettings -> onNavigateToSettings()

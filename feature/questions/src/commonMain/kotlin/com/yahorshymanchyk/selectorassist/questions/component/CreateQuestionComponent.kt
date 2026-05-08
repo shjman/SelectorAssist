@@ -6,6 +6,8 @@ import com.yahorshymanchyk.selectorassist.questions.presentation.CreateQuestionS
 
 interface CreateQuestionComponent {
     val state: Value<CreateQuestionState>
+
     fun onIntent(intent: CreateQuestionIntent)
+
     fun onBack()
 }

@@ -6,5 +6,6 @@ import com.yahorshymanchyk.selectorassist.questions.presentation.QuestionsListSt
 
 interface QuestionsListComponent {
     val state: Value<QuestionsListState>
+
     fun onIntent(intent: QuestionsListIntent)
 }

@@ -8,8 +8,9 @@ import com.yahorshymanchyk.selectorassist.domain.repository.EntryRepository
 import com.yahorshymanchyk.selectorassist.domain.repository.QuestionRepository
 import org.koin.dsl.module
 
-val webDataModule = module {
-    single<QuestionRepository> { InMemoryQuestionRepository(get()) }
-    single<EntryRepository> { InMemoryEntryRepository() }
-    single<AppSettingsRepository> { InMemoryAppSettingsRepository() }
-}
+val webDataModule =
+    module {
+        single<QuestionRepository> { InMemoryQuestionRepository(get()) }
+        single<EntryRepository> { InMemoryEntryRepository() }
+        single<AppSettingsRepository> { InMemoryAppSettingsRepository() }
+    }

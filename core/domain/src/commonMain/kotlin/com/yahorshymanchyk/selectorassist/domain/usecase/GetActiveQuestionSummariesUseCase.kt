@@ -33,16 +33,20 @@ class GetActiveQuestionSummariesUseCase(
                         entryRepository.observeByDate(question.id, today).map { entry ->
                             question.toSummary(hasTodayEntry = entry != null, nowMs = nowMs)
                         }
-                    }
+                    },
                 ) { it.toList() }
             }
         }
 
-    private fun Question.toSummary(hasTodayEntry: Boolean, nowMs: Long): ActiveQuestionSummary {
+    private fun Question.toSummary(
+        hasTodayEntry: Boolean,
+        nowMs: Long,
+    ): ActiveQuestionSummary {
         val totalDays = ((deadlineAt - createdAt) / MILLIS_PER_DAY).toInt().coerceAtLeast(1)
-        val currentDay = ((nowMs - createdAt) / MILLIS_PER_DAY + 1L)
-            .toInt()
-            .coerceIn(1, totalDays)
+        val currentDay =
+            ((nowMs - createdAt) / MILLIS_PER_DAY + 1L)
+                .toInt()
+                .coerceIn(1, totalDays)
         return ActiveQuestionSummary(
             question = this,
             hasTodayEntry = hasTodayEntry,

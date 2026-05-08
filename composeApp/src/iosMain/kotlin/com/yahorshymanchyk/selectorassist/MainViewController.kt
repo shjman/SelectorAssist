@@ -8,14 +8,17 @@ import com.yahorshymanchyk.selectorassist.di.iosPlatformModule
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 
-fun MainViewController() = ComposeUIViewController {
-    if (GlobalContext.getOrNull() == null) {
-        startKoin {
-            modules(iosPlatformModule, domainModule)
+@Suppress("ktlint:standard:function-naming") // iOS factory convention: returns UIViewController
+fun MainViewController() =
+    ComposeUIViewController {
+        if (GlobalContext.getOrNull() == null) {
+            startKoin {
+                modules(iosPlatformModule, domainModule)
+            }
         }
+        val rootComponent =
+            DefaultRootComponent(
+                DefaultComponentContext(lifecycle = ApplicationLifecycle()),
+            )
+        RootContent(rootComponent)
     }
-    val rootComponent = DefaultRootComponent(
-        DefaultComponentContext(lifecycle = ApplicationLifecycle())
-    )
-    RootContent(rootComponent)
-}
