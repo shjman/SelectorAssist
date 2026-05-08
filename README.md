@@ -2,7 +2,9 @@
 
 A Kotlin Multiplatform app for tracking binary dilemmas. The user defines two poles and an observation period — each day they log a slider position, tags, and an optional comment. At the end of the period, a report shows patterns and tendencies.
 
-Targets: Android (Google Play) + iOS (App Store). Fully shared UI — no SwiftUI.
+Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully shared UI across all platforms.
+
+**Live demo:** https://shjman.github.io/SelectorAssist/
 
 ---
 
@@ -23,7 +25,7 @@ Targets: Android (Google Play) + iOS (App Store). Fully shared UI — no SwiftUI
 | Area | Library / Version |
 |------|--------------------|
 | Language | Kotlin 2.3.20 |
-| UI | Compose Multiplatform 1.10.3 (commonMain, Android + iOS) |
+| UI | Compose Multiplatform 1.10.3 (commonMain, Android + iOS + Web) |
 | Material | JetBrains Material3 1.10.0-alpha05 |
 | Navigation | Decompose 3.5.0 (ChildStack) |
 | Architecture | MVI + plain-class ViewModel + Decompose Components |
@@ -34,6 +36,7 @@ Targets: Android (Google Play) + iOS (App Store). Fully shared UI — no SwiftUI
 | Biometrics | AndroidX Biometric 1.1.0 / LocalAuthentication (expect/actual) |
 | Static analysis | Detekt 1.23.7 |
 | Build | AGP 8.11.2, minSdk 28, targetSdk 36, JVM 17 |
+| CI / CD | GitHub Actions → GitHub Pages |
 
 ---
 
@@ -84,9 +87,11 @@ Targets: Android (Google Play) + iOS (App Store). Fully shared UI — no SwiftUI
     │   ├── MainActivity.kt
     │   ├── SelectorAssistApp.kt    # Koin init
     │   └── di/AndroidPlatformModule.kt
-    └── iosMain/
-        ├── MainViewController.kt   # Koin init + ComposeUIViewController
-        └── di/IosPlatformModule.kt
+    ├── iosMain/
+    │   ├── MainViewController.kt   # Koin init + ComposeUIViewController
+    │   └── di/IosPlatformModule.kt
+    └── wasmJsMain/                 # Web entry point
+        └── main.kt                 # ComposeViewport
 ```
 
 ---
@@ -168,12 +173,26 @@ XxxViewModel (plain class)        — pure business logic, scope injected from C
 ./gradlew :composeApp:assembleRelease        # build release APK
 ./gradlew :composeApp:installDebug           # build + install on device/emulator
 
+# Web
+./gradlew :composeApp:wasmJsBrowserDistribution   # build → composeApp/build/dist/wasmJs/productionExecutable/
+
 # Static analysis (must be clean before commit)
 ./gradlew lintDebug --no-configuration-cache
 ./gradlew detekt --no-configuration-cache
 ```
 
 **iOS:** open `iosApp/iosApp.xcodeproj` in Xcode and run, or use the Android Studio iOS run configuration.
+
+---
+
+## CI / CD
+
+Push to `main` triggers `.github/workflows/web-deploy.yml`:
+
+1. Build `wasmJsBrowserDistribution`
+2. Deploy `composeApp/build/dist/wasmJs/productionExecutable/` to GitHub Pages
+
+Result is live at https://shjman.github.io/SelectorAssist/
 
 ---
 
