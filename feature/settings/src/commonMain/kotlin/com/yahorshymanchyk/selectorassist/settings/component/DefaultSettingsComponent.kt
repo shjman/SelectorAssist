@@ -20,15 +20,16 @@ class DefaultSettingsComponent(
     private val onNavigateBack: () -> Unit,
     getAppSettings: GetAppSettingsUseCase,
     setBiometryEnabled: SetBiometryEnabledUseCase,
-) : SettingsComponent, ComponentContext by componentContext {
-
+) : SettingsComponent,
+    ComponentContext by componentContext {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = SettingsViewModel(
-        getAppSettings = getAppSettings,
-        setBiometryEnabled = setBiometryEnabled,
-        scope = scope,
-    )
+    private val viewModel =
+        SettingsViewModel(
+            getAppSettings = getAppSettings,
+            setBiometryEnabled = setBiometryEnabled,
+            scope = scope,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<SettingsState> = _state
@@ -39,5 +40,6 @@ class DefaultSettingsComponent(
     }
 
     override fun onIntent(intent: SettingsIntent) = viewModel.onIntent(intent)
+
     override fun onBack() = onNavigateBack()
 }

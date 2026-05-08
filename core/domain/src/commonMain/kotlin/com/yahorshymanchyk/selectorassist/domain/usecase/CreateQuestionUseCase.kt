@@ -7,7 +7,12 @@ class CreateQuestionUseCase(
     private val repository: QuestionRepository,
     private val clock: CurrentDateProvider,
 ) {
-    suspend operator fun invoke(title: String, poleA: String, poleB: String, durationDays: Int) {
+    suspend operator fun invoke(
+        title: String,
+        poleA: String,
+        poleB: String,
+        durationDays: Int,
+    ) {
         val deadlineAt = clock.now() + durationDays * CurrentDateProvider.DAY_MS
         repository.create(title, poleA, poleB, deadlineAt)
     }

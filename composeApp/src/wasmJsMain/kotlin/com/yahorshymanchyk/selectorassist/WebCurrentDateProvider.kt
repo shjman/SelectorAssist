@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class WebCurrentDateProvider : CurrentDateProvider {
-
     private val initialDayMs = SystemClock.now().let { it - (it % CurrentDateProvider.DAY_MS) }
 
     private val _offsetDays = MutableStateFlow(0)

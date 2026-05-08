@@ -8,36 +8,44 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
-private class AndroidBiometryAuthenticator(private val activity: FragmentActivity) : BiometryAuthenticator {
+private class AndroidBiometryAuthenticator(
+    private val activity: FragmentActivity,
+) : BiometryAuthenticator {
     override suspend fun authenticate(): Boolean {
         val status = BiometricManager.from(activity).canAuthenticate(BIOMETRIC_WEAK)
         if (status != BiometricManager.BIOMETRIC_SUCCESS) return true
         return suspendCancellableCoroutine { cont ->
             val executor = ContextCompat.getMainExecutor(activity)
-            val prompt = BiometricPrompt(
-                activity,
-                executor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        if (cont.isActive) cont.resume(true)
-                    }
+            val prompt =
+                BiometricPrompt(
+                    activity,
+                    executor,
+                    object : BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                            if (cont.isActive) cont.resume(true)
+                        }
 
-                    override fun onAuthenticationFailed() {
-                        // Individual attempt failed — wait for terminal error to resume false
-                    }
+                        override fun onAuthenticationFailed() {
+                            // Individual attempt failed — wait for terminal error to resume false
+                        }
 
-                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        if (cont.isActive) cont.resume(false)
-                    }
-                }
-            )
-            val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Вход в приложение")
-                .setNegativeButtonText("Отмена")
-                .build()
+                        override fun onAuthenticationError(
+                            errorCode: Int,
+                            errString: CharSequence,
+                        ) {
+                            if (cont.isActive) cont.resume(false)
+                        }
+                    },
+                )
+            val promptInfo =
+                BiometricPrompt.PromptInfo
+                    .Builder()
+                    .setTitle("Вход в приложение")
+                    .setNegativeButtonText("Отмена")
+                    .build()
             prompt.authenticate(promptInfo)
             cont.invokeOnCancellation { prompt.cancelAuthentication() }
         }
@@ -47,7 +55,8 @@ private class AndroidBiometryAuthenticator(private val activity: FragmentActivit
 @Composable
 actual fun rememberBiometryAuthenticator(): BiometryAuthenticator {
     val context = LocalContext.current
-    val activity = context as? FragmentActivity
-        ?: error("rememberBiometryAuthenticator requires FragmentActivity context")
+    val activity =
+        context as? FragmentActivity
+            ?: error("rememberBiometryAuthenticator requires FragmentActivity context")
     return remember(activity) { AndroidBiometryAuthenticator(activity) }
 }

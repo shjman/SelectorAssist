@@ -17,11 +17,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import org.jetbrains.compose.resources.stringResource
 import selectorassist.composeapp.generated.resources.Res
 import selectorassist.composeapp.generated.resources.biometry_error_title
 import selectorassist.composeapp.generated.resources.biometry_retry
-import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BiometryScreen(component: BiometryComponent) {
@@ -36,9 +36,10 @@ fun BiometryScreen(component: BiometryComponent) {
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.Background),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(AppColors.Background),
         contentAlignment = Alignment.Center,
     ) {
         if (state.isError) {

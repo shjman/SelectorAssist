@@ -31,7 +31,7 @@ class GetCompletedQuestionSummariesUseCase(
                         entryRepository.observeAll(question.id).map { entries ->
                             question.toSummary(entries)
                         }
-                    }
+                    },
                 ) { it.toList() }
             }
         }
@@ -40,11 +40,12 @@ class GetCompletedQuestionSummariesUseCase(
         val poleACount = entries.count { it.sliderValue < SLIDER_MID }
         val poleBCount = entries.count { it.sliderValue > SLIDER_MID }
         val total = entries.size
-        val (dominantPole, percentage) = when {
-            total == 0 -> poleA to PERCENT_NEUTRAL
-            poleACount >= poleBCount -> poleA to (poleACount * PERCENT_MULTIPLIER / total)
-            else -> poleB to (poleBCount * PERCENT_MULTIPLIER / total)
-        }
+        val (dominantPole, percentage) =
+            when {
+                total == 0 -> poleA to PERCENT_NEUTRAL
+                poleACount >= poleBCount -> poleA to (poleACount * PERCENT_MULTIPLIER / total)
+                else -> poleB to (poleBCount * PERCENT_MULTIPLIER / total)
+            }
         return CompletedQuestionSummary(
             question = this,
             dominantPole = dominantPole,

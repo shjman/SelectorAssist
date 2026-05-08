@@ -46,6 +46,11 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.domain.model.Tag
 import com.yahorshymanchyk.selectorassist.domain.model.TagGroup
 import com.yahorshymanchyk.selectorassist.entry.component.EntryComponent
+import com.yahorshymanchyk.selectorassist.entry.presentation.EntryIntent
+import com.yahorshymanchyk.selectorassist.ui.components.BackButton
+import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
+import org.jetbrains.compose.resources.stringResource
 import selectorassist.feature.entry.generated.resources.Res
 import selectorassist.feature.entry.generated.resources.entry_comment_placeholder
 import selectorassist.feature.entry.generated.resources.entry_day_of
@@ -73,11 +78,6 @@ import selectorassist.feature.entry.generated.resources.tag_personal_freedom
 import selectorassist.feature.entry.generated.resources.tag_self_care
 import selectorassist.feature.entry.generated.resources.tag_self_doubt
 import selectorassist.feature.entry.generated.resources.tag_social_expectations
-import com.yahorshymanchyk.selectorassist.entry.presentation.EntryIntent
-import com.yahorshymanchyk.selectorassist.ui.components.BackButton
-import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
-import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
-import org.jetbrains.compose.resources.stringResource
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val ChipShape = RoundedCornerShape(20.dp)
@@ -92,9 +92,10 @@ fun EntryScreen(component: EntryComponent) {
     val state by component.state.subscribeAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.Background),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(AppColors.Background),
     ) {
         EntryHeader(
             title = state.questionTitle,
@@ -104,10 +105,11 @@ fun EntryScreen(component: EntryComponent) {
         )
 
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
         ) {
             Spacer(Modifier.height(12.dp))
 
@@ -163,9 +165,10 @@ private fun EntryHeader(
     onBack: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = if (isAndroid) 56.dp else 8.dp, bottom = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = if (isAndroid) 56.dp else 8.dp, bottom = 16.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -206,11 +209,12 @@ private fun SliderCard(
     onValueChange: (Float) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(CardShape)
-            .background(AppColors.Surface)
-            .padding(horizontal = 16.dp, vertical = 20.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(CardShape)
+                .background(AppColors.Surface)
+                .padding(horizontal = 16.dp, vertical = 20.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -224,25 +228,27 @@ private fun SliderCard(
 
         Box(modifier = Modifier.fillMaxWidth()) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .align(Alignment.Center)
-                    .padding(horizontal = 10.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(
-                        Brush.horizontalGradient(listOf(AppColors.PoleA, AppColors.PoleB))
-                    ),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .align(Alignment.Center)
+                        .padding(horizontal = 10.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(
+                            Brush.horizontalGradient(listOf(AppColors.PoleA, AppColors.PoleB)),
+                        ),
             )
             Slider(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth(),
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = Color.Transparent,
-                    inactiveTrackColor = Color.Transparent,
-                ),
+                colors =
+                    SliderDefaults.colors(
+                        thumbColor = Color.White,
+                        activeTrackColor = Color.Transparent,
+                        inactiveTrackColor = Color.Transparent,
+                    ),
             )
         }
 
@@ -257,11 +263,16 @@ private fun SliderCard(
 }
 
 @Composable
-private fun sliderHint(value: Float, poleA: String, poleB: String): String = when {
-    value < SLIDER_LOW_THRESHOLD -> stringResource(Res.string.entry_slider_hint_low, poleA)
-    value > SLIDER_HIGH_THRESHOLD -> stringResource(Res.string.entry_slider_hint_high, poleB)
-    else -> stringResource(Res.string.entry_slider_hint_mid)
-}
+private fun sliderHint(
+    value: Float,
+    poleA: String,
+    poleB: String,
+): String =
+    when {
+        value < SLIDER_LOW_THRESHOLD -> stringResource(Res.string.entry_slider_hint_low, poleA)
+        value > SLIDER_HIGH_THRESHOLD -> stringResource(Res.string.entry_slider_hint_high, poleB)
+        else -> stringResource(Res.string.entry_slider_hint_mid)
+    }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -278,10 +289,11 @@ private fun TagsSection(
         modifier = Modifier.padding(bottom = 10.dp),
     ) {
         Box(
-            modifier = Modifier
-                .size(6.dp)
-                .clip(CircleShape)
-                .background(groupColor),
+            modifier =
+                Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(groupColor),
         )
         Text(
             text = groupLabel,
@@ -311,17 +323,24 @@ private fun TagsSection(
 }
 
 @Composable
-private fun TagChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
+private fun TagChip(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
     Box(
-        modifier = Modifier
-            .clip(ChipShape)
-            .background(if (isSelected) AppColors.InputFieldSelected else AppColors.InputField)
-            .then(
-                if (isSelected) Modifier.border(1.dp, AppColors.InputFieldSelectedBorder, ChipShape)
-                else Modifier
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .clip(ChipShape)
+                .background(if (isSelected) AppColors.InputFieldSelected else AppColors.InputField)
+                .then(
+                    if (isSelected) {
+                        Modifier.border(1.dp, AppColors.InputFieldSelectedBorder, ChipShape)
+                    } else {
+                        Modifier
+                    },
+                ).clickable(onClick = onClick)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -333,23 +352,28 @@ private fun TagChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun CommentField(value: String, onValueChange: (String) -> Unit) {
+private fun CommentField(
+    value: String,
+    onValueChange: (String) -> Unit,
+) {
     val textStyle = remember { TextStyle(color = AppColors.TextPrimary, fontSize = 16.sp) }
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(FieldShape)
-            .background(AppColors.Surface)
-            .padding(horizontal = 16.dp, vertical = 14.dp)
-            .height(COMMENT_FIELD_HEIGHT.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(FieldShape)
+                .background(AppColors.Surface)
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+                .height(COMMENT_FIELD_HEIGHT.dp),
         textStyle = textStyle,
         cursorBrush = SolidColor(AppColors.TextPrimary),
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Default,
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Default,
+            ),
         decorationBox = { innerTextField ->
             Box {
                 if (value.isEmpty()) {
@@ -366,13 +390,17 @@ private fun CommentField(value: String, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-private fun SaveButton(isSaving: Boolean, onClick: () -> Unit) {
+private fun SaveButton(
+    isSaving: Boolean,
+    onClick: () -> Unit,
+) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(BUTTON_HEIGHT.dp)
-            .background(AppColors.Surface)
-            .clickable(enabled = !isSaving, onClick = onClick),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(BUTTON_HEIGHT.dp)
+                .background(AppColors.Surface)
+                .clickable(enabled = !isSaving, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -386,21 +414,22 @@ private fun SaveButton(isSaving: Boolean, onClick: () -> Unit) {
 
 @Suppress("CyclomaticComplexMethod") // exhaustive enum mapping — complexity is structural, not logical
 @Composable
-private fun Tag.label(): String = when (this) {
-    Tag.FEAR_OF_FUTURE -> stringResource(Res.string.tag_fear_of_future)
-    Tag.OPINION_OF_OTHERS -> stringResource(Res.string.tag_opinion_of_others)
-    Tag.PAST_EXPERIENCE -> stringResource(Res.string.tag_past_experience)
-    Tag.GUILT -> stringResource(Res.string.tag_guilt)
-    Tag.EMOTIONS_IMPULSES -> stringResource(Res.string.tag_emotions_impulses)
-    Tag.SELF_DOUBT -> stringResource(Res.string.tag_self_doubt)
-    Tag.FATIGUE_BURNOUT -> stringResource(Res.string.tag_fatigue_burnout)
-    Tag.SOCIAL_EXPECTATIONS -> stringResource(Res.string.tag_social_expectations)
-    Tag.MY_VALUES -> stringResource(Res.string.tag_my_values)
-    Tag.FACTS_REASON -> stringResource(Res.string.tag_facts_reason)
-    Tag.INTUITION -> stringResource(Res.string.tag_intuition)
-    Tag.SELF_CARE -> stringResource(Res.string.tag_self_care)
-    Tag.LONG_TERM_GOALS -> stringResource(Res.string.tag_long_term_goals)
-    Tag.PERSONAL_FREEDOM -> stringResource(Res.string.tag_personal_freedom)
-    Tag.INNER_PEACE -> stringResource(Res.string.tag_inner_peace)
-    Tag.OBJECTIVE_OPPORTUNITIES -> stringResource(Res.string.tag_objective_opportunities)
-}
+private fun Tag.label(): String =
+    when (this) {
+        Tag.FEAR_OF_FUTURE -> stringResource(Res.string.tag_fear_of_future)
+        Tag.OPINION_OF_OTHERS -> stringResource(Res.string.tag_opinion_of_others)
+        Tag.PAST_EXPERIENCE -> stringResource(Res.string.tag_past_experience)
+        Tag.GUILT -> stringResource(Res.string.tag_guilt)
+        Tag.EMOTIONS_IMPULSES -> stringResource(Res.string.tag_emotions_impulses)
+        Tag.SELF_DOUBT -> stringResource(Res.string.tag_self_doubt)
+        Tag.FATIGUE_BURNOUT -> stringResource(Res.string.tag_fatigue_burnout)
+        Tag.SOCIAL_EXPECTATIONS -> stringResource(Res.string.tag_social_expectations)
+        Tag.MY_VALUES -> stringResource(Res.string.tag_my_values)
+        Tag.FACTS_REASON -> stringResource(Res.string.tag_facts_reason)
+        Tag.INTUITION -> stringResource(Res.string.tag_intuition)
+        Tag.SELF_CARE -> stringResource(Res.string.tag_self_care)
+        Tag.LONG_TERM_GOALS -> stringResource(Res.string.tag_long_term_goals)
+        Tag.PERSONAL_FREEDOM -> stringResource(Res.string.tag_personal_freedom)
+        Tag.INNER_PEACE -> stringResource(Res.string.tag_inner_peace)
+        Tag.OBJECTIVE_OPPORTUNITIES -> stringResource(Res.string.tag_objective_opportunities)
+    }

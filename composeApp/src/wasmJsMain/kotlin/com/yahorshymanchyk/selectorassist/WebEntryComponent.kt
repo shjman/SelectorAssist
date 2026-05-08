@@ -23,18 +23,18 @@ class WebEntryComponent(
     saveEntry: SaveEntryUseCase,
     clock: CurrentDateProvider,
 ) : EntryComponent {
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = EntryViewModel(
-        questionId = questionId,
-        getQuestionById = getQuestionById,
-        getTodayEntry = getTodayEntry,
-        saveEntry = saveEntry,
-        clock = clock,
-        coroutineScope = scope,
-        onSaved = {},
-    )
+    private val viewModel =
+        EntryViewModel(
+            questionId = questionId,
+            getQuestionById = getQuestionById,
+            getTodayEntry = getTodayEntry,
+            saveEntry = saveEntry,
+            clock = clock,
+            coroutineScope = scope,
+            onSaved = {},
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<EntryState> = _state
@@ -46,5 +46,6 @@ class WebEntryComponent(
     fun cancel() = scope.cancel()
 
     override fun onIntent(intent: EntryIntent) = viewModel.onIntent(intent)
+
     override fun onBack() = Unit
 }

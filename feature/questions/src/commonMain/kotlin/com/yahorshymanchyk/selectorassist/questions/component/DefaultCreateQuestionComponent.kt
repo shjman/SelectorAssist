@@ -18,15 +18,16 @@ class DefaultCreateQuestionComponent(
     componentContext: ComponentContext,
     private val onNavigateBack: () -> Unit,
     createQuestionUseCase: CreateQuestionUseCase,
-) : CreateQuestionComponent, ComponentContext by componentContext {
-
+) : CreateQuestionComponent,
+    ComponentContext by componentContext {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = CreateQuestionViewModel(
-        createQuestionUseCase = createQuestionUseCase,
-        coroutineScope = scope,
-        onCreated = onNavigateBack,
-    )
+    private val viewModel =
+        CreateQuestionViewModel(
+            createQuestionUseCase = createQuestionUseCase,
+            coroutineScope = scope,
+            onCreated = onNavigateBack,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<CreateQuestionState> = _state
@@ -39,5 +40,6 @@ class DefaultCreateQuestionComponent(
     }
 
     override fun onIntent(intent: CreateQuestionIntent) = viewModel.onIntent(intent)
+
     override fun onBack() = onNavigateBack()
 }

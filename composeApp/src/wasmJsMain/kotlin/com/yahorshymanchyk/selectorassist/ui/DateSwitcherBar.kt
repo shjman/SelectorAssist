@@ -29,25 +29,28 @@ fun DateSwitcherBar(
     onAdvance: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val label = when {
-        offsetDays == 0 -> "Today"
-        offsetDays > 0 -> "+$offsetDays day${if (offsetDays > 1) "s" else ""}"
-        else -> "$offsetDays day${if (offsetDays < -1) "s" else ""}"
-    }
+    val label =
+        when {
+            offsetDays == 0 -> "Today"
+            offsetDays > 0 -> "+$offsetDays day${if (offsetDays > 1) "s" else ""}"
+            else -> "$offsetDays day${if (offsetDays < -1) "s" else ""}"
+        }
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(AppColors.Surface)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(AppColors.Surface)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             onClick = onRetreat,
-            modifier = Modifier
-                .size(36.dp)
-                .background(AppColors.InputField, CircleShape),
+            modifier =
+                Modifier
+                    .size(36.dp)
+                    .background(AppColors.InputField, CircleShape),
         ) {
             Icon(
                 imageVector = Icons.Filled.KeyboardArrowLeft,
@@ -63,9 +66,10 @@ fun DateSwitcherBar(
         )
         IconButton(
             onClick = onAdvance,
-            modifier = Modifier
-                .size(36.dp)
-                .background(AppColors.InputField, CircleShape),
+            modifier =
+                Modifier
+                    .size(36.dp)
+                    .background(AppColors.InputField, CircleShape),
         ) {
             Icon(
                 imageVector = Icons.Filled.KeyboardArrowRight,

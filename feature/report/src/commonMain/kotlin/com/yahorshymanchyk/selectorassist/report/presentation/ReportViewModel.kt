@@ -29,9 +29,10 @@ class ReportViewModel(
             ) { question, stats -> question to stats }
                 .collect { (question, stats) ->
                     if (question == null) return@collect
-                    val totalDays = ((question.deadlineAt - question.createdAt) / MILLIS_PER_DAY)
-                        .toInt()
-                        .coerceAtLeast(1)
+                    val totalDays =
+                        ((question.deadlineAt - question.createdAt) / MILLIS_PER_DAY)
+                            .toInt()
+                            .coerceAtLeast(1)
                     _state.update {
                         ReportState(
                             questionTitle = question.title,

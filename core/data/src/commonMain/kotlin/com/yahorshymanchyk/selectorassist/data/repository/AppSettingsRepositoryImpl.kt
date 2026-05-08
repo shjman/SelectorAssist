@@ -11,10 +11,12 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class AppSettingsRepositoryImpl(private val database: AppDatabase) : AppSettingsRepository {
-
+class AppSettingsRepositoryImpl(
+    private val database: AppDatabase,
+) : AppSettingsRepository {
     override fun observe(): Flow<AppSettings> =
-        database.settingsQueries.selectSettings()
+        database.settingsQueries
+            .selectSettings()
             .asFlow()
             .mapToOneOrNull(Dispatchers.Default)
             .map { row -> AppSettings(isBiometryEnabled = row == 1L) }

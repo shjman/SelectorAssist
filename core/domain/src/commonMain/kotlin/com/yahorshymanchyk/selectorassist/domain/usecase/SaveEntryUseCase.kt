@@ -8,7 +8,12 @@ class SaveEntryUseCase(
     private val repository: EntryRepository,
     private val clock: CurrentDateProvider,
 ) {
-    suspend operator fun invoke(questionId: Long, sliderValue: Int, tags: List<Tag>, comment: String?) {
+    suspend operator fun invoke(
+        questionId: Long,
+        sliderValue: Int,
+        tags: List<Tag>,
+        comment: String?,
+    ) {
         repository.upsert(questionId, clock.todayAtMidnightMs(), sliderValue, tags, comment)
     }
 }

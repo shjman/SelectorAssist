@@ -12,10 +12,24 @@ interface HomeComponent {
     val stack: Value<ChildStack<*, HomeChild>>
 
     sealed class HomeChild {
-        class QuestionsList(val component: QuestionsListComponent) : HomeChild()
-        class CreateQuestion(val component: CreateQuestionComponent) : HomeChild()
-        class Entry(val component: EntryComponent) : HomeChild()
-        class Report(val component: ReportComponent) : HomeChild()
-        class Settings(val component: SettingsComponent) : HomeChild()
+        class QuestionsList(
+            val component: QuestionsListComponent,
+        ) : HomeChild()
+
+        class CreateQuestion(
+            val component: CreateQuestionComponent,
+        ) : HomeChild()
+
+        class Entry(
+            val component: EntryComponent,
+        ) : HomeChild()
+
+        class Report(
+            val component: ReportComponent,
+        ) : HomeChild()
+
+        class Settings(
+            val component: SettingsComponent,
+        ) : HomeChild()
     }
 }

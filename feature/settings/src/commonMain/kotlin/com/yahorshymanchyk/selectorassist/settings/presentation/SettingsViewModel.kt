@@ -27,9 +27,10 @@ class SettingsViewModel(
 
     fun onIntent(intent: SettingsIntent) {
         when (intent) {
-            is SettingsIntent.ToggleBiometry -> scope.launch {
-                setBiometryEnabled(intent.enabled)
-            }
+            is SettingsIntent.ToggleBiometry ->
+                scope.launch {
+                    setBiometryEnabled(intent.enabled)
+                }
         }
     }
 }

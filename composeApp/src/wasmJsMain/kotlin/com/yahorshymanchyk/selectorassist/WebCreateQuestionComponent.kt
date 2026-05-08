@@ -17,14 +17,14 @@ class WebCreateQuestionComponent(
     createQuestionUseCase: CreateQuestionUseCase,
     onCreated: () -> Unit = {},
 ) : CreateQuestionComponent {
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = CreateQuestionViewModel(
-        createQuestionUseCase = createQuestionUseCase,
-        coroutineScope = scope,
-        onCreated = onCreated,
-    )
+    private val viewModel =
+        CreateQuestionViewModel(
+            createQuestionUseCase = createQuestionUseCase,
+            coroutineScope = scope,
+            onCreated = onCreated,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<CreateQuestionState> = _state
@@ -36,5 +36,6 @@ class WebCreateQuestionComponent(
     fun cancel() = scope.cancel()
 
     override fun onIntent(intent: CreateQuestionIntent) = viewModel.onIntent(intent)
+
     override fun onBack() = Unit
 }

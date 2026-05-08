@@ -9,8 +9,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
-class InMemoryQuestionRepository(private val clock: CurrentDateProvider) : QuestionRepository {
-
+class InMemoryQuestionRepository(
+    private val clock: CurrentDateProvider,
+) : QuestionRepository {
     private var nextId = 1L
     private val questions = MutableStateFlow<List<Question>>(emptyList())
 
@@ -29,17 +30,23 @@ class InMemoryQuestionRepository(private val clock: CurrentDateProvider) : Quest
             list.find { it.id == questionId }?.withCompletion(nowMs)
         }
 
-    override suspend fun create(title: String, poleA: String, poleB: String, deadlineAt: Long) {
+    override suspend fun create(
+        title: String,
+        poleA: String,
+        poleB: String,
+        deadlineAt: Long,
+    ) {
         questions.update { list ->
-            list + Question(
-                id = nextId++,
-                title = title,
-                poleA = poleA,
-                poleB = poleB,
-                createdAt = clock.now(),
-                deadlineAt = deadlineAt,
-                isCompleted = false,
-            )
+            list +
+                Question(
+                    id = nextId++,
+                    title = title,
+                    poleA = poleA,
+                    poleB = poleB,
+                    createdAt = clock.now(),
+                    deadlineAt = deadlineAt,
+                    isCompleted = false,
+                )
         }
     }
 

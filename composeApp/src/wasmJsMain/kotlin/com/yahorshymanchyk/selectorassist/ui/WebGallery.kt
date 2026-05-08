@@ -65,24 +65,27 @@ fun WebGallery() {
     val getCompletedQuestionSummaries = koinInject<GetCompletedQuestionSummariesUseCase>()
     val createQuestion = koinInject<CreateQuestionUseCase>()
 
-    val questionsListComponent = remember {
-        WebQuestionsListComponent(getActiveQuestionSummaries, getCompletedQuestionSummaries)
-    }
+    val questionsListComponent =
+        remember {
+            WebQuestionsListComponent(getActiveQuestionSummaries, getCompletedQuestionSummaries)
+        }
     DisposableEffect(Unit) { onDispose { questionsListComponent.cancel() } }
 
     var formKey by remember { mutableStateOf(0) }
     key(formKey) {
-        val createQuestionComponent = remember {
-            WebCreateQuestionComponent(createQuestion, onCreated = { formKey++ })
-        }
+        val createQuestionComponent =
+            remember {
+                WebCreateQuestionComponent(createQuestion, onCreated = { formKey++ })
+            }
         DisposableEffect(formKey) { onDispose { createQuestionComponent.cancel() } }
         val questionsState by questionsListComponent.state.subscribeAsState()
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .background(AppColors.Background),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .background(AppColors.Background),
         ) {
             DateSwitcherBar(
                 offsetDays = offsetDays,
@@ -90,10 +93,11 @@ fun WebGallery() {
                 onAdvance = { clock.advance() },
             )
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
                 verticalAlignment = Alignment.Top,
             ) {
                 PhoneFrame(label = "Questions") { QuestionsListScreen(questionsListComponent) }
@@ -111,21 +115,26 @@ fun WebGallery() {
 }
 
 @Composable
-private fun QuestionFramePair(question: Question, completed: Boolean) {
+private fun QuestionFramePair(
+    question: Question,
+    completed: Boolean,
+) {
     val getQuestionById = koinInject<GetQuestionByIdUseCase>()
     val getTodayEntry = koinInject<GetTodayEntryUseCase>()
     val saveEntry = koinInject<SaveEntryUseCase>()
     val clock = koinInject<WebCurrentDateProvider>()
     val getQuestionStats = koinInject<GetQuestionStatsUseCase>()
 
-    val entryComponent = remember {
-        WebEntryComponent(question.id, getQuestionById, getTodayEntry, saveEntry, clock)
-    }
+    val entryComponent =
+        remember {
+            WebEntryComponent(question.id, getQuestionById, getTodayEntry, saveEntry, clock)
+        }
     DisposableEffect(question.id) { onDispose { entryComponent.cancel() } }
 
-    val reportComponent = remember {
-        WebReportComponent(question.id, getQuestionById, getQuestionStats)
-    }
+    val reportComponent =
+        remember {
+            WebReportComponent(question.id, getQuestionById, getQuestionStats)
+        }
     DisposableEffect(question.id) { onDispose { reportComponent.cancel() } }
 
     val suffix = if (completed) " (done)" else ""
@@ -148,12 +157,13 @@ private fun PhoneFrame(
             modifier = Modifier.padding(bottom = 8.dp),
         )
         Box(
-            modifier = Modifier
-                .width(PHONE_WIDTH)
-                .height(PHONE_HEIGHT)
-                .border(FRAME_BORDER, AppColors.Divider, RoundedCornerShape(FRAME_CORNER))
-                .clip(RoundedCornerShape(FRAME_CORNER))
-                .background(AppColors.Background),
+            modifier =
+                Modifier
+                    .width(PHONE_WIDTH)
+                    .height(PHONE_HEIGHT)
+                    .border(FRAME_BORDER, AppColors.Divider, RoundedCornerShape(FRAME_CORNER))
+                    .clip(RoundedCornerShape(FRAME_CORNER))
+                    .background(AppColors.Background),
         ) {
             content()
         }

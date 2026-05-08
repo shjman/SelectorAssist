@@ -6,6 +6,8 @@ import com.yahorshymanchyk.selectorassist.entry.presentation.EntryState
 
 interface EntryComponent {
     val state: Value<EntryState>
+
     fun onIntent(intent: EntryIntent)
+
     fun onBack()
 }

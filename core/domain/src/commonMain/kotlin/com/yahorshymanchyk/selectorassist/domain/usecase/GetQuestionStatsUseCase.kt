@@ -12,15 +12,19 @@ import kotlinx.coroutines.flow.map
 private const val SLIDER_MAX = 10
 private const val SLIDER_MID = 5
 
-class GetQuestionStatsUseCase(private val repository: EntryRepository) {
-    operator fun invoke(questionId: Long): Flow<QuestionStats> =
-        repository.observeAll(questionId).map { it.toStats() }
+class GetQuestionStatsUseCase(
+    private val repository: EntryRepository,
+) {
+    operator fun invoke(questionId: Long): Flow<QuestionStats> = repository.observeAll(questionId).map { it.toStats() }
 
     private fun List<Entry>.toStats(): QuestionStats {
         val total = size
-        val poleATendencyPercent = if (total > 0) {
-            (sumOf { (SLIDER_MAX - it.sliderValue).toDouble() } / (total * SLIDER_MAX) * 100).toInt()
-        } else 0
+        val poleATendencyPercent =
+            if (total > 0) {
+                (sumOf { (SLIDER_MAX - it.sliderValue).toDouble() } / (total * SLIDER_MAX) * 100).toInt()
+            } else {
+                0
+            }
         return QuestionStats(
             totalEntries = total,
             poleATendencyPercent = poleATendencyPercent,

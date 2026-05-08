@@ -32,6 +32,10 @@ import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.domain.model.Pole
 import com.yahorshymanchyk.selectorassist.report.component.ReportComponent
+import com.yahorshymanchyk.selectorassist.report.presentation.ReportState
+import com.yahorshymanchyk.selectorassist.ui.components.BackButton
+import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
+import org.jetbrains.compose.resources.stringResource
 import selectorassist.feature.report.generated.resources.Res
 import selectorassist.feature.report.generated.resources.report_header_stats
 import selectorassist.feature.report.generated.resources.report_healthy_group_label
@@ -41,10 +45,6 @@ import selectorassist.feature.report.generated.resources.report_noise_verb
 import selectorassist.feature.report.generated.resources.report_section_arguments
 import selectorassist.feature.report.generated.resources.report_section_influence
 import selectorassist.feature.report.generated.resources.report_section_tendency
-import com.yahorshymanchyk.selectorassist.report.presentation.ReportState
-import com.yahorshymanchyk.selectorassist.ui.components.BackButton
-import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
-import org.jetbrains.compose.resources.stringResource
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val ArgumentShape = RoundedCornerShape(12.dp)
@@ -54,9 +54,10 @@ fun ReportScreen(component: ReportComponent) {
     val state by component.state.subscribeAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.Background),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(AppColors.Background),
     ) {
         BackButton(onBack = component::onBack)
 
@@ -93,11 +94,12 @@ private fun BackButton(onBack: () -> Unit) {
 @Composable
 private fun HeaderCard(state: ReportState) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(CardShape)
-            .background(AppColors.Surface)
-            .padding(horizontal = 20.dp, vertical = 20.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(CardShape)
+                .background(AppColors.Surface)
+                .padding(horizontal = 20.dp, vertical = 20.dp),
     ) {
         Text(
             text = state.questionTitle,
@@ -132,7 +134,11 @@ private fun HeaderCard(state: ReportState) {
 }
 
 @Composable
-private fun TendencyRow(label: String, percent: Int, color: Color) {
+private fun TendencyRow(
+    label: String,
+    percent: Int,
+    color: Color,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -144,18 +150,20 @@ private fun TendencyRow(label: String, percent: Int, color: Color) {
             modifier = Modifier.weight(1f),
         )
         Box(
-            modifier = Modifier
-                .weight(2f)
-                .height(6.dp)
-                .clip(RoundedCornerShape(3.dp))
-                .background(AppColors.ProgressTrack),
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(fraction = percent / 100f)
+            modifier =
+                Modifier
+                    .weight(2f)
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(color),
+                    .background(AppColors.ProgressTrack),
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth(fraction = percent / 100f)
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(color),
             )
         }
         Text(
@@ -171,11 +179,12 @@ private fun TendencyRow(label: String, percent: Int, color: Color) {
 @Composable
 private fun InfluenceCard(state: ReportState) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(CardShape)
-            .background(AppColors.Surface)
-            .padding(horizontal = 20.dp, vertical = 20.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clip(CardShape)
+                .background(AppColors.Surface)
+                .padding(horizontal = 20.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         SectionLabel(stringResource(Res.string.report_section_influence))
@@ -211,17 +220,18 @@ private fun InfluenceLine(
     poleColor: Color,
 ) {
     Text(
-        text = buildAnnotatedString {
-            withStyle(SpanStyle(color = groupColor, fontWeight = FontWeight.Bold)) {
-                append(groupLabel)
-            }
-            withStyle(SpanStyle(color = AppColors.TextPrimary)) {
-                append(" $verb ")
-            }
-            withStyle(SpanStyle(color = poleColor, fontWeight = FontWeight.Bold)) {
-                append(poleName)
-            }
-        },
+        text =
+            buildAnnotatedString {
+                withStyle(SpanStyle(color = groupColor, fontWeight = FontWeight.Bold)) {
+                    append(groupLabel)
+                }
+                withStyle(SpanStyle(color = AppColors.TextPrimary)) {
+                    append(" $verb ")
+                }
+                withStyle(SpanStyle(color = poleColor, fontWeight = FontWeight.Bold)) {
+                    append(poleName)
+                }
+            },
         fontSize = 15.sp,
     )
 }
@@ -275,11 +285,15 @@ private fun ArgumentsSection(state: ReportState) {
 }
 
 @Composable
-private fun ArgumentCard(text: String?, modifier: Modifier = Modifier) {
+private fun ArgumentCard(
+    text: String?,
+    modifier: Modifier = Modifier,
+) {
     Box(
-        modifier = modifier
-            .clip(ArgumentShape)
-            .background(if (text != null) AppColors.Surface else AppColors.Background),
+        modifier =
+            modifier
+                .clip(ArgumentShape)
+                .background(if (text != null) AppColors.Surface else AppColors.Background),
     ) {
         if (text != null) {
             Text(

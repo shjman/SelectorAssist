@@ -18,15 +18,15 @@ class WebReportComponent(
     getQuestionById: GetQuestionByIdUseCase,
     getQuestionStats: GetQuestionStatsUseCase,
 ) : ReportComponent {
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = ReportViewModel(
-        questionId = questionId,
-        getQuestionById = getQuestionById,
-        getQuestionStats = getQuestionStats,
-        coroutineScope = scope,
-    )
+    private val viewModel =
+        ReportViewModel(
+            questionId = questionId,
+            getQuestionById = getQuestionById,
+            getQuestionStats = getQuestionStats,
+            coroutineScope = scope,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<ReportState> = _state

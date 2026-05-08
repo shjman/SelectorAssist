@@ -18,7 +18,10 @@ import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
 
 @Composable
-fun SettingsIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun SettingsIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     if (isAndroid) {
         IconButton(onClick = onClick, modifier = modifier) {
             Icon(
@@ -29,11 +32,12 @@ fun SettingsIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         }
     } else {
         Box(
-            modifier = modifier
-                .size(42.dp)
-                .clip(CircleShape)
-                .background(AppColors.Surface)
-                .clickable(onClick = onClick),
+            modifier =
+                modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(AppColors.Surface)
+                    .clickable(onClick = onClick),
             contentAlignment = Alignment.Center,
         ) {
             Icon(

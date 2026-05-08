@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class InMemoryAppSettingsRepository : AppSettingsRepository {
-
     private val settings = MutableStateFlow(AppSettings(isBiometryEnabled = false))
 
     override fun observe(): Flow<AppSettings> = settings

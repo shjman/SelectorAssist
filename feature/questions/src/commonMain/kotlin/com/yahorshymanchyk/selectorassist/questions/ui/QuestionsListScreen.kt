@@ -39,16 +39,16 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.yahorshymanchyk.selectorassist.domain.model.ActiveQuestionSummary
 import com.yahorshymanchyk.selectorassist.domain.model.CompletedQuestionSummary
 import com.yahorshymanchyk.selectorassist.questions.component.QuestionsListComponent
-import selectorassist.feature.questions.generated.resources.Res
-import selectorassist.feature.questions.generated.resources.questions_list_add_cd
-import selectorassist.feature.questions.generated.resources.questions_list_day_of
-import selectorassist.feature.questions.generated.resources.questions_list_pending
-import selectorassist.feature.questions.generated.resources.questions_list_title
 import com.yahorshymanchyk.selectorassist.questions.presentation.QuestionsListIntent
 import com.yahorshymanchyk.selectorassist.ui.components.SettingsIconButton
 import com.yahorshymanchyk.selectorassist.ui.theme.AppColors
 import com.yahorshymanchyk.selectorassist.ui.theme.isAndroid
 import org.jetbrains.compose.resources.stringResource
+import selectorassist.feature.questions.generated.resources.Res
+import selectorassist.feature.questions.generated.resources.questions_list_add_cd
+import selectorassist.feature.questions.generated.resources.questions_list_day_of
+import selectorassist.feature.questions.generated.resources.questions_list_pending
+import selectorassist.feature.questions.generated.resources.questions_list_title
 
 @Composable
 fun QuestionsListScreen(component: QuestionsListComponent) {
@@ -56,9 +56,10 @@ fun QuestionsListScreen(component: QuestionsListComponent) {
     val onCreateClick = { component.onIntent(QuestionsListIntent.OpenCreateQuestion) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppColors.Background),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(AppColors.Background),
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -75,7 +76,7 @@ fun QuestionsListScreen(component: QuestionsListComponent) {
                     summary = summary,
                     onClick = {
                         component.onIntent(
-                            QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = false)
+                            QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = false),
                         )
                     },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
@@ -88,7 +89,7 @@ fun QuestionsListScreen(component: QuestionsListComponent) {
                         summary = summary,
                         onClick = {
                             component.onIntent(
-                                QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = true)
+                                QuestionsListIntent.OpenQuestion(summary.question.id, isCompleted = true),
                             )
                         },
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
@@ -108,16 +109,20 @@ fun QuestionsListScreen(component: QuestionsListComponent) {
 @Composable
 private fun SectionDivider() {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-            .height(1.dp)
-            .background(AppColors.Divider),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+                .height(1.dp)
+                .background(AppColors.Divider),
     )
 }
 
 @Composable
-private fun AddFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun AddFab(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     FloatingActionButton(
         onClick = onClick,
         modifier = modifier.padding(end = 16.dp, bottom = 24.dp),
@@ -127,11 +132,15 @@ private fun AddFab(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ScreenHeader(onSettingsClick: () -> Unit, onCreateClick: (() -> Unit)?) {
+private fun ScreenHeader(
+    onSettingsClick: () -> Unit,
+    onCreateClick: (() -> Unit)?,
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 56.dp, bottom = 12.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 56.dp, bottom = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -146,11 +155,12 @@ private fun ScreenHeader(onSettingsClick: () -> Unit, onCreateClick: (() -> Unit
             SettingsIconButton(onClick = onSettingsClick)
             if (onCreateClick != null) {
                 Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(AppColors.Surface)
-                        .clickable(onClick = onCreateClick),
+                    modifier =
+                        Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(AppColors.Surface)
+                            .clickable(onClick = onCreateClick),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -175,19 +185,19 @@ private fun ActiveQuestionCard(
     val isPending = !summary.hasTodayEntry
 
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(cardShape)
-            .background(AppColors.Surface)
-            .then(
-                if (isPending) {
-                    Modifier.border(width = 1.dp, color = AppColors.PendingBorder, shape = cardShape)
-                } else {
-                    Modifier
-                },
-            )
-            .clickable(onClick = onClick)
-            .padding(16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clip(cardShape)
+                .background(AppColors.Surface)
+                .then(
+                    if (isPending) {
+                        Modifier.border(width = 1.dp, color = AppColors.PendingBorder, shape = cardShape)
+                    } else {
+                        Modifier
+                    },
+                ).clickable(onClick = onClick)
+                .padding(16.dp),
     ) {
         Column {
             if (isPending) PendingBadge()
@@ -225,10 +235,11 @@ private fun PendingBadge() {
         modifier = Modifier.padding(bottom = 8.dp),
     ) {
         Box(
-            modifier = Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(AppColors.PendingIndicator),
+            modifier =
+                Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(AppColors.PendingIndicator),
         )
         Spacer(Modifier.width(6.dp))
         Text(text = stringResource(Res.string.questions_list_pending), color = AppColors.PendingIndicator, fontSize = 13.sp)
@@ -236,7 +247,10 @@ private fun PendingBadge() {
 }
 
 @Composable
-private fun PoleLabels(poleA: String, poleB: String) {
+private fun PoleLabels(
+    poleA: String,
+    poleB: String,
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = poleA, color = AppColors.PoleA, fontSize = 14.sp)
         Text(text = " · ", color = AppColors.TextSecondary, fontSize = 14.sp)
@@ -245,13 +259,17 @@ private fun PoleLabels(poleA: String, poleB: String) {
 }
 
 @Composable
-private fun CardProgress(currentDay: Int, totalDays: Int) {
+private fun CardProgress(
+    currentDay: Int,
+    totalDays: Int,
+) {
     LinearProgressIndicator(
         progress = { currentDay.toFloat() / totalDays.toFloat() },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(3.dp)
-            .clip(RoundedCornerShape(50)),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(3.dp)
+                .clip(RoundedCornerShape(50)),
         color = AppColors.ProgressFill,
         trackColor = AppColors.ProgressTrack,
     )
@@ -270,9 +288,10 @@ private fun CompletedQuestionRow(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

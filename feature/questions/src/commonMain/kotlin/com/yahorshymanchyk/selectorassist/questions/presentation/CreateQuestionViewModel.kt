@@ -24,9 +24,10 @@ class CreateQuestionViewModel(
             is CreateQuestionIntent.UpdateTitle -> _state.update { it.copy(title = intent.value) }
             is CreateQuestionIntent.UpdatePoleA -> _state.update { it.copy(poleA = intent.value) }
             is CreateQuestionIntent.UpdatePoleB -> _state.update { it.copy(poleB = intent.value) }
-            is CreateQuestionIntent.SetDuration -> _state.update {
-                it.copy(durationDays = intent.days.coerceIn(MIN_DURATION_DAYS, MAX_DURATION_DAYS))
-            }
+            is CreateQuestionIntent.SetDuration ->
+                _state.update {
+                    it.copy(durationDays = intent.days.coerceIn(MIN_DURATION_DAYS, MAX_DURATION_DAYS))
+                }
             CreateQuestionIntent.Submit -> submit()
         }
     }

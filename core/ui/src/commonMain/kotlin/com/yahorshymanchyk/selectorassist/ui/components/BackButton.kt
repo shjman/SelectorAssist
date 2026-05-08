@@ -35,10 +35,11 @@ fun BackButton(
         }
     } else {
         Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(onClick = onClick)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+            modifier =
+                modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .clickable(onClick = onClick)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(text = "‹", color = tint, fontSize = 24.sp)

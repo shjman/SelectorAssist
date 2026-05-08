@@ -25,19 +25,20 @@ class DefaultEntryComponent(
     getTodayEntry: GetTodayEntryUseCase,
     saveEntry: SaveEntryUseCase,
     clock: CurrentDateProvider,
-) : EntryComponent, ComponentContext by componentContext {
-
+) : EntryComponent,
+    ComponentContext by componentContext {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val viewModel = EntryViewModel(
-        questionId = questionId,
-        getQuestionById = getQuestionById,
-        getTodayEntry = getTodayEntry,
-        saveEntry = saveEntry,
-        clock = clock,
-        coroutineScope = scope,
-        onSaved = onNavigateBack,
-    )
+    private val viewModel =
+        EntryViewModel(
+            questionId = questionId,
+            getQuestionById = getQuestionById,
+            getTodayEntry = getTodayEntry,
+            saveEntry = saveEntry,
+            clock = clock,
+            coroutineScope = scope,
+            onSaved = onNavigateBack,
+        )
 
     private val _state = MutableValue(viewModel.state.value)
     override val state: Value<EntryState> = _state
@@ -50,5 +51,6 @@ class DefaultEntryComponent(
     }
 
     override fun onIntent(intent: EntryIntent) = viewModel.onIntent(intent)
+
     override fun onBack() = onNavigateBack()
 }
