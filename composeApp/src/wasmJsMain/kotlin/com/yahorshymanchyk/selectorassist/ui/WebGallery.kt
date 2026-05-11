@@ -79,7 +79,6 @@ fun WebGallery() {
                 WebCreateQuestionComponent(createQuestion, onCreated = { formKey++ })
             }
         DisposableEffect(formKey) { onDispose { createQuestionComponent.cancel() } }
-        val questionsState by questionsListComponent.state.subscribeAsState()
 
         Column(
             modifier =
@@ -94,33 +93,36 @@ fun WebGallery() {
                 onAdvance = { clock.advance() },
             )
             Hint()
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
-                verticalAlignment = Alignment.Top,
-            ) {
-                PhoneFrame(label = "Questions") { QuestionsListScreen(questionsListComponent) }
-                Spacer(modifier = Modifier.width(FRAME_GAP))
-                PhoneFrame(label = "Create Question") { CreateQuestionScreen(createQuestionComponent) }
-                questionsState.activeQuestions.forEach { summary ->
-                    key(summary.question.id) {
-                        QuestionFramePair(
-                            summary.question,
-                            completed = false
-                        )
-                    }
-                }
-                questionsState.completedQuestions.forEach { summary ->
-                    key("completed_${summary.question.id}") {
-                        QuestionFramePair(
-                            summary.question,
-                            completed = true
-                        )
-                    }
-                }
+            GalleryRow(questionsListComponent, createQuestionComponent)
+        }
+    }
+}
+
+@Composable
+private fun GalleryRow(
+    questionsListComponent: WebQuestionsListComponent,
+    createQuestionComponent: WebCreateQuestionComponent,
+) {
+    val questionsState by questionsListComponent.state.subscribeAsState()
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
+        verticalAlignment = Alignment.Top,
+    ) {
+        PhoneFrame(label = "Questions") { QuestionsListScreen(questionsListComponent) }
+        Spacer(modifier = Modifier.width(FRAME_GAP))
+        PhoneFrame(label = "Create Question") { CreateQuestionScreen(createQuestionComponent) }
+        questionsState.activeQuestions.forEach { summary ->
+            key(summary.question.id) {
+                QuestionFramePair(summary.question, completed = false)
+            }
+        }
+        questionsState.completedQuestions.forEach { summary ->
+            key("completed_${summary.question.id}") {
+                QuestionFramePair(summary.question, completed = true)
             }
         }
     }
@@ -129,9 +131,10 @@ fun WebGallery() {
 @Composable
 fun Hint() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        modifier =
+            Modifier
+                .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
     ) {
         Text(
             text = "Add a new question to see the question screen.",
