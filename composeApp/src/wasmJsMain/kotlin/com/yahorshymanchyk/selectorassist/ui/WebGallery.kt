@@ -5,6 +5,7 @@ package com.yahorshymanchyk.selectorassist.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -78,7 +79,6 @@ fun WebGallery() {
                 WebCreateQuestionComponent(createQuestion, onCreated = { formKey++ })
             }
         DisposableEffect(formKey) { onDispose { createQuestionComponent.cancel() } }
-        val questionsState by questionsListComponent.state.subscribeAsState()
 
         Column(
             modifier =
@@ -92,25 +92,55 @@ fun WebGallery() {
                 onRetreat = { clock.retreat() },
                 onAdvance = { clock.advance() },
             )
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
-                verticalAlignment = Alignment.Top,
-            ) {
-                PhoneFrame(label = "Questions") { QuestionsListScreen(questionsListComponent) }
-                Spacer(modifier = Modifier.width(FRAME_GAP))
-                PhoneFrame(label = "Create Question") { CreateQuestionScreen(createQuestionComponent) }
-                questionsState.activeQuestions.forEach { summary ->
-                    key(summary.question.id) { QuestionFramePair(summary.question, completed = false) }
-                }
-                questionsState.completedQuestions.forEach { summary ->
-                    key("completed_${summary.question.id}") { QuestionFramePair(summary.question, completed = true) }
-                }
+            Hint()
+            GalleryRow(questionsListComponent, createQuestionComponent)
+        }
+    }
+}
+
+@Composable
+private fun GalleryRow(
+    questionsListComponent: WebQuestionsListComponent,
+    createQuestionComponent: WebCreateQuestionComponent,
+) {
+    val questionsState by questionsListComponent.state.subscribeAsState()
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = FRAME_GAP, vertical = FRAME_GAP),
+        verticalAlignment = Alignment.Top,
+    ) {
+        PhoneFrame(label = "Questions") { QuestionsListScreen(questionsListComponent) }
+        Spacer(modifier = Modifier.width(FRAME_GAP))
+        PhoneFrame(label = "Create Question") { CreateQuestionScreen(createQuestionComponent) }
+        questionsState.activeQuestions.forEach { summary ->
+            key(summary.question.id) {
+                QuestionFramePair(summary.question, completed = false)
             }
         }
+        questionsState.completedQuestions.forEach { summary ->
+            key("completed_${summary.question.id}") {
+                QuestionFramePair(summary.question, completed = true)
+            }
+        }
+    }
+}
+
+@Composable
+fun Hint() {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = "Add a new question to see the question screen.",
+            color = AppColors.TextPrimary,
+            fontSize = 14.sp,
+        )
     }
 }
 
