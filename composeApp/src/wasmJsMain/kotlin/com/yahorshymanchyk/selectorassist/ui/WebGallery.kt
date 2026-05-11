@@ -93,17 +93,7 @@ fun WebGallery() {
                 onRetreat = { clock.retreat() },
                 onAdvance = { clock.advance() },
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Add a new question to see the question screen.",
-                    color = AppColors.TextPrimary,
-                    fontSize = 14.sp,
-                )
-            }
+            Hint()
             Row(
                 modifier =
                     Modifier
@@ -133,6 +123,21 @@ fun WebGallery() {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Hint() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Add a new question to see the question screen.",
+            color = AppColors.TextPrimary,
+            fontSize = 14.sp,
+        )
     }
 }
 
