@@ -5,6 +5,7 @@ package com.yahorshymanchyk.selectorassist.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -93,6 +94,17 @@ fun WebGallery() {
                 onAdvance = { clock.advance() },
             )
             Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Add a new question to see the question screen.",
+                    color = AppColors.TextPrimary,
+                    fontSize = 14.sp,
+                )
+            }
+            Row(
                 modifier =
                     Modifier
                         .fillMaxWidth()
@@ -104,10 +116,20 @@ fun WebGallery() {
                 Spacer(modifier = Modifier.width(FRAME_GAP))
                 PhoneFrame(label = "Create Question") { CreateQuestionScreen(createQuestionComponent) }
                 questionsState.activeQuestions.forEach { summary ->
-                    key(summary.question.id) { QuestionFramePair(summary.question, completed = false) }
+                    key(summary.question.id) {
+                        QuestionFramePair(
+                            summary.question,
+                            completed = false
+                        )
+                    }
                 }
                 questionsState.completedQuestions.forEach { summary ->
-                    key("completed_${summary.question.id}") { QuestionFramePair(summary.question, completed = true) }
+                    key("completed_${summary.question.id}") {
+                        QuestionFramePair(
+                            summary.question,
+                            completed = true
+                        )
+                    }
                 }
             }
         }
