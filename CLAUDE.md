@@ -103,10 +103,12 @@ Pet project → Google Play + App Store.
 :feature:questions — список + создание вопроса
 :feature:entry     — ежедневный ввод
 :feature:report    — финальный отчёт
-:composeApp    — точка входа, Koin wiring, Decompose Root
+:feature:settings  — настройки (биометрия)
+:composeApp    — точка входа, Koin wiring, Decompose Root, BiometryComponent (expect/actual)
 ```
 
 Правило: `:feature:*` → только `:core:domain` + `:core:ui`, никогда `:core:data`.  
+Исключение: `BiometryComponent` живёт в `:composeApp` (использует `expect/actual` и владеет gate-ом на уровне RootComponent).  
 Все версии зависимостей — только через `libs.versions.toml`.  
 Не добавлять новые зависимости без явного запроса.
 
@@ -121,26 +123,26 @@ Pet project → Google Play + App Store.
 - `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged из `StateFlow`
 - ViewModel: plain class, не наследует `androidx.lifecycle.ViewModel`, scope снаружи
 
-**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` + `dataModule` + `domainModule`. `DefaultRootComponent : KoinComponent`.
+**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` (или `iosPlatformModule`) + `domainModule`. Репозитории и `CurrentDateProvider` регистрируются в platform-модуле как `single`. `DefaultRootComponent : KoinComponent` инжектирует use cases через `by inject()`.
 
 ---
 
 ## Текущий статус реализации
 
 **Готово:**
-- `core:domain` — все модели, репозитории, все use cases
-- `core:data` — SQLDelight схема, оба драйвера, репозитории, маперы
-- `core:ui` — AppTheme, AppColors, AppTypography
+- `core:domain` — все модели (`Question`, `Entry`, `Tag`, `AppSettings`), репозитории (интерфейсы), все use cases
+- `core:data` — SQLDelight схема (tables: questions, entries, entry_tags, app_settings), оба драйвера, репозитории, маперы
+- `core:ui` — AppTheme, AppColors, AppTypography, BackButton, SettingsIconButton
 - `feature:questions` — QuestionsListScreen + CreateQuestionScreen (полный MVI + Decompose)
 - `feature:entry` — EntryScreen (слайдер 0..10 + теги + комментарий, полный MVI + Decompose)
 - `feature:report` — ReportScreen (склонение + влияние тегов + аргументы, полный MVI + Decompose)
-- `composeApp` — Koin DI, RootComponent, HomeComponent с ChildStack, MainActivity
+- `feature:settings` — SettingsScreen (toggle биометрии, полный MVI + Decompose)
+- `composeApp` — Koin DI, RootComponent (ChildStack: Biometry → Home), HomeComponent с ChildStack, BiometryComponent + expect/actual BiometryAuthenticator, MainActivity
 
 **TODO (MVP):**
 - QuestionComponent (вложенный ChildStack для Entry/Report)
-- BiometryComponent
 - Alarmee уведомления
-- DeleteQuestionUseCase — UI (свайп или кнопка)
+- DeleteQuestionUseCase — UI (свайп или кнопка); domain + DI уже готовы
 
 ---
 
