@@ -14,7 +14,8 @@ Stack: MVI · Decompose · SQLDelight · Koin · Coroutines/StateFlow
 :feature:questions — QuestionsListScreen + CreateQuestionScreen
 :feature:entry     — EntryScreen (daily slider + tags + comment)
 :feature:report    — ReportScreen (tendency + tag influence + arguments)
-:composeApp    — entry point, Koin wiring, Decompose Root, MainActivity / MainViewController
+:feature:settings  — SettingsScreen (biometry toggle)
+:composeApp    — entry point, Koin wiring, Decompose Root, BiometryComponent, MainActivity / MainViewController
 ```
 
 ### Dependency rules
@@ -27,6 +28,9 @@ Stack: MVI · Decompose · SQLDelight · Koin · Coroutines/StateFlow
 :feature:*   →  :core:data                        ❌ FORBIDDEN
 :core:domain →  anything Android / platform       ❌ FORBIDDEN
 ```
+
+> **Exception:** `BiometryComponent` lives in `:composeApp` (not a feature module) because it uses
+> `expect/actual` (`BiometryAuthenticator`) and owns the app-level `RootComponent` navigation gate.
 
 ---
 
@@ -173,19 +177,22 @@ private sealed interface HomeConfig {
 ### Current Decompose tree
 
 ```
-RootComponent
+RootComponent (ChildStack)
+├── BiometryComponent            ✅  (composeApp, expect/actual BiometryAuthenticator)
 └── HomeComponent (ChildStack)
     ├── QuestionsListComponent   ✅
     ├── CreateQuestionComponent  ✅
     ├── EntryComponent           ✅
-    └── ReportComponent          ✅
+    ├── ReportComponent          ✅
+    └── SettingsComponent        ✅
 
 Planned (MVP):
-RootComponent
-├── BiometryComponent            TODO
+RootComponent (ChildStack)
+├── BiometryComponent            ✅
 └── HomeComponent (ChildStack)
     ├── QuestionsListComponent   ✅
     ├── CreateQuestionComponent  ✅
+    ├── SettingsComponent        ✅
     └── QuestionComponent (nested ChildStack) TODO
         ├── EntryComponent       ✅  (to move here)
         └── ReportComponent      ✅  (to move here)
@@ -197,36 +204,36 @@ RootComponent
 2. Add `class Xxx(val component: XxxComponent) : HomeChild()` to `HomeComponent.HomeChild`
 3. Add `is HomeConfig.Xxx -> HomeComponent.HomeChild.Xxx(DefaultXxxComponent(...))` in `createChild()`
 4. Add the trigger: `navigation.push(HomeConfig.Xxx(...))` where needed
-5. Add render in `RootContent.kt`
+5. Add render in `HomeContent` in `RootContent.kt`
 
 ---
 
 ## DI (Koin)
 
 ```
-Platform module (Android/iOS)
-    └─ provides DatabaseDriverFactory
+Platform module (androidPlatformModule / iosPlatformModule)
+    └─ single<CurrentDateProvider>  { SystemCurrentDateProvider() }
+    └─ single  { DatabaseDriverFactory(...) }
+    └─ single  { AppDatabase(driverFactory.create()) }
+    └─ single<QuestionRepository>    { QuestionRepositoryImpl(db) }
+    └─ single<EntryRepository>       { EntryRepositoryImpl(db) }
+    └─ single<AppSettingsRepository> { AppSettingsRepositoryImpl(db) }
 
-dataModule
-    └─ AppDatabase(driverFactory.create())
-    └─ QuestionRepositoryImpl(db)  bound to QuestionRepository
-    └─ EntryRepositoryImpl(db)     bound to EntryRepository
-
-domainModule
+domainModule  (composeApp/di/AppModule.kt)
     └─ factory { GetXxxUseCase(get()) }   // new use case = one line here
 
 DefaultRootComponent : KoinComponent
     └─ inject() use cases
-    └─ passes to DefaultHomeComponent constructor
+    └─ passes to DefaultHomeComponent and DefaultBiometryComponent constructors
 ```
 
-**Rule:** Use cases are `factory` (new instance per injection). Repositories are `single`.
+**Rule:** Use cases are `factory` (new instance per injection). Repositories and infrastructure are `single`.
 
 ### Adding a new use case to DI
 
 1. Write `GetXxxUseCase` in `:core:domain`
 2. Add `factory { GetXxxUseCase(get()) }` in `domainModule` (`composeApp/di/AppModule.kt`)
-3. Inject in `DefaultRootComponent`, pass to `DefaultHomeComponent`
+3. Inject in `DefaultRootComponent` via `by inject()`, pass to the relevant component constructor
 
 ---
 

@@ -15,7 +15,7 @@ Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully sha
 - **Two tag groups** — *Noise* (false filters: fear, guilt, impulses…) and *Healthy* (grounded reasons: values, long-term goals…)
 - **Upsert behaviour** — re-opening a day's entry pre-fills with the saved values; saving again updates in place
 - **Final report** — tendency bars (% per pole), tag group influence, and all user comments split by pole
-- **Biometric lock** — optional Face ID / Fingerprint gate on app open *(planned)*
+- **Biometric lock** — optional Face ID / Fingerprint gate on app open (toggle in Settings)
 - **Local-only** — no network, no analytics, no sync; all data stays on device
 
 ---
@@ -73,25 +73,36 @@ Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully sha
 │   ├── entry/                      # Daily entry (slider + tags + comment)
 │   │   └── commonMain/             # same structure: component / presentation / ui
 │   │
-│   └── report/                     # Final report — tendency, tag influence, arguments
+│   ├── report/                     # Final report — tendency, tag influence, arguments
+│   │   └── commonMain/
+│   │
+│   └── settings/                   # Settings (biometry toggle)
+│       └── commonMain/
 │
 └── composeApp/                     # App entry point
     ├── commonMain/
-    │   ├── RootComponent.kt        # Top-level Decompose component
+    │   ├── RootComponent.kt        # Top-level Decompose component (ChildStack)
     │   ├── DefaultRootComponent.kt # KoinComponent — injects use cases
-    │   ├── HomeComponent.kt        # ChildStack interface
-    │   ├── DefaultHomeComponent.kt # Navigation logic
+    │   ├── HomeComponent.kt        # Home ChildStack interface
+    │   ├── DefaultHomeComponent.kt # Home navigation logic
+    │   ├── BiometryComponent.kt    # Biometry gate interface
+    │   ├── DefaultBiometryComponent.kt
+    │   ├── BiometryAuthenticator.kt  # expect/actual
     │   ├── RootContent.kt          # Root @Composable — routes stack to screens
-    │   └── di/AppModule.kt         # dataModule + domainModule
+    │   └── di/AppModule.kt         # domainModule
     ├── androidMain/
     │   ├── MainActivity.kt
     │   ├── SelectorAssistApp.kt    # Koin init
-    │   └── di/AndroidPlatformModule.kt
+    │   ├── BiometryAuthenticator.android.kt
+    │   └── di/AndroidPlatformModule.kt  # DB + repositories + CurrentDateProvider
     ├── iosMain/
     │   ├── MainViewController.kt   # Koin init + ComposeUIViewController
+    │   ├── BiometryAuthenticator.ios.kt
     │   └── di/IosPlatformModule.kt
-    └── wasmJsMain/                 # Web entry point
-        └── main.kt                 # ComposeViewport
+    └── wasmJsMain/                 # Web entry point (GitHub Pages demo)
+        ├── Main.kt                 # ComposeViewport
+        ├── di/WebPlatformModule.kt
+        └── data/                   # In-memory repository implementations
 ```
 
 ---
@@ -161,7 +172,14 @@ XxxViewModel (plain class)        — pure business logic, scope injected from C
 | Column | Type | Notes |
 |--------|------|-------|
 | entry_id | INTEGER | FK → entries.id |
-| tag | TEXT | `Tag` enum name (e.g. `FEAR_OF_FUTURE`) |
+| tag_name | TEXT | `Tag` enum name (e.g. `FEAR_OF_FUTURE`) |
+
+**`app_settings`**
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | INTEGER | Always 1 (singleton row) |
+| is_biometry_enabled | INTEGER | 0 / 1 |
 
 ---
 
@@ -201,12 +219,14 @@ Result is live at https://shjman.github.io/SelectorAssist/
 Current Decompose stack:
 
 ```
-RootComponent
+RootComponent (ChildStack)
+├── BiometryComponent            ✅
 └── HomeComponent (ChildStack)
     ├── QuestionsListComponent   ✅
     ├── CreateQuestionComponent  ✅
     ├── EntryComponent           ✅
-    └── ReportComponent          ✅
+    ├── ReportComponent          ✅
+    └── SettingsComponent        ✅
 
 Planned:
     └── QuestionComponent (nested ChildStack)
