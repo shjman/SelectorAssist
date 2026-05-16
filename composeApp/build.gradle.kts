@@ -1,4 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val versionProps = Properties().apply {
+    load(rootProject.file("version.properties").inputStream())
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -73,8 +78,8 @@ android {
         applicationId = "com.yahorshymanchyk.selectorassist"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = versionProps["VERSION_CODE"].toString().toInt()
+        versionName = versionProps["VERSION_NAME"].toString()
     }
     packaging {
         resources {

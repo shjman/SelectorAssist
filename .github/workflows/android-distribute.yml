@@ -9,12 +9,48 @@ concurrency:
   group: android-distribute
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   distribute:
     name: Build & Distribute APK
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump version
+        id: version
+        run: |
+          VERSION_CODE=$(grep VERSION_CODE version.properties | cut -d'=' -f2)
+          VERSION_NAME=$(grep VERSION_NAME version.properties | cut -d'=' -f2)
+
+          NEW_VERSION_CODE=$((VERSION_CODE + 1))
+          TODAY=$(date +%Y.%m.%d)
+
+          if [[ "$VERSION_NAME" == ${TODAY}.* ]]; then
+            COUNTER="${VERSION_NAME##*.}"
+            NEW_VERSION_NAME="${TODAY}.$((COUNTER + 1))"
+          else
+            NEW_VERSION_NAME="${TODAY}.1"
+          fi
+
+          sed -i "s/VERSION_CODE=.*/VERSION_CODE=${NEW_VERSION_CODE}/" version.properties
+          sed -i "s/VERSION_NAME=.*/VERSION_NAME=${NEW_VERSION_NAME}/" version.properties
+
+          echo "version_code=${NEW_VERSION_CODE}" >> $GITHUB_OUTPUT
+          echo "version_name=${NEW_VERSION_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add version.properties
+          git commit -m "chore(version): bump to ${{ steps.version.outputs.version_name }} [skip ci]"
+          git push
 
       - uses: actions/setup-java@v4
         with:
@@ -26,10 +62,15 @@ jobs:
       - name: Build debug APK
         run: ./gradlew :composeApp:assembleDebug --no-configuration-cache
 
+      - name: Rename APK
+        run: |
+          mv composeApp/build/outputs/apk/debug/composeApp-debug.apk \
+             composeApp/build/outputs/apk/debug/SelectorAssist-${{ steps.version.outputs.version_name }}.apk
+
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: myTesters
-          file: composeApp/build/outputs/apk/debug/composeApp-debug.apk
+          file: composeApp/build/outputs/apk/debug/SelectorAssist-${{ steps.version.outputs.version_name }}.apk
