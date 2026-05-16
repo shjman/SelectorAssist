@@ -13,10 +13,12 @@ permissions:
   contents: write
 
 jobs:
-  distribute:
-    name: Build & Distribute APK
+  bump-version:
+    name: Bump version
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
+    outputs:
+      version_name: ${{ steps.version.outputs.version_name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,7 +43,6 @@ jobs:
           sed -i "s/VERSION_CODE=.*/VERSION_CODE=${NEW_VERSION_CODE}/" version.properties
           sed -i "s/VERSION_NAME=.*/VERSION_NAME=${NEW_VERSION_NAME}/" version.properties
 
-          echo "version_code=${NEW_VERSION_CODE}" >> $GITHUB_OUTPUT
           echo "version_name=${NEW_VERSION_NAME}" >> $GITHUB_OUTPUT
 
       - name: Commit version bump
@@ -50,7 +51,18 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add version.properties
           git commit -m "chore(version): bump to ${{ steps.version.outputs.version_name }} [skip ci]"
+          git pull --rebase origin main
           git push
+
+  distribute:
+    name: Build & distribute APK
+    needs: bump-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          ref: main
 
       - uses: actions/setup-java@v4
         with:
@@ -65,7 +77,7 @@ jobs:
       - name: Rename APK
         run: |
           mv composeApp/build/outputs/apk/debug/composeApp-debug.apk \
-             composeApp/build/outputs/apk/debug/SelectorAssist-${{ steps.version.outputs.version_name }}.apk
+             composeApp/build/outputs/apk/debug/SelectorAssist-${{ needs.bump-version.outputs.version_name }}.apk
 
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
@@ -73,4 +85,4 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: myTesters
-          file: composeApp/build/outputs/apk/debug/SelectorAssist-${{ steps.version.outputs.version_name }}.apk
+          file: composeApp/build/outputs/apk/debug/SelectorAssist-${{ needs.bump-version.outputs.version_name }}.apk
