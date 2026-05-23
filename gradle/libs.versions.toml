@@ -1,5 +1,6 @@
 [versions]
 agp = "8.11.2"
+paparazzi = "2.0.0-alpha05"
 detekt = "1.23.7"
 kotlinx-coroutines = "1.9.0"
 alarmee = "2.6.0"
@@ -61,3 +62,4 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }

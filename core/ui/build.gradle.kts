@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.paparazzi)
 }
 
 kotlin {
@@ -21,6 +22,9 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiTooling)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.junit)
         }
         commonMain.dependencies {
             implementation(projects.core.domain)
