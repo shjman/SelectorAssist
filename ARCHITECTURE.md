@@ -220,7 +220,18 @@ Platform module (androidPlatformModule / iosPlatformModule)
     └─ single<AppSettingsRepository> { AppSettingsRepositoryImpl(db) }
 
 domainModule  (composeApp/di/AppModule.kt)
-    └─ factory { GetXxxUseCase(get()) }   // new use case = one line here
+    └─ factory { GetActiveQuestionsUseCase(get()) }
+    └─ factory { GetCompletedQuestionsUseCase(get()) }
+    └─ factory { GetActiveQuestionSummariesUseCase(get(), get(), get()) }
+    └─ factory { GetCompletedQuestionSummariesUseCase(get(), get()) }
+    └─ factory { GetQuestionByIdUseCase(get()) }
+    └─ factory { CreateQuestionUseCase(get(), get()) }
+    └─ factory { DeleteQuestionUseCase(get()) }   // DI ready; UI (swipe/button) TODO
+    └─ factory { GetTodayEntryUseCase(get(), get()) }
+    └─ factory { SaveEntryUseCase(get(), get()) }
+    └─ factory { GetQuestionStatsUseCase(get()) }
+    └─ factory { GetAppSettingsUseCase(get()) }
+    └─ factory { SetBiometryEnabledUseCase(get()) }
 
 DefaultRootComponent : KoinComponent
     └─ inject() use cases
@@ -231,8 +242,8 @@ DefaultRootComponent : KoinComponent
 
 ### Adding a new use case to DI
 
-1. Write `GetXxxUseCase` in `:core:domain`
-2. Add `factory { GetXxxUseCase(get()) }` in `domainModule` (`composeApp/di/AppModule.kt`)
+1. Write `XxxUseCase` in `:core:domain`
+2. Add `factory { XxxUseCase(get()) }` in `domainModule` (`composeApp/di/AppModule.kt`)
 3. Inject in `DefaultRootComponent` via `by inject()`, pass to the relevant component constructor
 
 ---
