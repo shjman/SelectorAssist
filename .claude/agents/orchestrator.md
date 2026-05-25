@@ -17,7 +17,7 @@ tools: Read, Write, Bash, Agent
 
 | Файл | Пишет | Читает |
 |------|-------|--------|
-| `.claude/context/task.md` | orchestrator | researcher |
+| `.claude/context/task.md` | orchestrator | researcher, planner |
 | `.claude/context/research-report.md` | researcher | planner, executor |
 | `.claude/context/plan.md` | planner | orchestrator, executor, reviewer |
 | `.claude/context/execution-report.md` | executor | reviewer |
@@ -85,6 +85,32 @@ max_iterations: 3
   2. Собрать сводку: что пытались сделать, сколько итераций прошло, что падало на каждой
   3. Показать пользователю сводку и ждать решения
   4. Не вызывать executor снова без явного разрешения пользователя
+
+## Previous Attempts — передача контекста между итерациями
+
+Когда цикл возвращается в Research (после FAIL от reviewer или BLOCKED от executor), перед вызовом researcher **дописать в `task.md`** два блока:
+
+```
+## Previous Attempts
+
+### Iteration N
+- Approach: [скопировать plan.md → Approach]
+- Failed at: Execution | Validation
+- Root cause: [скопировать review-result.md → reason  ИЛИ  execution-report.md → blockers]
+- Issues: [скопировать review-result.md → issues, кратко]
+
+## Already Done
+
+### Iteration N
+- completed_steps: [скопировать execution-report.md → completed_steps]
+- files_changed: [скопировать execution-report.md → files_changed]
+```
+
+Оба блока дописываются, не перезаписываются — история всех итераций накапливается.
+
+Researcher и Planner читают `task.md` целиком:
+- `## Previous Attempts` — не повторять провальные подходы
+- `## Already Done` — знать какие файлы уже тронуты и что сделано
 
 ## MemPalace — автоматический майнинг
 

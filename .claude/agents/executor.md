@@ -29,6 +29,22 @@ tools: Read, Write, Edit, Bash
 
 Выполнить все шаги из плана последовательно. Не останавливаться между шагами.
 
+Шаги с пометкой `[SKIP]` — пропустить, добавить в `completed_steps` с припиской "(skipped — already done)".
+Шаги с пометкой `[REDO]` — выполнить заново, предварительно убедиться что старый код не конфликтует.
+Шаги с пометкой `[NEW]` или без пометки — выполнить как обычно.
+
+### Фаза 1.5 — Roborazzi baseline (если затронут UI)
+
+Если в `plan.md → Files to Change` есть `*Screen.kt` или UI-компоненты:
+
+```bash
+./gradlew recordRoborazziDebug --no-configuration-cache
+```
+
+Обновляет baseline-скриншоты в `src/androidUnitTest/snapshots/`. Добавить их в `files_changed`.
+
+> TODO: сейчас baseline не настроен в CI — команда выполняется локально. Когда будет настроен, убрать это примечание.
+
 ### Фаза 2 — Компиляция (макс. 3 попытки)
 
 ```bash

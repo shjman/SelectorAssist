@@ -31,7 +31,7 @@ tools: Read, Bash, Write
 scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 ./gradlew detekt --no-configuration-cache
 ./gradlew lintDebug --no-configuration-cache
-./gradlew testDebugUnitTest --no-configuration-cache
+timeout 300 ./gradlew testDebugUnitTest --no-configuration-cache
 ```
 
 Все четыре обязательны. Зафиксировать вывод каждого.
@@ -64,7 +64,12 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 ### 3. Проверка плана
 
 - Все шаги из `plan.md → Steps` выполнены?
-- `minor_deviations` из `execution-report.md` оправданы (4 вопроса executor)?
+- `minor_deviations` из `execution-report.md` оправданы? Критерий Minor Deviation (все 4 должны быть "да"):
+  1. Это прямое следствие того что уже делается?
+  2. Решение однозначно — только один способ сделать?
+  3. Это меньше 5 строк кода?
+  4. Не нужно создавать новый файл?
+  Если хотя бы одно "нет" — deviation неоправдан → FAIL → executor.
 - Нет изменений за пределами `plan.md → Files to Change / Files to Create`?
 
 ---
