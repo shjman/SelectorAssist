@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.roborazzi)
 }
 
 kotlin {
@@ -19,6 +20,13 @@ kotlin {
     wasmJs { browser() }
 
     sourceSets {
+        androidUnitTest.dependencies {
+            implementation(libs.junit)
+            implementation(libs.roborazzi)
+            implementation(libs.roborazzi.compose)
+            implementation(libs.robolectric)
+            implementation(libs.compose.ui.test.junit4)
+        }
         commonMain.dependencies {
             implementation(projects.core.domain)
             implementation(projects.core.ui)
@@ -51,6 +59,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+}
+
+roborazzi {
+    outputDir.set(project.file("src/androidUnitTest/snapshots/images"))
 }
 
 detekt {
