@@ -35,6 +35,7 @@ Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully sha
 | Notifications | Alarmee 2.6.0 (commonMain) |
 | Biometrics | AndroidX Biometric 1.1.0 / LocalAuthentication (expect/actual) |
 | Static analysis | Detekt 1.23.7 |
+| Snapshot tests | Roborazzi 1.20.0 + Robolectric 4.14.1 + Paparazzi 2.0.0-alpha02 |
 | Build | AGP 8.11.2, minSdk 28, targetSdk 36, JVM 17 |
 | CI / CD | GitHub Actions → GitHub Pages |
 
@@ -85,11 +86,11 @@ Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully sha
     │   ├── DefaultRootComponent.kt # KoinComponent — injects use cases
     │   ├── HomeComponent.kt        # Home ChildStack interface
     │   ├── DefaultHomeComponent.kt # Home navigation logic
-    │   ├── BiometryComponent.kt    # Biometry gate interface
+    │   ├── BiometryComponent.kt    # Biometry gate interface + State/Intent/ViewModel/Screen
     │   ├── DefaultBiometryComponent.kt
     │   ├── BiometryAuthenticator.kt  # expect/actual
     │   ├── RootContent.kt          # Root @Composable — routes stack to screens
-    │   └── di/AppModule.kt         # domainModule
+    │   └── di/AppModule.kt         # domainModule (all use cases as factory)
     ├── androidMain/
     │   ├── MainActivity.kt
     │   ├── SelectorAssistApp.kt    # Koin init
@@ -101,8 +102,15 @@ Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully sha
     │   └── di/IosPlatformModule.kt
     └── wasmJsMain/                 # Web entry point (GitHub Pages demo)
         ├── Main.kt                 # ComposeViewport
-        ├── di/WebPlatformModule.kt
-        └── data/                   # In-memory repository implementations
+        ├── WebCurrentDateProvider.kt
+        ├── Web*Component.kt        # Stateless wrapper components for live demo
+        ├── di/
+        │   ├── WebPlatformModule.kt   # CurrentDateProvider
+        │   └── WebDataModule.kt       # In-memory repositories
+        ├── data/                   # InMemory{Question,Entry,AppSettings}Repository
+        └── ui/
+            ├── WebGallery.kt       # Side-by-side screen gallery for the demo page
+            └── DateSwitcherBar.kt  # Date navigation bar used in the demo
 ```
 
 ---
