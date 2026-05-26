@@ -1,263 +1,263 @@
 # SelectorAssist — CLAUDE.md
 
-Читается автоматически каждую сессию. Следуй строго.
+Read automatically every session. Follow strictly.
 
 ---
 
 ## Reference docs
 
-Читай до того, как смотреть исходники — содержат готовые сниппеты и паттерны.
+Read before looking at source files — they contain ready snippets and patterns.
 
-| Файл | Читать когда |
-|------|-------------|
-| `ARCHITECTURE.md` | новый экран, навигация, DI, структура модулей, паттерны MVI/Decompose/Koin |
-| `DESIGN_SYSTEM.md` | любой UI-код: цвета, компоненты, новый экран, изменения в AppColors |
+| File | Read when |
+|------|-----------|
+| `ARCHITECTURE.md` | new screen, navigation, DI, module structure, MVI/Decompose/Koin patterns |
+| `DESIGN_SYSTEM.md` | any UI code: colors, components, new screen, changes to AppColors |
 
-При создании субагентов на реализацию — передавай содержимое релевантного файла в промпт.
-
----
-
-## Рабочий процесс
-
-### Развилка: простые vs сложные задачи
-
-**Простые задачи** — выполнять напрямую, без оркестратора:
-- Однострочные правки, опечатки, переименования
-- Вопросы об архитектуре, объяснения кода
-- Правки в документации, CLAUDE.md, конфигах
-- Изменения, которые не могут привести к крашу или регрессии
-
-**Сложные задачи** — обязательно через агента-оркестратора (`.claude/agents/orchestrator.md`):
-- Любые изменения логики, архитектуры, навигации
-- Новые экраны, компоненты, use cases
-- Изменения схемы БД, DI-модулей
-- Рефакторинг, затрагивающий несколько файлов
-- Всё, что может вызвать краш или регрессию
-
-Сомневаешься — выбирай оркестратора.
+When creating subagents for implementation — pass the relevant file content in the prompt.
 
 ---
 
-### Валидация (обязательно после любых изменений кода)
+## Workflow
 
-После завершения обязательно прогнать статические анализаторы:
+### Branch: simple vs complex tasks
+
+**Simple tasks** — execute directly, no orchestrator:
+- Single-line edits, typos, renames
+- Architecture questions, code explanations
+- Documentation edits, CLAUDE.md edits, config changes
+- Changes that cannot cause a crash or regression
+
+**Complex tasks** — always go through the orchestrator agent (`.claude/agents/orchestrator.md`):
+- Any changes to logic, architecture, navigation
+- New screens, components, use cases
+- DB schema changes, DI module changes
+- Refactoring that touches multiple files
+- Anything that could cause a crash or regression
+
+When in doubt — choose the orchestrator.
+
+---
+
+### Validation (mandatory after any code changes)
+
+After completion, always run the static analyzers:
 ```bash
 ./gradlew detekt --no-configuration-cache
 ./gradlew lintDebug --no-configuration-cache
 scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 ```
-Задача считается выполненной только если все три прошли без ошибок. При ошибках — вернуться на этап анализа или выполнения, исправить, повторить проверку.
+The task is only complete when all three pass without errors. On errors — return to the analysis or execution stage, fix, re-run the check.
 
 ---
 
-## Стиль работы
+## Work style
 
-**Качество — единственный критерий.** Не принимать «починим потом», «сойдёт для MVP», «временное решение». Временное становится постоянным.
+**Quality is the only criterion.** Do not accept "we'll fix it later", "good enough for MVP", "temporary solution". Temporary becomes permanent.
 
-**Право не соглашаться.** Если запрошенный подход нарушает SOLID, создаёт tech debt или является workaround — возразить, объяснить почему, предложить альтернативу. Молчаливое согласие с плохим решением — тоже ошибка.
+**Right to disagree.** If the requested approach violates SOLID, creates tech debt, or is a workaround — object, explain why, propose an alternative. Silent agreement with a bad solution is also a mistake.
 
-**Право критиковать и советовать.** Замечаешь проблему в коде, архитектуре или подходе — называй её, даже если тебя об этом не спрашивали. Предлагай лучшее решение. Дискутируй, если видишь риски.
+**Right to critique and advise.** If you spot a problem in code, architecture, or approach — name it, even if not asked. Propose a better solution. Debate if you see risks.
 
-**Право спрашивать.** Если требования неясны, неполны или противоречивы — задать вопрос и дождаться ответа. Никогда не додумывать за пользователя.
+**Right to ask.** If requirements are unclear, incomplete, or contradictory — ask a question and wait for an answer. Never fill in the blanks for the user.
 
-**Приоритет решений:** правильное > поддерживаемое > быстрое. Никогда наоборот.
+**Solution priority:** correct > maintainable > fast. Never the reverse.
 
-Если пользователь настаивает на плохом решении — явно назвать риски, зафиксировать несогласие, и только потом выполнить (если пользователь подтверждает).
+If the user insists on a bad solution — explicitly name the risks, record disagreement, and only then execute (if the user confirms).
 
 ---
 
 ## Build commands
 
 ```bash
-./gradlew :composeApp:assembleDebug          # сборка debug APK
-./gradlew :composeApp:assembleRelease        # сборка release APK
-./gradlew :composeApp:installDebug           # сборка + установка на устройство/эмулятор
+./gradlew :composeApp:assembleDebug          # build debug APK
+./gradlew :composeApp:assembleRelease        # build release APK
+./gradlew :composeApp:installDebug           # build + install on device/emulator
 ./gradlew lintDebug --no-configuration-cache # Android Lint
-./gradlew detekt --no-configuration-cache    # Kotlin статический анализ
+./gradlew detekt --no-configuration-cache    # Kotlin static analysis
 ```
 
 ---
 
-## Разработчик
+## Developer
 
-Опытный Android-разработчик, знает Kotlin глубоко, стандартные паттерны (MVVM, MVI, Repository, DI) — без объяснений. KMP-специфику объясняй, Android-базу — нет. Общение лаконичное, технически точное.
+Experienced Android developer, deep Kotlin knowledge, standard patterns (MVVM, MVI, Repository, DI) — no explanation needed. Explain KMP-specific things; Android fundamentals — no. Communication: concise, technically precise.
 
 ---
 
-## Проект
+## Project
 
-KMP + Compose Multiplatform. Android + iOS, UI полностью общий (никакого SwiftUI).  
+KMP + Compose Multiplatform. Android + iOS, fully shared UI (no SwiftUI).  
 Package: `com.yahorshymanchyk.selectorassist`  
 Pet project → Google Play + App Store.
 
-**Суть:** пользователь создаёт бинарную дилемму (два полюса, срок). Каждый день — слайдер, теги, комментарий. По окончании — статистика склонений + паттерны.
+**Core idea:** the user creates a binary dilemma (two poles, a deadline). Every day — a slider, tags, comment. At the end — statistics of tendencies + patterns.
 
 ---
 
-## Стек (не менять без явного запроса)
+## Stack (do not change without explicit request)
 
-| Слой | Решение |
-|------|---------|
+| Layer | Solution |
+|-------|---------|
 | UI | Compose Multiplatform (commonMain) |
-| Архитектура | MVI + plain ViewModel class с внешним CoroutineScope |
-| БД | SQLDelight |
-| Навигация | Decompose 3.x (ChildStack, StackNavigation) |
+| Architecture | MVI + plain ViewModel class with external CoroutineScope |
+| DB | SQLDelight |
+| Navigation | Decompose 3.x (ChildStack, StackNavigation) |
 | Async | Coroutines + StateFlow |
 | DI | Koin 4.x (KMP) |
-| Уведомления | Alarmee (local/scheduled, commonMain) |
-| Биометрия | expect/actual: AndroidX Biometric / LocalAuthentication |
-| Сборка | Gradle KTS + libs.versions.toml |
+| Notifications | Alarmee (local/scheduled, commonMain) |
+| Biometry | expect/actual: AndroidX Biometric / LocalAuthentication |
+| Build | Gradle KTS + libs.versions.toml |
 | JVM | 17 · minSdk 28 · iOS 16.0 |
 
-**material3:** `org.jetbrains.compose.material3:1.10.0-alpha05` — JetBrains CMP-артефакт, НЕ равен `androidx.compose.material3`. Не менять версию без проверки совместимости с foundation.
+**material3:** `org.jetbrains.compose.material3:1.10.0-alpha05` — JetBrains CMP artifact, NOT equal to `androidx.compose.material3`. Do not change version without checking compatibility with foundation.
 
 ---
 
-## Модули и зависимости
+## Modules and dependencies
 
 ```
-:core:domain   — модели, репозитории (интерфейсы), use cases
-:core:data     — SQLDelight, реализации репозиториев, маперы
+:core:domain   — models, repositories (interfaces), use cases
+:core:data     — SQLDelight, repository implementations, mappers
 :core:ui       — AppTheme, AppColors, AppTypography, shared components
-:feature:questions — список + создание вопроса
-:feature:entry     — ежедневный ввод
-:feature:report    — финальный отчёт
-:feature:settings  — настройки (биометрия)
-:composeApp    — точка входа, Koin wiring, Decompose Root, BiometryComponent (expect/actual)
+:feature:questions — questions list + create question
+:feature:entry     — daily input
+:feature:report    — final report
+:feature:settings  — settings (biometry)
+:composeApp    — entry point, Koin wiring, Decompose Root, BiometryComponent (expect/actual)
 ```
 
-Правило: `:feature:*` → только `:core:domain` + `:core:ui`, никогда `:core:data`.  
-Исключение: `BiometryComponent` живёт в `:composeApp` (использует `expect/actual` и владеет gate-ом на уровне RootComponent).  
-Все версии зависимостей — только через `libs.versions.toml`.  
-Не добавлять новые зависимости без явного запроса.
+Rule: `:feature:*` → only `:core:domain` + `:core:ui`, never `:core:data`.  
+Exception: `BiometryComponent` lives in `:composeApp` (uses `expect/actual` and owns the gate at RootComponent level).  
+All dependency versions — only via `libs.versions.toml`.  
+Do not add new dependencies without explicit request.
 
 ---
 
-## Архитектура
+## Architecture
 
-**Слои:** UI → Intent → ViewModel → UseCase → Repository (interface) → SQLDelight
+**Layers:** UI → Intent → ViewModel → UseCase → Repository (interface) → SQLDelight
 
-**Паттерн компонента** (подробно + сниппеты → `ARCHITECTURE.md`):
-- Интерфейс: `Value<XxxState>` + `onIntent(XxxIntent)`
-- `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged из `StateFlow`
-- ViewModel: plain class, не наследует `androidx.lifecycle.ViewModel`, scope снаружи
+**Component pattern** (detailed + snippets → `ARCHITECTURE.md`):
+- Interface: `Value<XxxState>` + `onIntent(XxxIntent)`
+- `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged from `StateFlow`
+- ViewModel: plain class, does not extend `androidx.lifecycle.ViewModel`, scope from outside
 
-**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` (или `iosPlatformModule`) + `domainModule`. Репозитории и `CurrentDateProvider` регистрируются в platform-модуле как `single`. `DefaultRootComponent : KoinComponent` инжектирует use cases через `by inject()`.
+**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` (or `iosPlatformModule`) + `domainModule`. Repositories and `CurrentDateProvider` are registered in the platform module as `single`. `DefaultRootComponent : KoinComponent` injects use cases via `by inject()`.
 
 ---
 
-## Текущий статус реализации
+## Current implementation status
 
-**Готово:**
-- `core:domain` — все модели (`Question`, `Entry`, `Tag`, `AppSettings`), репозитории (интерфейсы), все use cases
-- `core:data` — SQLDelight схема (tables: questions, entries, entry_tags, app_settings), оба драйвера, репозитории, маперы
+**Done:**
+- `core:domain` — all models (`Question`, `Entry`, `Tag`, `AppSettings`), repositories (interfaces), all use cases
+- `core:data` — SQLDelight schema (tables: questions, entries, entry_tags, app_settings), both drivers, repositories, mappers
 - `core:ui` — AppTheme, AppColors, AppTypography, BackButton, SettingsIconButton
-- `feature:questions` — QuestionsListScreen + CreateQuestionScreen (полный MVI + Decompose)
-- `feature:entry` — EntryScreen (слайдер 0..10 + теги + комментарий, полный MVI + Decompose)
-- `feature:report` — ReportScreen (склонение + влияние тегов + аргументы, полный MVI + Decompose)
-- `feature:settings` — SettingsScreen (toggle биометрии, полный MVI + Decompose)
-- `composeApp` — Koin DI, RootComponent (ChildStack: Biometry → Home), HomeComponent с ChildStack, BiometryComponent + expect/actual BiometryAuthenticator, MainActivity
+- `feature:questions` — QuestionsListScreen + CreateQuestionScreen (full MVI + Decompose)
+- `feature:entry` — EntryScreen (slider 0..10 + tags + comment, full MVI + Decompose)
+- `feature:report` — ReportScreen (tendency + tag influence + arguments, full MVI + Decompose)
+- `feature:settings` — SettingsScreen (biometry toggle, full MVI + Decompose)
+- `composeApp` — Koin DI, RootComponent (ChildStack: Biometry → Home), HomeComponent with ChildStack, BiometryComponent + expect/actual BiometryAuthenticator, MainActivity
 
 **TODO (MVP):**
-- QuestionComponent (вложенный ChildStack для Entry/Report)
-- Alarmee уведомления
-- DeleteQuestionUseCase — UI (свайп или кнопка); domain + DI уже готовы
+- QuestionComponent (nested ChildStack for Entry/Report)
+- Alarmee notifications
+- DeleteQuestionUseCase — UI (swipe or button); domain + DI already done
 
 ---
 
 ## Git
 
 ```
-main ← только merge из develop
-develop ← текущая разработка
+main ← merge from develop only
+develop ← current development
 feature/ · fix/ · chore/
 ```
 
-Формат коммита: `feat(scope): ...` / `fix(scope): ...` / `chore(scope): ...`
+Commit format: `feat(scope): ...` / `fix(scope): ...` / `chore(scope): ...`
 
 ---
 
 <!-- ======================================================= -->
-<!-- СЕКЦИИ ДЛЯ АГЕНТОВ — читать по метке, не целиком файл  -->
+<!-- AGENT SECTIONS — read by label, not the whole file      -->
 <!-- ======================================================= -->
 
 ## HARD RULES
-<!-- читают: ВСЕ агенты. Оркестратор копирует эту секцию в task.md -->
+<!-- read by: ALL agents. Orchestrator copies this section into task.md -->
 
-- Никаких сетевых запросов, аналитики, синхронизации
-- Никакого ИИ внутри приложения
-- Никаких советов пользователю от приложения
-- Никаких engagement-механик (стрики, награды, напоминания-давления)
-- `Color(0xFF...)` inline — запрещено, только через `AppColors`
-- `LiveData` / `MutableLiveData` — запрещено
-- `class XxxViewModel : ViewModel()` — запрещено, только plain class с внешним scope
-- Бизнес-логику в `@Composable` или Component — запрещено
-- `:feature:*` → `implementation(projects.core.data)` — запрещено
-- `import android.*` в `:core:domain` или `:core:data` — запрещено
+- No network requests, analytics, sync
+- No AI inside the app
+- No advice to the user from the app
+- No engagement mechanics (streaks, rewards, pressure reminders)
+- `Color(0xFF...)` inline — forbidden, only via `AppColors`
+- `LiveData` / `MutableLiveData` — forbidden
+- `class XxxViewModel : ViewModel()` — forbidden, only plain class with external scope
+- Business logic in `@Composable` or Component — forbidden
+- `:feature:*` → `implementation(projects.core.data)` — forbidden
+- `import android.*` in `:core:domain` or `:core:data` — forbidden
 
 ---
 
 ## ARCHITECTURE
-<!-- читает: Planner -->
+<!-- read by: Planner -->
 
-**Стек:**
-- UI: Compose Multiplatform, commonMain only — никакого SwiftUI
-- Архитектура: MVI + plain ViewModel с внешним CoroutineScope
-- Навигация: Decompose 3.x (ChildStack, StackNavigation)
+**Stack:**
+- UI: Compose Multiplatform, commonMain only — no SwiftUI
+- Architecture: MVI + plain ViewModel with external CoroutineScope
+- Navigation: Decompose 3.x (ChildStack, StackNavigation)
 - DI: Koin 4.x (KMP)
-- БД: SQLDelight
+- DB: SQLDelight
 - Async: Coroutines + StateFlow
 
-**Слои:** UI → Intent → ViewModel → UseCase → Repository (interface) → SQLDelight
+**Layers:** UI → Intent → ViewModel → UseCase → Repository (interface) → SQLDelight
 
-**Модули:**
+**Modules:**
 ```
-:core:domain   — модели, репозитории (интерфейсы), use cases
-:core:data     — SQLDelight, реализации репозиториев, маперы
+:core:domain   — models, repositories (interfaces), use cases
+:core:data     — SQLDelight, repository implementations, mappers
 :core:ui       — AppTheme, AppColors, AppTypography, shared components
-:feature:*     — только :core:domain + :core:ui, никогда :core:data
-:composeApp    — точка входа, Koin wiring, Decompose Root
+:feature:*     — only :core:domain + :core:ui, never :core:data
+:composeApp    — entry point, Koin wiring, Decompose Root
 ```
 
-**Правила зависимостей:**
-- Все версии — только через `libs.versions.toml`
-- Не добавлять новые зависимости без явного запроса
-- `BiometryComponent` живёт в `:composeApp` (исключение — использует expect/actual)
+**Dependency rules:**
+- All versions — only via `libs.versions.toml`
+- Do not add new dependencies without explicit request
+- `BiometryComponent` lives in `:composeApp` (exception — uses expect/actual)
 
-**Паттерн компонента:**
-- Интерфейс: `Value<XxxState>` + `onIntent(XxxIntent)`
+**Component pattern:**
+- Interface: `Value<XxxState>` + `onIntent(XxxIntent)`
 - `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`
-- ViewModel: plain class, scope снаружи, не наследует `androidx.lifecycle.ViewModel`
+- ViewModel: plain class, scope from outside, does not extend `androidx.lifecycle.ViewModel`
 
-**Koin:** репозитории и `CurrentDateProvider` — `single` в platform-модуле. `DefaultRootComponent : KoinComponent` инжектирует use cases через `by inject()`.
+**Koin:** repositories and `CurrentDateProvider` — `single` in platform module. `DefaultRootComponent : KoinComponent` injects use cases via `by inject()`.
 
 ---
 
 ## CODE STYLE
-<!-- читает: Executor -->
+<!-- read by: Executor -->
 
-- `BasicTextField` вместо M3 `TextField`
-- Magic numbers → именованные `private const val`
-- `@Suppress` только с однострочным комментарием-обоснованием
-- `import android.*` в `:core:domain` или `:core:data` — запрещено
-- Версии зависимостей только через `libs.versions.toml`
-- Material3: `org.jetbrains.compose.material3:1.10.0-alpha05` — JetBrains CMP-артефакт, не менять без проверки совместимости
+- `BasicTextField` instead of M3 `TextField`
+- Magic numbers → named `private const val`
+- `@Suppress` only with a one-line justification comment
+- `import android.*` in `:core:domain` or `:core:data` — forbidden
+- Dependency versions only via `libs.versions.toml`
+- Material3: `org.jetbrains.compose.material3:1.10.0-alpha05` — JetBrains CMP artifact, do not change without checking compatibility
 
 ---
 
 ## REVIEW CHECKLIST
-<!-- читает: Reviewer -->
+<!-- read by: Reviewer -->
 
-**План:**
-- Все шаги из plan.md выполнены
-- Нет незапланированных изменений
+**Plan:**
+- All steps from plan.md completed
+- No unplanned changes
 
-**Код:**
-- Все HARD RULES соблюдены (см. секцию выше)
-- Нет magic numbers без `private const val`
-- `@Suppress` — только с комментарием
+**Code:**
+- All HARD RULES followed (see section above)
+- No magic numbers without `private const val`
+- `@Suppress` — only with a comment
 
-**Статические анализаторы (все три обязательны):**
+**Static analyzers (all three required):**
 ```bash
 ./gradlew detekt --no-configuration-cache
 ./gradlew lintDebug --no-configuration-cache

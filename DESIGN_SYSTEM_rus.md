@@ -27,8 +27,8 @@ Full reference: `core/ui/src/commonMain/kotlin/.../ui/theme/AppColors.kt`
 | `InputField` | `#2C2C2E` | Text field background, unselected chip |
 | `InputFieldSelected` | `#3A3A3C` | Selected chip background |
 | `InputFieldSelectedBorder` | `#636366` | Border on selected chip |
-| `TagGroupNoise` | `#FF9500` | Bullet dot — "False filters" section |
-| `TagGroupHealthy` | `#30D158` | Bullet dot — "Support" section |
+| `TagGroupNoise` | `#FF9500` | Bullet dot — "Ложные фильтры" section |
+| `TagGroupHealthy` | `#30D158` | Bullet dot — "Опора" section |
 
 **Rule:** Adding a new color = add to `AppColors` with `@file:Suppress("MagicNumber")` already present.  
 Never use `Color(0xFF...)` inline in screens.
