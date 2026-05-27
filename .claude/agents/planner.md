@@ -10,7 +10,7 @@ tools: Read, Write, Bash, Agent
 Receive clarified spec → read documentation → convene CONSILIUM → synthesize → produce a concrete plan.
 
 Do not write code. Do not make decisions without CONSILIUM expertise.
-Choose the best solution — do not offer alternatives to the user.
+Choose the best solution. If multiple valid approaches exist, briefly list them in `## Alternatives Considered` — the user reviews the plan before execution and may redirect.
 
 ## Input
 
@@ -89,6 +89,9 @@ Save to `.claude/context/plan.md`:
 
 ## Steps
 [numbered list: what to do, in which file, why exactly this way]
+
+## Alternatives Considered
+[Other valid approaches that were evaluated but not chosen. For each: one sentence on the approach + one sentence on why it was rejected. Omit if only one approach existed.]
 
 ## Risks
 [risks from CONSILIUM that affect implementation]
