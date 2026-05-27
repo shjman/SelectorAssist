@@ -1,21 +1,21 @@
 # CONSILIUM Registry
 
-## Всегда активные
+## Always active
 
-- `kotlin-expert` — Kotlin idioms, Coroutines, Flow, KMP-специфика
+- `kotlin-expert` — Kotlin idioms, Coroutines, Flow, KMP specifics
 - `android-architect` — MVI, Decompose, Koin, Clean Architecture, SQLDelight
 
-## Опциональные
+## Optional
 
-| Эксперт | Включать если |
-|---------|---------------|
-| `ui-designer` | новый экран, новый UI-компонент, изменения в AppColors/AppTypography, DESIGN_SYSTEM затронут |
-| `kmp-expert` | задача затрагивает expect/actual, платформенный код (androidMain/iosMain), iOS-специфику |
-| `android-security` | биометрия, локальное хранилище чувствительных данных, разрешения |
-| `performance` | списки (LazyColumn), анимации, тяжёлые вычисления, SQLDelight-запросы по большим данным |
+| Expert | Include when |
+|--------|-------------|
+| `ui-designer` | new screen, new UI component, changes to AppColors/AppTypography, DESIGN_SYSTEM affected |
+| `kmp-expert` | task touches expect/actual, platform code (androidMain/iosMain), iOS specifics |
+| `android-security` | biometry, local storage of sensitive data, permissions |
+| `performance` | lists (LazyColumn), animations, heavy computations, SQLDelight queries on large datasets |
 
-## Как добавить нового эксперта
+## How to add a new expert
 
-1. Создать `.claude/agents/consilium/<name>.md`
-2. Добавить строку в таблицу выше
-3. Planner автоматически начнёт его использовать — менять planner.md не нужно
+1. Create `.claude/agents/consilium/<name>.md`
+2. Add a row to the table above
+3. Planner will automatically start using it — no need to change planner.md
