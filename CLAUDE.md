@@ -48,6 +48,16 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 ```
 The task is only complete when all three pass without errors. On errors — return to the analysis or execution stage, fix, re-run the check.
 
+If UI files were changed, also verify snapshot tests:
+```bash
+./gradlew verifyPaparazziDebug --no-configuration-cache   # core:ui components
+./gradlew verifyRoborazziDebug --no-configuration-cache   # feature:* screens
+```
+If snapshots fail due to intentional UI changes — record new baselines and commit them:
+```bash
+./gradlew recordPaparazziDebug recordRoborazziDebug --no-configuration-cache
+```
+
 ---
 
 ## Work style
@@ -262,4 +272,10 @@ Commit format: `feat(scope): ...` / `fix(scope): ...` / `chore(scope): ...`
 ./gradlew detekt --no-configuration-cache
 ./gradlew lintDebug --no-configuration-cache
 scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
+```
+
+**Snapshot tests (if UI files changed):**
+```bash
+./gradlew verifyPaparazziDebug --no-configuration-cache
+./gradlew verifyRoborazziDebug --no-configuration-cache
 ```
