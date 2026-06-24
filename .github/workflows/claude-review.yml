@@ -17,24 +17,75 @@ jobs:
     steps:
       - uses: anthropics/claude-code-action@beta
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_api_key: ${{ secrets.SELECTOR_ASSIST_GITHUB_ANTHROPIC }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           direct_prompt: |
-            Review this PR. The project is SelectorAssist — KMP + Compose Multiplatform (Android + iOS).
+            You are reviewing a PR for SelectorAssist — KMP + Compose Multiplatform (Android + iOS, shared UI in commonMain only).
 
-            Check for violations of these HARD RULES:
-            - No Color(0xFF...) inline — only via AppColors
-            - No LiveData / MutableLiveData
-            - No class XxxViewModel : ViewModel() — only plain class with external scope
-            - No business logic in @Composable or Component
-            - :feature:* modules must NOT depend on :core:data
-            - No import android.* in :core:domain or :core:data
+            ## Project context
+            Stack: Compose Multiplatform (commonMain), MVI + plain ViewModel, Decompose 3.x, Koin 4.x, SQLDelight, Coroutines + StateFlow.
+            Layers: UI → Intent → ViewModel → UseCase → Repository (interface) → SQLDelight.
+            Modules: :core:domain (pure Kotlin), :core:data, :core:ui, :feature:questions, :feature:entry, :feature:report, :feature:settings, :composeApp.
 
-            Also check:
-            - MVI pattern correctness (Intent → ViewModel → UseCase → Repository)
-            - Decompose component lifecycle (scope cancellation on destroy)
-            - Magic numbers without named const
-            - Logic bugs and edge cases
+            ---
 
-            Post findings as inline PR review comments on the relevant lines.
-            If no violations found — post a single comment saying the code looks good.
+            ## BLOCKERS — any violation must be flagged, PR cannot merge
+
+            ### Hard rules
+            - Color(0xFF...) inline is forbidden — only AppColors from :core:ui
+            - LiveData / MutableLiveData are forbidden
+            - class XxxViewModel : ViewModel() is forbidden — must be a plain class with CoroutineScope injected from the Component
+            - Business logic in @Composable or Decompose Component is forbidden — Component only dispatches intents and handles navigation callbacks
+            - :feature:* modules must NOT import :core:data (only :core:domain + :core:ui allowed)
+            - import android.* in :core:domain or :core:data is forbidden (breaks iOS build)
+            - No network requests, analytics, sync — the app is fully offline
+            - No AI features inside the app, no advice to the user, no engagement mechanics (streaks, rewards, pressure reminders)
+
+            ### Architecture rules
+            - Decompose Default* component must: create CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate), cancel it in lifecycle.doOnDestroy { scope.cancel() }
+            - Component interface must expose: Value<XxxState> and onIntent(XxxIntent) — never expose ViewModel directly
+            - StateFlow → Decompose bridge must use: scope.launch { viewModel.state.collect { _state.value = it } }
+            - ViewModel must NOT manage its own lifecycle — scope comes from the Component and is cancelled on destroy
+            - Repository must NOT be injected directly into ViewModel — use cases are the boundary (ViewModel depends on UseCase, UseCase depends on Repository interface)
+            - Koin: use cases must be registered as factory { }, repositories and infrastructure as single { }
+            - All dependency versions must be in libs.versions.toml — no inline version strings in build.gradle.kts
+            - No new dependencies added without explicit need
+
+            ### UI rules
+            - remember { mutableStateOf() } in @Composable is forbidden unless it's purely local ephemeral UI state with no domain meaning (e.g., rememberScrollState() is fine)
+            - Coroutines (LaunchedEffect, produceState, etc.) in @Composable are forbidden — state lives in XxxState, driven by ViewModel
+            - ViewModel must not be created or remembered inside @Composable
+            - No Material3 default theming overrides — dark-only theme, everything is explicit via AppColors / AppTypography
+            - BasicTextField must be used instead of Material3 TextField
+
+            ### KMP rules
+            - All UI code in commonMain only — no SwiftUI, no Android-specific UI classes
+            - If expect declaration is added — both actual implementations must exist (androidMain + iosMain)
+            - No import android.* or import UIKit.* in shared modules
+
+            ### SQLDelight
+            - If any .sq schema file is changed (table added/altered/dropped) — a migration file must be present in the same PR
+
+            ### Security
+            - No hardcoded API keys, tokens, passwords, or secrets in source code
+            - No sensitive data stored in plaintext
+
+            ---
+
+            ## WARNINGS — flag but do not block
+
+            - Magic numbers without named private const val
+            - @Suppress without a one-line justification comment
+            - Dead code or unused imports
+            - If new Koin bindings are added — verify they are registered in androidPlatformModule / iosPlatformModule / domainModule as appropriate
+
+            ---
+
+            ## Review output format
+            - Post inline comments on the exact lines where issues are found
+            - Each inline comment: name the violated rule, explain why it's wrong, show the correct pattern
+            - Skip files with no issues — do not post "looks good" per file
+            - After all inline comments, post one summary comment:
+              BLOCKERS: <list or "none">
+              WARNINGS: <list or "none">
+              If both are empty: "No issues found. LGTM."
