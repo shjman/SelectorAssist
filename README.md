@@ -213,12 +213,32 @@ XxxViewModel (plain class)        — pure business logic, scope injected from C
 
 ## CI / CD
 
-Push to `main` triggers `.github/workflows/web-deploy.yml`:
+### On every PR → `main`
 
-1. Build `wasmJsBrowserDistribution`
-2. Deploy `composeApp/build/dist/wasmJs/productionExecutable/` to GitHub Pages
+| Check | Tool | Notes |
+|-------|------|-------|
+| Kotlin static analysis | Detekt | Custom ruleset |
+| Android Lint | AGP Lint | Full `lintDebug` |
+| Code style | ktlint | Enforced via `scripts/ktlint` |
+| Secret scanning | Gitleaks | Full git history scan |
+| Snapshot regression | Paparazzi 2.0.0-alpha02 | Shared components in `:core:ui` |
+| Snapshot regression | Roborazzi 1.20.0 + Robolectric | Full screens in `:feature:*` |
+| Build verification | AGP | Debug APK must compile |
+| AI code review | Claude (`@claude review`) | Checks architecture rules, HARD RULES, KMP constraints |
+| AI PR description | Claude (`@claude describe`) | Auto-generates PR body from diff |
 
-Result is live at https://shjman.github.io/SelectorAssist/
+Snapshot baselines are committed to the repo. A pixel-level diff against any baseline fails the PR — intentional UI changes require running `./gradlew recordRoborazziDebug recordPaparazziDebug` locally and committing the new baselines explicitly.
+
+### On merge to `main`
+
+| Step | What happens |
+|------|-------------|
+| Version bump | `version.properties` incremented automatically, committed by bot |
+| APK build | Debug APK assembled |
+| Distribution | APK uploaded to Firebase App Distribution |
+| Web deploy | `wasmJsBrowserDistribution` built and deployed to GitHub Pages |
+
+**Live demo:** https://shjman.github.io/SelectorAssist/
 
 ---
 
