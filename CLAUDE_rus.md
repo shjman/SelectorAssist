@@ -48,6 +48,16 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 ```
 Задача считается выполненной только если все три прошли без ошибок. При ошибках — вернуться на этап анализа или выполнения, исправить, повторить проверку.
 
+Если изменялись UI-файлы — дополнительно проверить snapshot-тесты:
+```bash
+./gradlew verifyPaparazziDebug --no-configuration-cache   # компоненты core:ui
+./gradlew verifyRoborazziDebug --no-configuration-cache   # экраны feature:*
+```
+Если snapshot-тесты падают из-за намеренного изменения UI — записать новые baseline и закоммитить их:
+```bash
+./gradlew recordPaparazziDebug recordRoborazziDebug --no-configuration-cache
+```
+
 ---
 
 ## Стиль работы
@@ -262,4 +272,10 @@ feature/ · fix/ · chore/
 ./gradlew detekt --no-configuration-cache
 ./gradlew lintDebug --no-configuration-cache
 scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
+```
+
+**Snapshot-тесты (если изменялись UI-файлы):**
+```bash
+./gradlew verifyPaparazziDebug --no-configuration-cache
+./gradlew verifyRoborazziDebug --no-configuration-cache
 ```
