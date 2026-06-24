@@ -1,0 +1,40 @@
+name: Claude Code Review
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  review:
+    # Only run on PR comments (not issue comments) containing @claude review
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@claude review')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          direct_prompt: |
+            Review this PR. The project is SelectorAssist — KMP + Compose Multiplatform (Android + iOS).
+
+            Check for violations of these HARD RULES:
+            - No Color(0xFF...) inline — only via AppColors
+            - No LiveData / MutableLiveData
+            - No class XxxViewModel : ViewModel() — only plain class with external scope
+            - No business logic in @Composable or Component
+            - :feature:* modules must NOT depend on :core:data
+            - No import android.* in :core:domain or :core:data
+
+            Also check:
+            - MVI pattern correctness (Intent → ViewModel → UseCase → Repository)
+            - Decompose component lifecycle (scope cancellation on destroy)
+            - Magic numbers without named const
+            - Logic bugs and edge cases
+
+            Post findings as inline PR review comments on the relevant lines.
+            If no violations found — post a single comment saying the code looks good.

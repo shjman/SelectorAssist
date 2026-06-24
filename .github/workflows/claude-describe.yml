@@ -1,0 +1,29 @@
+name: Claude PR Description
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  describe:
+    # Only run on PR comments (not issue comments) containing @claude describe
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@claude describe')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          direct_prompt: |
+            Analyze the diff of this PR and update the PR description (body).
+            Write a concise, technical description in English:
+            - What changed and why
+            - Key implementation decisions
+            - What to test / how to verify
+
+            Keep it short. No fluff. Write directly in the PR body field.
