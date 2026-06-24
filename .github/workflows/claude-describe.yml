@@ -23,6 +23,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.SELECTOR_ASSIST_GITHUB_ANTHROPIC }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          model: claude-sonnet-4-6
           direct_prompt: |
             Analyze the diff of this PR and update the PR description (body).
             Write a concise, technical description in English:
