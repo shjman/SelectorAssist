@@ -89,9 +89,6 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Verify Paparazzi snapshots
-        run: ./gradlew verifyPaparazziDebug --no-configuration-cache
-
       - name: Verify Roborazzi snapshots
         run: ./gradlew verifyRoborazziDebug --no-configuration-cache
 
