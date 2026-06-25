@@ -35,7 +35,7 @@ Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully sha
 | Notifications | Alarmee 2.6.0 (commonMain) |
 | Biometrics | AndroidX Biometric 1.1.0 / LocalAuthentication (expect/actual) |
 | Static analysis | Detekt 1.23.7 |
-| Snapshot tests | Roborazzi 1.20.0 + Robolectric 4.14.1 + Paparazzi 2.0.0-alpha02 |
+| Snapshot tests | Roborazzi 1.20.0 + Robolectric 4.14.1 |
 | Build | AGP 8.11.2, minSdk 28, targetSdk 36, JVM 17 |
 | CI / CD | GitHub Actions → GitHub Pages |
 
@@ -221,13 +221,12 @@ XxxViewModel (plain class)        — pure business logic, scope injected from C
 | Android Lint | AGP Lint | Full `lintDebug` |
 | Code style | ktlint | Enforced via `scripts/ktlint` |
 | Secret scanning | Gitleaks | Full git history scan |
-| Snapshot regression | Paparazzi 2.0.0-alpha02 | Shared components in `:core:ui` |
 | Snapshot regression | Roborazzi 1.20.0 + Robolectric | Full screens in `:feature:*` |
 | Build verification | AGP | Debug APK must compile |
 | AI code review | Claude (`@claude review`) | Checks architecture rules, HARD RULES, KMP constraints |
 | AI PR description | Claude (`@claude describe`) | Auto-generates PR body from diff |
 
-Snapshot baselines are committed to the repo. A pixel-level diff against any baseline fails the PR — intentional UI changes require running `./gradlew recordRoborazziDebug recordPaparazziDebug` locally and committing the new baselines explicitly.
+Snapshot baselines are committed to the repo. A pixel-level diff against any baseline fails the PR — intentional UI changes require running `./gradlew recordRoborazziDebug` locally and committing the new baselines explicitly.
 
 ### On merge to `main`
 
