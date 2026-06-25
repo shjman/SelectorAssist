@@ -36,6 +36,13 @@ When creating subagents for implementation — pass the relevant file content in
 
 When in doubt — choose the orchestrator.
 
+**Invoking the orchestrator (mandatory procedure):**
+- Never spawn orchestrator directly via Agent tool
+- Always invoke via `/mytask` skill (Skill tool), passing the task description
+- Before invoking: explicitly inform the user and wait for confirmation:
+  > "Это сложная задача — запускаю цепочку агентов (researcher → planner → executor → reviewer). Это займёт время. Подтверди запуск."
+- Only proceed after explicit confirmation from the user
+
 ---
 
 ### Validation (mandatory after any code changes)
@@ -50,12 +57,11 @@ The task is only complete when all three pass without errors. On errors — retu
 
 If UI files were changed, also verify snapshot tests:
 ```bash
-./gradlew verifyPaparazziDebug --no-configuration-cache   # core:ui components
 ./gradlew verifyRoborazziDebug --no-configuration-cache   # feature:* screens
 ```
 If snapshots fail due to intentional UI changes — record new baselines and commit them:
 ```bash
-./gradlew recordPaparazziDebug recordRoborazziDebug --no-configuration-cache
+./gradlew recordRoborazziDebug --no-configuration-cache
 ```
 
 ---
@@ -276,6 +282,5 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 
 **Snapshot tests (if UI files changed):**
 ```bash
-./gradlew verifyPaparazziDebug --no-configuration-cache
 ./gradlew verifyRoborazziDebug --no-configuration-cache
 ```
