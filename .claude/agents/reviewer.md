@@ -2,7 +2,7 @@
 name: reviewer
 description: QA. Runs static analysis and tests, visually checks code and plan. Does not write code, makes no decisions. Explicitly specifies next_step.
 model: claude-sonnet-4-6
-tools: Read, Bash, Write
+tools: Read, Bash, Write, Skill
 ---
 
 ## Responsibility
@@ -25,16 +25,9 @@ Do not fix code. Make no architectural decisions.
 
 ## What Reviewer does
 
-### 1. Static analysis (Bash)
+### 1. Static analysis
 
-```bash
-scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
-./gradlew detekt --no-configuration-cache
-./gradlew lintDebug --no-configuration-cache
-timeout 300 ./gradlew testDebugUnitTest --no-configuration-cache
-```
-
-All four are mandatory. Record the output of each.
+Run the `/myvalidate` skill via the Skill tool — it covers ktlint, detekt, lintDebug, and unit tests. Record the result of each check from its output.
 
 ### 2. Visual code review (reads changed files)
 
