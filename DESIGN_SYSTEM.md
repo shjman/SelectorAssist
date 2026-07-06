@@ -39,15 +39,30 @@ Never use `Color(0xFF...)` inline in screens.
 
 Full reference: `core/ui/src/commonMain/kotlin/.../ui/theme/AppTypography.kt`
 
-| Style | Size / Weight | Used for |
-|-------|--------------|----------|
-| `headlineLarge` | 28sp Bold | — (reserved) |
-| `titleLarge` | 18sp SemiBold | Screen titles |
-| `bodyMedium` | 14sp Regular | Body text, list items |
-| `labelSmall` | 12sp Regular | Captions, helper text |
+| Style | Size / Weight / Line height | Used for |
+|-------|-----------------------------|----------|
+| `headlineLarge` | 28sp Bold / 34sp | — (reserved) |
+| `titleLarge` | 18sp SemiBold / 24sp | Screen titles |
+| `bodyMedium` | 14sp Regular / 20sp | Body text, list items |
+| `labelSmall` | 12sp Regular / 16sp | Captions, helper text |
 
 Most screens use inline `fontSize` / `fontWeight` directly for fine-grained control.  
 Typography styles are a baseline — not enforced everywhere yet.
+
+---
+
+## Platform-adaptive UI (`isAndroid`)
+
+`core/ui/src/commonMain/kotlin/.../ui/theme/Platform.kt` — `expect val isAndroid: Boolean` (actuals: android / ios / wasmJs).
+
+Use it for small platform-idiom differences, never for logic:
+
+- **Back navigation:** `BackButton` from `core:ui` renders a Material `ArrowBack` icon on Android, a `‹` text chevron elsewhere. Always use the shared component, don't inline.
+- **Header sizing:** Android headers use `start = 4.dp`, `fontSize = 22.sp`; iOS/web use `start = 8.dp`, `fontSize = 20.sp`.
+- **Primary action placement:** Android — FAB (e.g. create question); iOS/web — inline button in content.
+- **Accents:** Android may use `AppColors.PoleA` + `FontWeight.Medium` where iOS uses `TextSecondary` + `Normal` (see SettingsScreen).
+
+Shared components in `core:ui/components`: `BackButton`, `SettingsIconButton` (both platform-adaptive via `isAndroid`).
 
 ---
 
@@ -236,26 +251,20 @@ Box(
 
 ### Screen header with back
 
+Back arrow — always the shared `BackButton` from `core:ui` (platform-adaptive, see the `isAndroid` section above).
+
 ```kotlin
 Row(
     modifier = Modifier
         .fillMaxWidth()
-        .padding(start = 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
+        .padding(start = if (isAndroid) 4.dp else 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
     verticalAlignment = Alignment.CenterVertically,
 ) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onBack)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = "‹", color = AppColors.TextPrimary, fontSize = 24.sp)
-    }
+    BackButton(onClick = onBack)
     Text(
         text = screenTitle,
         color = AppColors.TextPrimary,
-        fontSize = 20.sp,
+        fontSize = if (isAndroid) 22.sp else 20.sp,
         fontWeight = FontWeight.SemiBold,
     )
 }
