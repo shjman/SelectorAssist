@@ -47,7 +47,9 @@ When in doubt — choose the orchestrator.
 
 ### Validation (mandatory after any code changes)
 
-After completion, always run the static analyzers:
+Preferred: run the `/myvalidate` skill — it bundles ktlint + detekt + lintDebug + unit tests (add `--ui` to include snapshot tests).
+
+Equivalent manual commands:
 ```bash
 ./gradlew detekt --no-configuration-cache
 ./gradlew lintDebug --no-configuration-cache
@@ -88,6 +90,7 @@ If the user insists on a bad solution — explicitly name the risks, record disa
 ./gradlew :composeApp:assembleDebug          # build debug APK
 ./gradlew :composeApp:assembleRelease        # build release APK
 ./gradlew :composeApp:installDebug           # build + install on device/emulator
+./gradlew :composeApp:wasmJsBrowserDistribution  # build web demo
 ./gradlew lintDebug --no-configuration-cache # Android Lint
 ./gradlew detekt --no-configuration-cache    # Kotlin static analysis
 ```
@@ -103,6 +106,7 @@ Experienced Android developer, deep Kotlin knowledge, standard patterns (MVVM, M
 ## Project
 
 KMP + Compose Multiplatform. Android + iOS, fully shared UI (no SwiftUI).  
+Plus a Web demo (wasmJs, in-memory repositories) deployed to GitHub Pages: https://shjman.github.io/SelectorAssist/  
 Package: `com.yahorshymanchyk.selectorassist`  
 Pet project → Google Play + App Store.
 
@@ -134,16 +138,17 @@ Pet project → Google Play + App Store.
 ```
 :core:domain   — models, repositories (interfaces), use cases
 :core:data     — SQLDelight, repository implementations, mappers
-:core:ui       — AppTheme, AppColors, AppTypography, shared components
+:core:ui       — AppTheme, AppColors, AppTypography, shared components (BackButton, SettingsIconButton), Platform.kt (expect val isAndroid)
 :feature:questions — questions list + create question
 :feature:entry     — daily input
 :feature:report    — final report
 :feature:settings  — settings (biometry)
-:composeApp    — entry point, Koin wiring, Decompose Root, BiometryComponent (expect/actual)
+:composeApp    — entry point, Koin wiring, Decompose Root, BiometryComponent (expect/actual), wasmJsMain (web demo: in-memory repos, WebGallery)
 ```
 
 Rule: `:feature:*` → only `:core:domain` + `:core:ui`, never `:core:data`.  
 Exception: `BiometryComponent` lives in `:composeApp` (uses `expect/actual` and owns the gate at RootComponent level).  
+Exception: `:core:ui` has `expect val isAndroid` (`Platform.kt`) for platform-adaptive UI — see `DESIGN_SYSTEM.md`.  
 All dependency versions — only via `libs.versions.toml`.  
 Do not add new dependencies without explicit request.
 
@@ -158,7 +163,7 @@ Do not add new dependencies without explicit request.
 - `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged from `StateFlow`
 - ViewModel: plain class, does not extend `androidx.lifecycle.ViewModel`, scope from outside
 
-**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` (or `iosPlatformModule`) + `domainModule`. Repositories and `CurrentDateProvider` are registered in the platform module as `single`. `DefaultRootComponent : KoinComponent` injects use cases via `by inject()`.
+**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` (or `iosPlatformModule`) + `domainModule`; web `main()` → `webPlatformModule` + `webDataModule` + `domainModule`. Repositories and `CurrentDateProvider` are registered in the platform module as `single`. `DefaultRootComponent : KoinComponent` injects use cases via `by inject()`.
 
 ---
 
@@ -167,16 +172,18 @@ Do not add new dependencies without explicit request.
 **Done:**
 - `core:domain` — all models (`Question`, `Entry`, `Tag`, `AppSettings`), repositories (interfaces), all use cases
 - `core:data` — SQLDelight schema (tables: questions, entries, entry_tags, app_settings), both drivers, repositories, mappers
-- `core:ui` — AppTheme, AppColors, AppTypography, BackButton, SettingsIconButton
+- `core:ui` — AppTheme, AppColors, AppTypography, BackButton, SettingsIconButton, `expect val isAndroid` (Platform.kt)
 - `feature:questions` — QuestionsListScreen + CreateQuestionScreen (full MVI + Decompose)
 - `feature:entry` — EntryScreen (slider 0..10 + tags + comment, full MVI + Decompose)
 - `feature:report` — ReportScreen (tendency + tag influence + arguments, full MVI + Decompose)
 - `feature:settings` — SettingsScreen (biometry toggle, full MVI + Decompose)
 - `composeApp` — Koin DI, RootComponent (ChildStack: Biometry → Home), HomeComponent with ChildStack, BiometryComponent + expect/actual BiometryAuthenticator, MainActivity
+- Web demo (wasmJs) — WebGallery (side-by-side screens), in-memory repositories, deployed to GitHub Pages via CI
+- CI/CD — PR checks (detekt, lint, ktlint, gitleaks, Roborazzi snapshots, build, Claude review); on merge to main: version bump, Firebase App Distribution, web deploy
 
 **TODO (MVP):**
 - QuestionComponent (nested ChildStack for Entry/Report)
-- Alarmee notifications
+- Alarmee notifications (dependency already in `composeApp/build.gradle.kts`, no code yet)
 - DeleteQuestionUseCase — UI (swipe or button); domain + DI already done
 
 ---
