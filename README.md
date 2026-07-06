@@ -49,20 +49,20 @@ Targets: Android (Google Play) + iOS (App Store) + Web (GitHub Pages). Fully sha
 │   ├── domain/                     # Pure Kotlin — no Android/iOS deps
 │   │   └── commonMain/
 │   │       ├── model/              # Question, Entry, Tag, TagGroup, *Summary, QuestionStats
-│   │       ├── repository/         # QuestionRepository, EntryRepository (interfaces)
+│   │       ├── repository/         # QuestionRepository, EntryRepository, AppSettingsRepository (interfaces)
 │   │       └── usecase/            # GetActive*, GetCompleted*, Create*, Save*, GetTodayEntry…
 │   │
 │   ├── data/                       # SQLDelight + repository implementations
 │   │   └── commonMain/
-│   │       ├── db/                 # AppDatabase.sq schema + generated queries
-│   │       ├── repository/         # QuestionRepositoryImpl, EntryRepositoryImpl
+│   │       ├── sqldelight/…/db/    # questions.sq, entries.sq, entry_tags.sq, settings.sq
+│   │       ├── repository/         # QuestionRepositoryImpl, EntryRepositoryImpl, AppSettingsRepositoryImpl
 │   │       └── mapper/             # Entries/Questions → domain model
 │   │
-│   └── ui/                         # Shared Compose design tokens
-│       └── commonMain/theme/
-│           ├── AppColors.kt
-│           ├── AppTypography.kt
-│           └── AppTheme.kt
+│   └── ui/                         # Shared Compose design tokens + components
+│       └── commonMain/
+│           ├── theme/              # AppColors, AppTypography, AppTheme,
+│           │                       #   Platform.kt (expect val isAndroid — android/ios/wasmJs actuals)
+│           └── components/         # BackButton, SettingsIconButton (platform-adaptive)
 │
 ├── feature/
 │   ├── questions/                  # QuestionsListScreen + CreateQuestionScreen
