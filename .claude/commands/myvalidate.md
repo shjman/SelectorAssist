@@ -31,9 +31,6 @@ description: SelectorAssist — запускает ktlint + detekt + lintDebug +
 5. ```bash
    ./gradlew verifyRoborazziDebug --no-configuration-cache
    ```
-6. ```bash
-   ./gradlew verifyPaparazziDebug --no-configuration-cache
-   ```
 
 ## Формат вывода
 

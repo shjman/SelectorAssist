@@ -1,7 +1,7 @@
 ---
 name: android-security
 description: Security expert. Checks biometry, local data storage, permissions. Risks and recommendations only — not a plan.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Bash
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: executor
 description: Developer. Implements the plan step by step, checks compilation after each step. Makes no architectural decisions. On a major gap in the plan — BLOCKED.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Write, Edit, Bash
 ---
 
@@ -33,18 +33,6 @@ Steps marked `[SKIP]` — skip, add to `completed_steps` with note "(skipped —
 Steps marked `[REDO]` — execute again, first ensure old code does not conflict.
 Steps marked `[NEW]` or unmarked — execute as normal.
 
-### Phase 1.5 — Roborazzi baseline (if UI is affected)
-
-If `plan.md → Files to Change` contains `*Screen.kt` or UI components:
-
-```bash
-./gradlew recordRoborazziDebug --no-configuration-cache
-```
-
-Updates baseline screenshots in `src/androidUnitTest/snapshots/`. Add them to `files_changed`.
-
-> TODO: baseline is not yet configured in CI — command runs locally. Remove this note when CI is set up.
-
 ### Phase 2 — Compilation (max 3 attempts)
 
 ```bash
@@ -56,6 +44,22 @@ If it fails:
 - Maximum **3 attempts**
 - Fix only the obvious: missing import, wrong type, typo
 - If still failing after 3 attempts → BLOCKED
+
+### Phase 3 — Roborazzi snapshots (only after compilation passes, if UI is affected)
+
+If `plan.md → Files to Change / Files to Create` contains `*Screen.kt` or UI components:
+
+```bash
+./gradlew verifyRoborazziDebug --no-configuration-cache
+```
+
+- Diffs match the intentional UI changes from the plan → record new baselines and add them to `files_changed`:
+  ```bash
+  ./gradlew recordRoborazziDebug --no-configuration-cache
+  ```
+- Diffs in screens the plan did not touch → unexpected regression → BLOCKED with details.
+
+CI verifies these baselines on every PR (`verifyRoborazziDebug` in pr-checks) — committing them is mandatory.
 
 ## Minor Deviation vs BLOCKED
 

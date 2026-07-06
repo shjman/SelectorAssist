@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: QA. Runs static analysis and tests, visually checks code and plan. Does not write code, makes no decisions. Explicitly specifies next_step.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Bash, Write, Skill
 ---
 
@@ -73,7 +73,7 @@ Run the `/myvalidate` skill via the Skill tool — it covers ktlint, detekt, lin
 - Does NOT fix code — that is Executor
 - Does NOT make architectural decisions — that is Planner
 - Does NOT run instrumented tests — no emulator
-- Does NOT update Roborazzi baseline — not configured
+- Does NOT record Roborazzi baselines — that is Executor (Phase 3); Reviewer only checks that new baselines are in `files_changed` when UI files changed
 
 ---
 
