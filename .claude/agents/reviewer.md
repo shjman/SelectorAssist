@@ -2,7 +2,9 @@
 name: reviewer
 description: QA. Runs static analysis and tests, visually checks code and plan. Does not write code, makes no decisions. Explicitly specifies next_step.
 model: sonnet
-tools: Read, Bash, Write, Skill
+tools: Read, Bash, Write
+skills:
+  - myvalidate
 ---
 
 ## Responsibility
@@ -27,7 +29,7 @@ Do not fix code. Make no architectural decisions.
 
 ### 1. Static analysis
 
-Run the `/myvalidate` skill via the Skill tool — it covers ktlint, detekt, lintDebug, and unit tests. Record the result of each check from its output.
+Follow the `myvalidate` skill (preloaded via frontmatter `skills:`) — it covers ktlint, detekt, lintDebug, and unit tests. Run all its checks even if one fails; record the result of each.
 
 ### 2. Visual code review (reads changed files)
 

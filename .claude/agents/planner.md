@@ -53,7 +53,7 @@ If **none** apply (medium task: changes within one module along existing pattern
 
 ### When convening
 
-Read `.claude/agents/consilium/_registry.md`.
+Read `.claude/consilium-registry.md`.
 
 Determine experts:
 - **Core (when convened):** `kotlin-expert`, `android-architect`

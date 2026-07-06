@@ -1,4 +1,5 @@
 ---
+name: myvalidate
 description: SelectorAssist — запускает ktlint + detekt + lintDebug + unit tests. С --ui добавляет snapshot тесты.
 ---
 

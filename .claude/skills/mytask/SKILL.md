@@ -1,4 +1,5 @@
 ---
+name: mytask
 description: SelectorAssist — запускает оркестратор для сложной задачи. Всё что после /mytask идёт в task.md.
 ---
 
