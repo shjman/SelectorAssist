@@ -39,15 +39,30 @@ Never use `Color(0xFF...)` inline in screens.
 
 Full reference: `core/ui/src/commonMain/kotlin/.../ui/theme/AppTypography.kt`
 
-| Style | Size / Weight | Used for |
-|-------|--------------|----------|
-| `headlineLarge` | 28sp Bold | — (reserved) |
-| `titleLarge` | 18sp SemiBold | Screen titles |
-| `bodyMedium` | 14sp Regular | Body text, list items |
-| `labelSmall` | 12sp Regular | Captions, helper text |
+| Style | Size / Weight / Line height | Used for |
+|-------|-----------------------------|----------|
+| `headlineLarge` | 28sp Bold / 34sp | — (reserved) |
+| `titleLarge` | 18sp SemiBold / 24sp | Screen titles |
+| `bodyMedium` | 14sp Regular / 20sp | Body text, list items |
+| `labelSmall` | 12sp Regular / 16sp | Captions, helper text |
 
 Most screens use inline `fontSize` / `fontWeight` directly for fine-grained control.  
 Typography styles are a baseline — not enforced everywhere yet.
+
+---
+
+## Платформо-адаптивный UI (`isAndroid`)
+
+`core/ui/src/commonMain/kotlin/.../ui/theme/Platform.kt` — `expect val isAndroid: Boolean` (actual: android / ios / wasmJs).
+
+Использовать для мелких платформенных идиом, никогда — для логики:
+
+- **Кнопка «назад»:** `BackButton` из `core:ui` рендерит Material-иконку `ArrowBack` на Android и текстовый chevron `‹` на остальных платформах. Всегда использовать общий компонент, не инлайнить.
+- **Размеры хедера:** Android — `start = 4.dp`, `fontSize = 22.sp`; iOS/web — `start = 8.dp`, `fontSize = 20.sp`.
+- **Размещение основного действия:** Android — FAB (например, создание вопроса); iOS/web — inline-кнопка в контенте.
+- **Акценты:** на Android допустимы `AppColors.PoleA` + `FontWeight.Medium` там, где на iOS — `TextSecondary` + `Normal` (см. SettingsScreen).
+
+Общие компоненты в `core:ui/components`: `BackButton`, `SettingsIconButton` (оба платформо-адаптивные через `isAndroid`).
 
 ---
 
@@ -236,26 +251,20 @@ Box(
 
 ### Screen header with back
 
+Стрелка «назад» — всегда общий `BackButton` из `core:ui` (платформо-адаптивный, см. секцию `isAndroid` выше).
+
 ```kotlin
 Row(
     modifier = Modifier
         .fillMaxWidth()
-        .padding(start = 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
+        .padding(start = if (isAndroid) 4.dp else 8.dp, end = 20.dp, top = 56.dp, bottom = 16.dp),
     verticalAlignment = Alignment.CenterVertically,
 ) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onBack)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = "‹", color = AppColors.TextPrimary, fontSize = 24.sp)
-    }
+    BackButton(onClick = onBack)
     Text(
         text = screenTitle,
         color = AppColors.TextPrimary,
-        fontSize = 20.sp,
+        fontSize = if (isAndroid) 22.sp else 20.sp,
         fontWeight = FontWeight.SemiBold,
     )
 }

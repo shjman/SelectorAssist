@@ -1,7 +1,7 @@
 ---
 name: ui-designer
 description: Compose Multiplatform UI expert. Checks DESIGN_SYSTEM compliance, components, colors, typography. Risks and recommendations only — not a plan.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Bash
 ---
 

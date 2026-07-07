@@ -1,7 +1,7 @@
 ---
 name: kotlin-expert
 description: Kotlin and KMP expert. Checks coroutines, Flow, language patterns, commonMain compatibility. Risks and recommendations only — not a plan.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Bash
 ---
 

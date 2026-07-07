@@ -36,11 +36,20 @@
 
 Сомневаешься — выбирай оркестратора.
 
+**Вызов оркестратора (обязательная процедура):**
+- Никогда не спавнить оркестратора напрямую через Agent tool
+- Всегда вызывать через скилл `/mytask` (Skill tool), передавая описание задачи
+- Перед вызовом: явно предупредить пользователя и дождаться подтверждения:
+  > «Это сложная задача — запускаю цепочку агентов (researcher → planner → executor → reviewer). Это займёт время. Подтверди запуск.»
+- Продолжать только после явного подтверждения пользователя
+
 ---
 
 ### Валидация (обязательно после любых изменений кода)
 
-После завершения обязательно прогнать статические анализаторы:
+Предпочтительно: запустить скилл `/myvalidate` — он объединяет ktlint + detekt + lintDebug + unit-тесты (добавь `--ui`, чтобы включить snapshot-тесты).
+
+Эквивалентные ручные команды:
 ```bash
 ./gradlew detekt --no-configuration-cache
 ./gradlew lintDebug --no-configuration-cache
@@ -50,12 +59,11 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 
 Если изменялись UI-файлы — дополнительно проверить snapshot-тесты:
 ```bash
-./gradlew verifyPaparazziDebug --no-configuration-cache   # компоненты core:ui
 ./gradlew verifyRoborazziDebug --no-configuration-cache   # экраны feature:*
 ```
 Если snapshot-тесты падают из-за намеренного изменения UI — записать новые baseline и закоммитить их:
 ```bash
-./gradlew recordPaparazziDebug recordRoborazziDebug --no-configuration-cache
+./gradlew recordRoborazziDebug --no-configuration-cache
 ```
 
 ---
@@ -82,6 +90,7 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 ./gradlew :composeApp:assembleDebug          # сборка debug APK
 ./gradlew :composeApp:assembleRelease        # сборка release APK
 ./gradlew :composeApp:installDebug           # сборка + установка на устройство/эмулятор
+./gradlew :composeApp:wasmJsBrowserDistribution  # сборка web-демо
 ./gradlew lintDebug --no-configuration-cache # Android Lint
 ./gradlew detekt --no-configuration-cache    # Kotlin статический анализ
 ```
@@ -97,6 +106,7 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 ## Проект
 
 KMP + Compose Multiplatform. Android + iOS, UI полностью общий (никакого SwiftUI).  
+Плюс Web-демо (wasmJs, in-memory репозитории), задеплоено на GitHub Pages: https://shjman.github.io/SelectorAssist/  
 Package: `com.yahorshymanchyk.selectorassist`  
 Pet project → Google Play + App Store.
 
@@ -128,16 +138,17 @@ Pet project → Google Play + App Store.
 ```
 :core:domain   — модели, репозитории (интерфейсы), use cases
 :core:data     — SQLDelight, реализации репозиториев, маперы
-:core:ui       — AppTheme, AppColors, AppTypography, shared components
+:core:ui       — AppTheme, AppColors, AppTypography, shared components (BackButton, SettingsIconButton), Platform.kt (expect val isAndroid)
 :feature:questions — список + создание вопроса
 :feature:entry     — ежедневный ввод
 :feature:report    — финальный отчёт
 :feature:settings  — настройки (биометрия)
-:composeApp    — точка входа, Koin wiring, Decompose Root, BiometryComponent (expect/actual)
+:composeApp    — точка входа, Koin wiring, Decompose Root, BiometryComponent (expect/actual), wasmJsMain (web-демо: in-memory репозитории, WebGallery)
 ```
 
 Правило: `:feature:*` → только `:core:domain` + `:core:ui`, никогда `:core:data`.  
 Исключение: `BiometryComponent` живёт в `:composeApp` (использует `expect/actual` и владеет gate-ом на уровне RootComponent).  
+Исключение: в `:core:ui` есть `expect val isAndroid` (`Platform.kt`) для платформо-адаптивного UI — см. `DESIGN_SYSTEM.md`.  
 Все версии зависимостей — только через `libs.versions.toml`.  
 Не добавлять новые зависимости без явного запроса.
 
@@ -152,7 +163,7 @@ Pet project → Google Play + App Store.
 - `Default*`: `CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)`, `lifecycle.doOnDestroy { scope.cancel() }`, `MutableValue` bridged из `StateFlow`
 - ViewModel: plain class, не наследует `androidx.lifecycle.ViewModel`, scope снаружи
 
-**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` (или `iosPlatformModule`) + `domainModule`. Репозитории и `CurrentDateProvider` регистрируются в platform-модуле как `single`. `DefaultRootComponent : KoinComponent` инжектирует use cases через `by inject()`.
+**Koin:** `SelectorAssistApp` / `MainViewController` → `androidPlatformModule` (или `iosPlatformModule`) + `domainModule`; web `main()` → `webPlatformModule` + `webDataModule` + `domainModule`. Репозитории и `CurrentDateProvider` регистрируются в platform-модуле как `single`. `DefaultRootComponent : KoinComponent` инжектирует use cases через `by inject()`.
 
 ---
 
@@ -161,16 +172,18 @@ Pet project → Google Play + App Store.
 **Готово:**
 - `core:domain` — все модели (`Question`, `Entry`, `Tag`, `AppSettings`), репозитории (интерфейсы), все use cases
 - `core:data` — SQLDelight схема (tables: questions, entries, entry_tags, app_settings), оба драйвера, репозитории, маперы
-- `core:ui` — AppTheme, AppColors, AppTypography, BackButton, SettingsIconButton
+- `core:ui` — AppTheme, AppColors, AppTypography, BackButton, SettingsIconButton, `expect val isAndroid` (Platform.kt)
 - `feature:questions` — QuestionsListScreen + CreateQuestionScreen (полный MVI + Decompose)
 - `feature:entry` — EntryScreen (слайдер 0..10 + теги + комментарий, полный MVI + Decompose)
 - `feature:report` — ReportScreen (склонение + влияние тегов + аргументы, полный MVI + Decompose)
 - `feature:settings` — SettingsScreen (toggle биометрии, полный MVI + Decompose)
 - `composeApp` — Koin DI, RootComponent (ChildStack: Biometry → Home), HomeComponent с ChildStack, BiometryComponent + expect/actual BiometryAuthenticator, MainActivity
+- Web-демо (wasmJs) — WebGallery (экраны бок о бок), in-memory репозитории, деплой на GitHub Pages через CI
+- CI/CD — PR-проверки (detekt, lint, ktlint, gitleaks, Roborazzi snapshots, сборка, Claude review); при merge в main: version bump, Firebase App Distribution, деплой web
 
 **TODO (MVP):**
 - QuestionComponent (вложенный ChildStack для Entry/Report)
-- Alarmee уведомления
+- Alarmee уведомления (зависимость уже в `composeApp/build.gradle.kts`, кода ещё нет)
 - DeleteQuestionUseCase — UI (свайп или кнопка); domain + DI уже готовы
 
 ---
@@ -276,6 +289,5 @@ scripts/ktlint --relative '**/*.kt' '!**/build/**' --reporter=plain
 
 **Snapshot-тесты (если изменялись UI-файлы):**
 ```bash
-./gradlew verifyPaparazziDebug --no-configuration-cache
 ./gradlew verifyRoborazziDebug --no-configuration-cache
 ```

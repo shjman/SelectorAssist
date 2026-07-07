@@ -1,4 +1,5 @@
 ---
+name: mycontext-reset
 description: SelectorAssist — архивирует context-файлы оркестратора перед новой задачей.
 ---
 

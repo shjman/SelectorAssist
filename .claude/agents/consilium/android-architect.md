@@ -1,7 +1,7 @@
 ---
 name: android-architect
 description: Architecture expert. Checks MVI, Decompose, Koin, Clean Architecture, SQLDelight, module dependencies. Risks and recommendations only — not a plan.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Bash
 ---
 
